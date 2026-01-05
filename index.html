@@ -3,143 +3,51 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<!-- PWA Settings -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Romeo Spelling">
 <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/lego-head.png">
-<!-- Google Fonts for Art Text -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
 
 <title>Romeo's Spelling</title>
 <style>
-  :root {
-    --bg: #f2f6fa; --card: #ffffff; --primary: #007AFF; 
-    --lego-yellow: #FFCF00; --lego-red: #ff3b30; --text: #1d1d1f;
-    --success: #34C759;
-  }
+  :root { --bg: #f2f6fa; --card: #ffffff; --primary: #007AFF; --lego-yellow: #FFCF00; --lego-red: #ff3b30; --text: #1d1d1f; --success: #34C759; }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  body {
-    margin: 0; padding: 0; 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg); color: var(--text);
-    height: 100vh; display: flex; flex-direction: column;
-    overflow: hidden; 
-  }
-
-  /* --- Layout --- */
-  header {
-    background: rgba(255,255,255,0.95);
-    padding: 15px 20px; padding-top: max(15px, env(safe-area-inset-top));
-    display: flex; align-items: center; justify-content: space-between;
-    position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-  }
+  body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+  header { background: rgba(255,255,255,0.95); padding: 15px 20px; padding-top: max(15px, env(safe-area-inset-top)); display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0,0,0,0.05); }
   .brand { display: flex; align-items: center; gap: 12px; }
-  .avatar {
-    width: 44px; height: 44px; background: var(--lego-yellow);
-    border-radius: 12px; display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 24px; color: #333;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.1); 
-    font-family: 'Fredoka One', cursive; 
-  }
+  .avatar { width: 44px; height: 44px; background: var(--lego-yellow); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px; color: #333; box-shadow: 0 4px 0 rgba(0,0,0,0.1); font-family: 'Fredoka One', cursive; }
   h1 { margin: 0; font-size: 18px; color: #000; font-weight: 700; }
   .subtitle { font-size: 12px; color: #888; font-weight: 400; }
-
-  /* --- Main Container --- */
-  #app {
-    flex: 1; overflow-y: auto; padding: 20px;
-    padding-bottom: max(30px, env(safe-area-inset-bottom));
-  }
-
-  /* --- Hero Title (Art Font) --- */
-  .hero-title {
-    font-family: 'Fredoka One', cursive; 
-    font-size: 56px; 
-    color: #333; 
-    text-shadow: 3px 3px 0px #ddd;
-    margin-bottom: 10px;
-    letter-spacing: 1px;
-  }
-  
-  /* --- Components --- */
-  .card {
-    background: var(--card); border-radius: 16px; padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 16px;
-    border: 1px solid rgba(0,0,0,0.02);
-  }
-  
-  /* Buttons */
-  .btn {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%; padding: 16px; 
-    border: none; border-radius: 14px;
-    font-size: 17px; font-weight: 600; cursor: pointer;
-    margin-bottom: 14px; transition: transform 0.1s;
-    text-align: center;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.05);
-  }
+  #app { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: max(30px, env(safe-area-inset-bottom)); }
+  .hero-title { font-family: 'Fredoka One', cursive; font-size: 56px; color: #333; text-shadow: 3px 3px 0px #ddd; margin-bottom: 10px; letter-spacing: 1px; }
+  .card { background: var(--card); border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.02); }
+  .btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border: none; border-radius: 14px; font-size: 17px; font-weight: 600; cursor: pointer; margin-bottom: 14px; transition: transform 0.1s; text-align: center; box-shadow: 0 4px 0 rgba(0,0,0,0.05); }
   .btn:active { transform: scale(0.98) translateY(2px); box-shadow: none; }
-  
   .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 0 #005bb5; }
   .btn-yellow { background: var(--lego-yellow); color: #000; box-shadow: 0 4px 0 #d4ac00; }
-  .btn-green { background: var(--success); color: #fff; box-shadow: 0 4px 0 #248a3d; }
   .btn-outline { background: #fff; color: var(--primary); border: 2px solid #eef2f6; box-shadow: none; }
   .btn-red { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; box-shadow: none; }
-  
   .btn-row { display: flex; gap: 12px; margin-top: 10px; }
-  .btn-small {
-    flex: 1; padding: 10px; font-size: 14px; border-radius: 10px;
-    background: #f1f3f7; color: #666; border: none; font-weight: 600;
-  }
-
-  /* --- Practice Mode UI --- */
-  .word-display {
-    text-align: center; margin: 20px 0;
-    min-height: 120px; display: flex; flex-direction: column; justify-content: center;
-  }
+  .btn-small { flex: 1; padding: 10px; font-size: 14px; border-radius: 10px; background: #f1f3f7; color: #666; border: none; font-weight: 600; }
+  .word-display { text-align: center; margin: 20px 0; min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
   .word-text { font-size: 52px; font-weight: 700; font-family: "Courier New", monospace; letter-spacing: 2px; color: #111; }
   .phonics { font-size: 24px; color: #555; margin-top: 8px; font-weight: 500; background:#e3f2fd; color:#1565c0; display:inline-block; padding:4px 14px; border-radius:20px; margin: 10px auto 0;}
-  
-  .blanks-container {
-    display: flex; justify-content: center; flex-wrap: wrap; gap: 8px;
-    margin: 30px 0; cursor: text;
-  }
-  .blank-char {
-    width: 48px; height: 58px;
-    border-bottom: 4px solid #e0e0e0;
-    font-size: 32px; font-weight: 600;
-    display: flex; align-items: center; justify-content: center;
-    background: #fff; color: #333; border-radius: 8px;
-    transition: all 0.2s;
-  }
+  .blanks-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; margin: 30px 0; cursor: text; }
+  .blank-char { width: 48px; height: 58px; border-bottom: 4px solid #e0e0e0; font-size: 32px; font-weight: 600; display: flex; align-items: center; justify-content: center; background: #fff; color: #333; border-radius: 8px; transition: all 0.2s; }
   .blank-char.active { border-bottom-color: var(--primary); background: #f0f7ff; transform: translateY(-2px); }
   .blank-char.filled { border-bottom-color: #333; }
   .blank-char.correct { color: #fff; background: var(--success); border-bottom-color: var(--success); border:none; }
   .blank-char.wrong { color: #fff; background: var(--lego-red); border-bottom-color: var(--lego-red); border:none; }
-
-  /* --- Achievement Page --- */
-  .rocket-stage {
-    background: linear-gradient(135deg, #0b1e3b, #1a3a6c); color: #fff; border-radius: 20px; padding: 30px 20px;
-    text-align: center; margin-bottom: 20px; position: relative; overflow: hidden;
-  }
+  .rocket-stage { background: linear-gradient(135deg, #0b1e3b, #1a3a6c); color: #fff; border-radius: 20px; padding: 30px 20px; text-align: center; margin-bottom: 20px; position: relative; overflow: hidden; }
   .big-score { font-size: 56px; font-weight: 900; margin: 10px 0; text-shadow: 0 4px 10px rgba(0,0,0,0.3); font-family: 'Fredoka One', cursive; }
   .icons-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; font-size: 24px; }
-  
-  /* Manage List */
-  .manage-item {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 14px; border-bottom: 1px solid #f0f0f0; cursor: pointer;
-  }
+  .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 14px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
   .manage-item:last-child { border-bottom: none; }
   .manage-item:active { background: #f9f9f9; }
-
-  .history-item {
-    background: #fff; border-radius: 14px; margin-bottom: 12px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.02); overflow: hidden;
-  }
+  .history-item { background: #fff; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); overflow: hidden; }
   .history-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; }
   .history-date { font-weight: 700; color: #333; }
   .history-count { color: #666; font-size: 14px; display: flex; align-items: center; gap: 6px; }
@@ -148,44 +56,32 @@
   .detail-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 4px 8px; border-radius: 6px; font-size: 13px; margin: 8px 4px 0 0; font-weight: 600; }
   .word-wall { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .wall-item { background: #fff; border: 1px solid #eee; padding: 6px 10px; border-radius: 8px; font-size: 14px; font-weight: 600; color: #444; }
-
-  /* Inputs */
   #hiddenInput { position: fixed; top: -100px; left: 0; opacity: 0; font-size: 16px; }
   #fileInput { display: none; }
   textarea { width: 100%; border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 16px; background: #fff; font-family: inherit; transition: border 0.2s;}
   textarea:focus { border-color: var(--primary); outline: none; }
-  input[type="date"] { font-family: inherit; }
-
-  /* Overlay */
-  #startOverlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255,255,255,0.98); z-index: 100;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-  }
+  input { font-family: inherit; width: 100%; padding: 12px; border:2px solid #e0e0e0; border-radius:12px; margin: 5px 0 15px; }
+  #startOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.98); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
 
-<!-- Hidden Inputs -->
 <input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <input type="file" id="fileInput" accept=".json" onchange="importData(this)">
 
-<!-- Header -->
 <header>
   <div class="brand">
     <div class="avatar">R</div>
     <div>
       <h1>Romeo's Spelling</h1>
-      <div class="subtitle">Phonics Practice</div>
+      <div class="subtitle">Cloud Edition</div>
     </div>
   </div>
   <div id="headerBtn"></div>
 </header>
 
-<!-- App Content -->
 <div id="app"></div>
 
-<!-- iOS Audio Unlock Overlay -->
 <div id="startOverlay">
   <div class="avatar" style="width:100px;height:100px;font-size:50px;margin-bottom:24px;box-shadow:0 12px 24px rgba(0,0,0,0.15)">R</div>
   <h2 style="margin-bottom:8px;font-size:32px;font-family:'Fredoka One',cursive">Ready?</h2>
@@ -194,46 +90,18 @@
 </div>
 
 <script>
-// --- 1. Global State & DB ---
+/* =============================================================
+   JSONBin.io CONFIG (无需实名，简单稳定)
+   ============================================================= */
+const BIN_ID = '695b813c43b1c97be91a29d3'; // 例如 6578abc...
+const API_KEY = '$2a$10$uEeLgIqeB1wImpeUneAhref2IXtkWjDsrQ1rh4tDTOdjMu8zDeYBC'; // 例如 $2a$10...
+// =============================================================
+
+// Global State
 let db;
 let currentSetDate = null;
-let practiceList = []; 
-let currentIndex = 0;
-let stage = 1; 
-let wrongList = []; 
-let sessionMasteredSet = new Set(); 
+let practiceList = []; currentIndex = 0; stage = 1; wrongList = []; sessionMasteredSet = new Set();
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-function playSuccessTone() {
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(500, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(1000, audioCtx.currentTime + 0.1);
-  gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + 0.5);
-}
-
-// --- 2. Database Init (V4) ---
-const DB_REQ = indexedDB.open('romeo_spelling_v4', 1);
-
-DB_REQ.onupgradeneeded = (e) => {
-  db = e.target.result;
-  if (!db.objectStoreNames.contains('wordSets')) db.createObjectStore('wordSets', { keyPath: 'date' });
-  if (!db.objectStoreNames.contains('wrongBank')) db.createObjectStore('wrongBank', { keyPath: 'word' });
-  if (!db.objectStoreNames.contains('practiceLogs')) db.createObjectStore('practiceLogs', { keyPath: 'id', autoIncrement: true });
-};
-DB_REQ.onsuccess = (e) => { db = e.target.result; };
-DB_REQ.onerror = (e) => console.error("DB Error", e);
-
-// --- 3. Navigation & Views ---
-const app = document.getElementById('app');
-const headerBtn = document.getElementById('headerBtn');
 
 function unlockAudio() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -243,69 +111,140 @@ function unlockAudio() {
   renderHome();
 }
 
-// --- PAGE: HOME ---
+// Database Init
+const DB_REQ = indexedDB.open('romeo_spelling_v4', 1);
+DB_REQ.onupgradeneeded = (e) => {
+  db = e.target.result;
+  if (!db.objectStoreNames.contains('wordSets')) db.createObjectStore('wordSets', { keyPath: 'date' });
+  if (!db.objectStoreNames.contains('wrongBank')) db.createObjectStore('wrongBank', { keyPath: 'word' });
+  if (!db.objectStoreNames.contains('practiceLogs')) db.createObjectStore('practiceLogs', { keyPath: 'id', autoIncrement: true });
+};
+DB_REQ.onsuccess = (e) => { db = e.target.result; };
+
+// --- Cloud Sync Logic (JSONBin) ---
+async function syncToCloud(isSilent = false) {
+    if(!BIN_ID.includes('6')) { if(!isSilent) alert("请先配置 JSONBin ID"); return; }
+    
+    // 1. Get Local Data
+    const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
+    const [sets, wrongs, logs] = await Promise.all([
+        getAll(tx.objectStore('wordSets')),
+        getAll(tx.objectStore('wrongBank')),
+        getAll(tx.objectStore('practiceLogs'))
+    ]);
+    
+    const payload = {
+        updatedAt: new Date(),
+        data: { wordSets: sets, wrongBank: wrongs, practiceLogs: logs }
+    };
+
+    const btn = document.getElementById('headerBtn');
+    if(isSilent) btn.innerHTML = '<span style="font-size:12px;color:#999">☁️ 正在云端存档...</span>';
+
+    try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'X-Master-Key': API_KEY 
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        if(!res.ok) throw new Error("API Error");
+
+        if(isSilent) {
+            btn.innerHTML = '<span style="font-size:12px;color:#34C759">✅ 云端已同步</span>';
+            setTimeout(() => btn.innerHTML = '', 3000);
+        } else {
+            alert("✅ 云端同步成功！");
+        }
+    } catch(e) {
+        if(!isSilent) alert("同步失败");
+        else btn.innerHTML = '<span style="font-size:12px;color:red">❌ 存档失败</span>';
+    }
+}
+
+async function syncFromCloud() {
+    if(!BIN_ID.includes('6')) return alert("请先配置 JSONBin ID");
+    if(!confirm("⚠️ 警告：将从云端下载并【覆盖】当前设备的所有数据。\n确定吗？")) return;
+
+    try {
+        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+            method: 'GET',
+            headers: { 'X-Master-Key': API_KEY }
+        });
+        const result = await res.json();
+        
+        // JSONBin wraps data in 'record'
+        const content = result.record.data; 
+        if(!content) return alert("云端数据为空");
+
+        const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
+        tx.objectStore('wordSets').clear();
+        tx.objectStore('wrongBank').clear();
+        tx.objectStore('practiceLogs').clear();
+        
+        (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
+        (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
+        (content.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
+        
+        tx.oncomplete = () => { alert("✅ 恢复成功！"); renderHome(); };
+        
+    } catch(e) {
+        alert("下载失败");
+    }
+}
+
+// --- Home Page ---
 function renderHome() {
-  headerBtn.innerHTML = '';
-  app.innerHTML = `
+  document.getElementById('headerBtn').innerHTML = '';
+  document.getElementById('app').innerHTML = `
     <div style="margin-top:20px;text-align:center;margin-bottom:30px">
         <div class="hero-title">Hi, Romeo!</div>
         <div style="font-size:16px;color:#666;font-weight:600">今天想做点什么？</div>
     </div>
-
-    <button class="btn btn-primary" onclick="renderSetSelection()">
-      <span style="font-size:24px">🚀</span> 开始练习
-    </button>
+    <button class="btn btn-primary" onclick="renderSetSelection()"><span style="font-size:24px">🚀</span> 开始练习</button>
+    <button class="btn btn-yellow" onclick="renderRecords()"><span style="font-size:24px">🏆</span> 成就 & 记录</button>
+    <button class="btn btn-outline" onclick="renderWordManager()"><span style="font-size:24px">📂</span> 单词管理</button>
     
-    <button class="btn btn-yellow" onclick="renderRecords()">
-      <span style="font-size:24px">🏆</span> 成就 & 记录
-    </button>
-    
-    <button class="btn btn-outline" onclick="renderWordManager()">
-      <span style="font-size:24px">📂</span> 单词管理
-    </button>
+    <div class="card" style="margin-top:20px;background:#f0f7ff;border:1px solid #cce5ff">
+        <h4 style="margin:0 0 10px 0;color:#007AFF;font-size:12px">CLOUD SYNC (JSONBin)</h4>
+        <div class="btn-row">
+            <button class="btn-small" style="background:#007AFF;color:#fff" onclick="syncToCloud()">☁️ 手动上传</button>
+            <button class="btn-small" style="background:#fff;border:1px solid #007AFF;color:#007AFF" onclick="syncFromCloud()">📥 从云端恢复</button>
+        </div>
+    </div>
 
-    <div class="card" style="margin-top:30px;background:#fff">
-      <h4 style="margin:0 0 10px 0;color:#888;font-size:12px">DATA BACKUP</h4>
+    <div class="card" style="margin-top:10px;background:#fff">
+      <h4 style="margin:0 0 10px 0;color:#888;font-size:12px">LOCAL BACKUP</h4>
       <div class="btn-row">
-         <button class="btn-small" onclick="exportAllData()">📤 导出备份</button>
-         <button class="btn-small" onclick="document.getElementById('fileInput').click()">📥 恢复数据</button>
+         <button class="btn-small" onclick="exportAllData()">📤 导出文件</button>
+         <button class="btn-small" onclick="document.getElementById('fileInput').click()">📥 导入文件</button>
       </div>
     </div>
   `;
 }
 
-// --- PAGE: WORD MANAGER ---
+// --- Rest (Manager, Practice, etc.) ---
 function renderWordManager() {
-  headerBtn.innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
   const today = new Date().toISOString().slice(0, 10);
-  
   const tx = db.transaction('wordSets', 'readonly');
   getAll(tx.objectStore('wordSets')).then(sets => {
     sets.sort((a,b) => b.date.localeCompare(a.date));
-    
-    let setsListHtml = '';
-    if (sets.length === 0) {
-        setsListHtml = '<div style="padding:15px;color:#999;text-align:center">暂无历史记录</div>';
-    } else {
-        setsListHtml = sets.map(s => `
-            <div class="manage-item" onclick="editSet('${s.date}')">
-                <div>
-                    <div style="font-weight:bold;color:#333">📅 ${s.date}</div>
-                    <div style="font-size:12px;color:#888;margin-top:2px">${s.words.length} 个单词</div>
-                </div>
-                <div style="color:var(--primary);font-size:14px;font-weight:600">编辑 ›</div>
-            </div>
-        `).join('');
-    }
+    let setsListHtml = sets.length ? sets.map(s => `
+        <div class="manage-item" onclick="editSet('${s.date}')">
+            <div><div style="font-weight:bold;color:#333">📅 ${s.date}</div><div style="font-size:12px;color:#888;margin-top:2px">${s.words.length} 个单词</div></div>
+            <div style="color:var(--primary);font-size:14px;font-weight:600">编辑 ›</div>
+        </div>`).join('') : '<div style="padding:15px;color:#999;text-align:center">暂无历史记录</div>';
 
-    app.innerHTML = `
+    document.getElementById('app').innerHTML = `
       <div class="card" id="managerCard">
         <h3 style="margin-top:0" id="mgrTitle">录入 / 编辑单词</h3>
-        <div style="background:#e3f2fd;padding:10px;border-radius:8px;font-size:13px;color:#1565c0;margin-bottom:12px;line-height:1.5">
-          💡 <b>提示：</b> 可用 "/" 或 "-" 指定分音节。<br>例如：<code>ap/ple</code>
-        </div>
+        <div style="background:#e3f2fd;padding:10px;border-radius:8px;font-size:13px;color:#1565c0;margin-bottom:12px;line-height:1.5">💡 <b>提示：</b> 可用 "/" 或 "-" 指定分音节。<br>例如：<code>ap/ple</code></div>
         <label class="subtitle">日期 (ID)</label>
-        <input type="date" id="newDate" value="${today}" style="width:100%;padding:12px;border:2px solid #e0e0e0;border-radius:12px;margin:8px 0 16px;background:#fff">
+        <input type="date" id="newDate" value="${today}">
         <label class="subtitle">单词列表 (每行一个)</label>
         <textarea id="newWords" rows="6" placeholder="例如：&#10;apple&#10;banana&#10;happy"></textarea>
         <div style="margin-top:20px;display:flex;gap:10px">
@@ -315,18 +254,13 @@ function renderWordManager() {
         <button class="btn-small" id="cancelBtn" style="margin-top:10px;width:100%;display:none" onclick="renderWordManager()">取消编辑 (返回新建)</button>
       </div>
       <h4 style="margin-left:10px;margin-bottom:10px;color:#666">历史词组管理</h4>
-      <div class="card" style="padding:0">
-         ${setsListHtml}
-      </div>
-    `;
+      <div class="card" style="padding:0">${setsListHtml}</div>`;
   });
 }
-
 function editSet(date) {
     const tx = db.transaction('wordSets', 'readonly');
     tx.objectStore('wordSets').get(date).onsuccess = (e) => {
-        const data = e.target.result;
-        if (!data) return;
+        const data = e.target.result; if (!data) return;
         document.getElementById('mgrTitle').innerText = "正在编辑: " + date;
         document.getElementById('newDate').value = data.date;
         document.getElementById('newDate').disabled = true; 
@@ -336,440 +270,177 @@ function editSet(date) {
         document.getElementById('app').scrollTop = 0;
     };
 }
-
-// --- PAGE: SET SELECTION ---
 function renderSetSelection() {
-  headerBtn.innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
-  
+  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
   const tx = db.transaction(['wordSets', 'wrongBank'], 'readonly');
-  Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank'))])
-  .then(([sets, wrongs]) => {
+  Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank'))]).then(([sets, wrongs]) => {
     sets.sort((a,b) => b.date.localeCompare(a.date));
-    
-    let html = `
-      <div style="margin-bottom:15px;display:flex;justify-content:space-between;align-items:center">
-        <h3 style="margin:0">选择课程</h3>
-        <span style="background:#eef;padding:4px 10px;border-radius:12px;font-size:12px;color:#558;font-weight:bold">${sets.length} 个任务</span>
-      </div>
-    `;
-    
-    if(wrongs.length > 0) {
-      html += `
-        <button class="btn btn-red" style="background:#ffebee;color:#d32f2f;box-shadow:none;border:2px solid #ffcdd2" onclick="renderWrongPractice()">
-          🔥 错题突击 (${wrongs.length} 词)
-        </button>
-        <div style="height:10px"></div>
-      `;
-    }
-
-    if(sets.length === 0) {
-      html += `<div style="text-align:center;padding:40px;color:#999">暂无练习，快去录入新词吧！</div>`;
-    } else {
-      html += sets.map(s => {
-          const previewWords = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0,5).join(', ');
-          return `
-            <div class="set-item" style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:#fff;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 5px rgba(0,0,0,0.02);cursor:pointer" onclick="startPractice('${s.date}')">
-              <div class="set-info">
-                <strong style="font-size:17px;color:#333">📅 ${s.date}</strong>
-                <span style="font-size:13px;color:#888">${previewWords}${s.words.length>5?'...':''}</span>
-              </div>
-              <div style="font-weight:bold;color:var(--primary);background:#eef6ff;padding:6px 12px;border-radius:10px">${s.words.length}词 ›</div>
-            </div>
-          `;
-      }).join('');
-    }
-    app.innerHTML = html;
+    let html = `<div style="margin-bottom:15px;display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">选择课程</h3><span style="background:#eef;padding:4px 10px;border-radius:12px;font-size:12px;color:#558;font-weight:bold">${sets.length} 个任务</span></div>`;
+    if(wrongs.length > 0) html += `<button class="btn btn-red" style="background:#ffebee;color:#d32f2f;box-shadow:none;border:2px solid #ffcdd2" onclick="renderWrongPractice()">🔥 错题突击 (${wrongs.length} 词)</button><div style="height:10px"></div>`;
+    if(sets.length === 0) html += `<div style="text-align:center;padding:40px;color:#999">暂无练习，快去录入新词吧！</div>`;
+    else html += sets.map(s => {
+        const previewWords = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0,5).join(', ');
+        return `<div class="set-item" style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:#fff;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 5px rgba(0,0,0,0.02);cursor:pointer" onclick="startPractice('${s.date}')">
+              <div class="set-info"><strong style="font-size:17px;color:#333">📅 ${s.date}</strong><span style="font-size:13px;color:#888">${previewWords}${s.words.length>5?'...':''}</span></div>
+              <div style="font-weight:bold;color:var(--primary);background:#eef6ff;padding:6px 12px;border-radius:10px">${s.words.length}词 ›</div></div>`;
+    }).join('');
+    document.getElementById('app').innerHTML = html;
   });
 }
-
-// --- PAGE: RECORDS ---
 function renderRecords() {
-  headerBtn.innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
-  
+  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
   const tx = db.transaction('practiceLogs', 'readonly');
   getAll(tx.objectStore('practiceLogs')).then(logs => {
     logs.sort((a,b) => b.timestamp - a.timestamp);
-    let totalStars = 0;
-    let allMasteredWords = new Set();
-    logs.forEach(l => {
-        totalStars += l.count;
-        if(l.words && Array.isArray(l.words)) { l.words.forEach(w => allMasteredWords.add(w.toLowerCase())); }
-    });
-    
+    let totalStars = 0; let allMasteredWords = new Set();
+    logs.forEach(l => { totalStars += l.count; if(l.words) l.words.forEach(w => allMasteredWords.add(w.toLowerCase())); });
     const rockets = Math.floor(totalStars / 10);
     const currentStars = totalStars % 10;
-    
-    let rocketsHtml = '';
-    for(let i=0; i<rockets; i++) rocketsHtml += '🚀 ';
-    if(rockets === 0) rocketsHtml = '<span style="font-size:14px;opacity:0.6;font-weight:normal">加油练习赚取火箭！</span>';
-    
-    let starsHtml = '';
-    for(let i=0; i<currentStars; i++) starsHtml += '⭐ ';
-    for(let i=currentStars; i<10; i++) starsHtml += '<span style="opacity:0.2">⭐</span> ';
-
+    let rocketsHtml = ''; for(let i=0; i<rockets; i++) rocketsHtml += '🚀 ';
+    let starsHtml = ''; for(let i=0; i<currentStars; i++) starsHtml += '⭐ '; for(let i=currentStars; i<10; i++) starsHtml += '<span style="opacity:0.2">⭐</span> ';
     let historyHtml = logs.length === 0 ? '<div style="text-align:center;padding:20px;color:#999">暂无记录</div>' : '';
-    
     logs.forEach((log, index) => {
-        const wordsArr = log.words || [];
-        const wordsHtml = wordsArr.map(w => `<span class="detail-tag">${w}</span>`).join('');
-        historyHtml += `
-            <div class="history-item">
-                <div class="history-header" onclick="toggleHistory(${index})">
-                    <div>
-                        <div class="history-date">${log.date}</div>
-                        <div class="history-count">
-                           <span>完成 ${log.count} 个单词</span>
-                           <span style="font-size:10px;color:#999">▼</span>
-                        </div>
-                    </div>
-                    <div style="font-weight:bold;color:#fbc02d">⭐ +${log.count}</div>
-                </div>
-                <div class="history-details" id="hist-detail-${index}">
-                    ${wordsHtml || '<span style="font-size:12px;color:#ccc">无详细记录</span>'}
-                </div>
-            </div>
-        `;
+        const wordsHtml = (log.words || []).map(w => `<span class="detail-tag">${w}</span>`).join('');
+        historyHtml += `<div class="history-item"><div class="history-header" onclick="toggleHistory(${index})"><div><div class="history-date">${log.date}</div><div class="history-count"><span>完成 ${log.count} 个单词</span><span style="font-size:10px;color:#999">▼</span></div></div><div style="font-weight:bold;color:#fbc02d">⭐ +${log.count}</div></div><div class="history-details" id="hist-detail-${index}">${wordsHtml || '<span style="font-size:12px;color:#ccc">无详细记录</span>'}</div></div>`;
     });
     const wallHtml = Array.from(allMasteredWords).sort().map(w => `<div class="wall-item">${w}</div>`).join('');
-
-    app.innerHTML = `
-      <div class="rocket-stage">
-        <div style="position:relative;z-index:2">
-            <div style="font-size:14px;opacity:0.8;text-transform:uppercase;letter-spacing:1px">Total Score</div>
-            <div class="big-score">${totalStars}</div>
-            <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-top:10px">
-                <div style="font-size:12px;margin-bottom:5px;opacity:0.7">火箭收藏馆 (${rockets})</div>
-                <div class="icons-grid" style="font-size:20px">${rocketsHtml}</div>
-            </div>
-             <div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-top:10px">
-                <div style="font-size:12px;margin-bottom:5px;opacity:0.7">当前进度 (${currentStars}/10)</div>
-                <div class="icons-grid">${starsHtml}</div>
-            </div>
-        </div>
-      </div>
-      <div class="card">
-        <h3 style="margin:0 0 10px 0">单词墙 (${allMasteredWords.size})</h3>
-        <div class="word-wall">${wallHtml || '<span style="color:#999;font-size:13px">还没有掌握单词哦</span>'}</div>
-      </div>
-      <h3 style="margin-left:5px;margin-top:20px">练习足迹</h3>
-      <div class="history-list">
-        ${historyHtml}
-      </div>
-    `;
+    document.getElementById('app').innerHTML = `<div class="rocket-stage"><div style="position:relative;z-index:2"><div style="font-size:14px;opacity:0.8;text-transform:uppercase;letter-spacing:1px">Total Score</div><div class="big-score">${totalStars}</div><div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-top:10px"><div style="font-size:12px;margin-bottom:5px;opacity:0.7">火箭收藏馆 (${rockets})</div><div class="icons-grid" style="font-size:20px">${rocketsHtml || '<span style="font-size:14px;opacity:0.6">加油！</span>'}</div></div><div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-top:10px"><div style="font-size:12px;margin-bottom:5px;opacity:0.7">当前进度 (${currentStars}/10)</div><div class="icons-grid">${starsHtml}</div></div></div></div><div class="card"><h3 style="margin:0 0 10px 0">单词墙 (${allMasteredWords.size})</h3><div class="word-wall">${wallHtml || '<span style="color:#999;font-size:13px">还没有掌握单词哦</span>'}</div></div><h3 style="margin-left:5px;margin-top:20px">练习足迹</h3><div class="history-list">${historyHtml}</div>`;
   });
 }
-
-function toggleHistory(idx) {
-    const el = document.getElementById(`hist-detail-${idx}`);
-    if(el) { el.classList.toggle('show'); }
-}
-
-// --- LOGIC: SAVE/IMPORT/EXPORT ---
+function toggleHistory(idx) { const el = document.getElementById(`hist-detail-${idx}`); if(el) el.classList.toggle('show'); }
 function saveSet() {
-  const date = document.getElementById('newDate').value;
-  const text = document.getElementById('newWords').value;
+  const date = document.getElementById('newDate').value; const text = document.getElementById('newWords').value;
   if(!text.trim()) return alert("请输入单词");
   const words = text.split(/\n+/).map(w => w.trim()).filter(w => w);
   const tx = db.transaction('wordSets', 'readwrite');
   tx.objectStore('wordSets').put({ date, words });
-  tx.oncomplete = () => { alert("保存成功!"); renderWordManager(); };
+  tx.oncomplete = () => { alert("保存成功!"); renderWordManager(); syncToCloud(true); };
 }
-
 function deleteSetByDate() {
-  const date = document.getElementById('newDate').value;
-  if(!confirm(`确认删除 ${date} 的所有单词吗？`)) return;
+  const date = document.getElementById('newDate').value; if(!confirm(`确认删除?`)) return;
   const tx = db.transaction('wordSets', 'readwrite');
-  tx.objectStore('wordSets').delete(date);
-  tx.oncomplete = () => { alert("已删除"); renderWordManager(); };
+  tx.objectStore('wordSets').delete(date); tx.oncomplete = () => { alert("已删除"); renderWordManager(); syncToCloud(true); };
 }
-
 function exportAllData() {
   const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
-  Promise.all([
-    getAll(tx.objectStore('wordSets')), 
-    getAll(tx.objectStore('wrongBank')),
-    getAll(tx.objectStore('practiceLogs'))
-  ])
+  Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))])
   .then(([sets, wrongs, logs]) => {
       const data = { wordSets: sets, wrongBank: wrongs, practiceLogs: logs, exportDate: new Date().toISOString() };
       const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `romeo_backup_${new Date().toISOString().slice(0,10)}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `romeo_backup_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
   });
 }
-
 function importData(inputElement) {
-  const file = inputElement.files[0];
-  if (!file) return;
-  if(!confirm("⚠️ 警告：恢复数据将会【清空】当前设备上所有的历史记录和单词，完全替换为备份文件里的内容。\n\n确定要覆盖吗？")) {
-     inputElement.value = ''; 
-     return;
-  }
+  const file = inputElement.files[0]; if (!file) return;
+  if(!confirm("⚠️ 警告：覆盖数据？")) { inputElement.value = ''; return; }
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      if (!data.wordSets && !data.wrongBank && !data.practiceLogs) throw new Error("Format error");
+      if (!data.wordSets) throw new Error("Format error");
       const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
-      
-      tx.objectStore('wordSets').clear();
-      tx.objectStore('wrongBank').clear();
-      tx.objectStore('practiceLogs').clear();
-      
+      tx.objectStore('wordSets').clear(); tx.objectStore('wrongBank').clear(); tx.objectStore('practiceLogs').clear();
       (data.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
       (data.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
       (data.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
-      
-      tx.oncomplete = () => { alert("恢复成功！"); renderHome(); inputElement.value = ''; };
+      tx.oncomplete = () => { alert("恢复成功！"); renderHome(); inputElement.value = ''; syncToCloud(true); };
     } catch (err) { alert("文件错误"); inputElement.value = ''; }
   };
   reader.readAsText(file);
 }
-
-// --- LOGIC: PRACTICE CORE ---
+// Practice
 function startPractice(date) {
   const tx = db.transaction('wordSets', 'readonly');
   tx.objectStore('wordSets').get(date).onsuccess = (e) => {
-    const data = e.target.result;
-    if(!data) return;
-    currentSetDate = date;
-    practiceList = data.words;
-    currentIndex = 0;
-    stage = 1; wrongList = []; sessionMasteredSet = new Set();
+    const data = e.target.result; if(!data) return;
+    currentSetDate = date; practiceList = data.words; currentIndex = 0; stage = 1; wrongList = []; sessionMasteredSet = new Set();
     renderPracticeUI();
   };
 }
-
 function renderWrongPractice() {
   const tx = db.transaction('wrongBank', 'readonly');
   getAll(tx.objectStore('wrongBank')).then(list => {
     if(list.length === 0) return alert("错题本是空的！");
-    currentSetDate = 'wrong_bank';
-    practiceList = list.map(i => i.word);
-    currentIndex = 0;
-    stage = 2; wrongList = []; sessionMasteredSet = new Set();
+    currentSetDate = 'wrong_bank'; practiceList = list.map(i => i.word); currentIndex = 0; stage = 2; wrongList = []; sessionMasteredSet = new Set();
     renderPracticeUI();
   });
 }
-
 function renderPracticeUI() {
-  headerBtn.innerHTML = `<button class="btn-small" onclick="if(confirm('退出练习？')) renderHome()">🏃 退出</button>`;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" onclick="if(confirm('退出练习？')) renderHome()">🏃 退出</button>`;
   let title = stage === 1 ? "第一轮: 认读记忆" : (stage === 2 ? "第二轮: 听写考核" : "错题重练");
   if(currentSetDate === 'wrong_bank') title = "错题突击";
-  
-  app.innerHTML = `
-    <div style="text-align:center;margin-bottom:15px;color:#888;font-weight:600;font-size:14px">
-        ${title} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span>
-    </div>
-    <div class="card" id="practiceCard" style="min-height:300px"></div>
-  `;
+  document.getElementById('app').innerHTML = `<div style="text-align:center;margin-bottom:15px;color:#888;font-weight:600;font-size:14px">${title} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span></div><div class="card" id="practiceCard" style="min-height:300px"></div>`;
   loadWord();
 }
-
 function loadWord() {
   if(currentIndex >= practiceList.length) { handleRoundComplete(); return; }
-  
   const rawWord = practiceList[currentIndex];
   const cleanWord = rawWord.replace(/[\/\-]/g, ''); 
   const container = document.getElementById('practiceCard');
-  
   let phonicsDisplay = "";
-  if(stage === 1) {
-      if(rawWord.includes('/') || rawWord.includes('-')) {
-          phonicsDisplay = rawWord.replace(/[\/\-]/g, ' · ');
-      } else {
-          phonicsDisplay = getImprovedPhonics(cleanWord);
-      }
-  }
-
+  if(stage === 1) { phonicsDisplay = (rawWord.includes('/') || rawWord.includes('-')) ? rawWord.replace(/[\/\-]/g, ' · ') : getImprovedPhonics(cleanWord); }
   const displayWord = stage === 1 ? cleanWord : "???";
-  
-  container.innerHTML = `
-    <div class="word-display">
-        <div class="word-text" style="color:${stage===1?'#111':'#ccc'}">${displayWord}</div>
-        ${phonicsDisplay ? `<div class="phonics">${phonicsDisplay}</div>` : '<div style="height:38px"></div>'}
-    </div>
-    
-    <div style="text-align:center;margin-bottom:20px">
-        <button class="btn-outline" style="display:inline-flex;width:auto;padding:10px 20px;border-radius:30px;align-items:center;gap:5px" onclick="speak('${cleanWord}')">
-            <span>🔊</span> <span style="font-weight:600">听发音</span>
-        </button>
-    </div>
-
-    <div class="blanks-container" id="blanksArea"></div>
-    <div style="text-align:center;height:30px;margin-bottom:10px;font-weight:bold;font-size:18px" id="feedback"></div>
-
-    <button class="btn btn-primary" id="confirmBtn" onclick="checkWord()">✨ 确认 (Enter)</button>
-    <button class="btn btn-outline" id="skipBtn" style="margin-top:0;border:none;color:#999" onclick="skipWord()">跳过 ›</button>
-  `;
-  setupInput(cleanWord);
-  setTimeout(() => speak(cleanWord), 400);
+  container.innerHTML = `<div class="word-display"><div class="word-text" style="color:${stage===1?'#111':'#ccc'}">${displayWord}</div>${phonicsDisplay ? `<div class="phonics">${phonicsDisplay}</div>` : '<div style="height:38px"></div>'}</div><div style="text-align:center;margin-bottom:20px"><button class="btn-outline" style="display:inline-flex;width:auto;padding:10px 20px;border-radius:30px;align-items:center;gap:5px" onclick="speak('${cleanWord}')"><span>🔊</span> <span style="font-weight:600">听发音</span></button></div><div class="blanks-container" id="blanksArea"></div><div style="text-align:center;height:30px;margin-bottom:10px;font-weight:bold;font-size:18px" id="feedback"></div><button class="btn btn-primary" id="confirmBtn" onclick="checkWord()">✨ 确认 (Enter)</button><button class="btn btn-outline" id="skipBtn" style="margin-top:0;border:none;color:#999" onclick="skipWord()">跳过 ›</button>`;
+  setupInput(cleanWord); setTimeout(() => speak(cleanWord), 400);
 }
-
-// --- LOGIC: INPUT & CHECK ---
-let targetWord = "";
-let currentInput = "";
-
 function setupInput(word) {
   targetWord = word; currentInput = "";
   const blanks = document.getElementById('blanksArea'); blanks.innerHTML = '';
-  for(let i=0; i<word.length; i++) {
-    const b = document.createElement('div'); b.className = 'blank-char';
-    if(word[i] === ' ' || word[i] === '-') { b.textContent = word[i]; b.style.borderBottom = 'none'; }
-    blanks.appendChild(b);
-  }
-  const hidden = document.getElementById('hiddenInput');
-  hidden.value = ''; hidden.focus();
+  for(let i=0; i<word.length; i++) { const b = document.createElement('div'); b.className = 'blank-char'; if(word[i] === ' ' || word[i] === '-') { b.textContent = word[i]; b.style.borderBottom = 'none'; } blanks.appendChild(b); }
+  const hidden = document.getElementById('hiddenInput'); hidden.value = ''; hidden.focus();
   blanks.onclick = () => { hidden.focus(); updateBlanksUI(); };
-  hidden.oninput = (e) => { 
-      let val = e.target.value.replace(/[^a-zA-Z]/g, '');
-      currentInput = val.slice(0, targetWord.length); 
-      updateBlanksUI(); 
-  };
+  hidden.oninput = (e) => { let val = e.target.value.replace(/[^a-zA-Z]/g, ''); currentInput = val.slice(0, targetWord.length); updateBlanksUI(); };
   hidden.onkeydown = (e) => { if(e.key === 'Enter') checkWord(); };
   updateBlanksUI();
 }
-
 function updateBlanksUI() {
   const chars = document.querySelectorAll('.blank-char');
   for(let i=0; i<targetWord.length; i++) {
     if(targetWord[i] === ' ' || targetWord[i] === '-') continue;
-    const charElem = chars[i];
-    const inputChar = currentInput[i] || '';
-    charElem.textContent = inputChar;
-    charElem.classList.remove('active', 'filled');
-    if(i === currentInput.length) charElem.classList.add('active');
-    if(inputChar) charElem.classList.add('filled');
+    const charElem = chars[i]; const inputChar = currentInput[i] || ''; charElem.textContent = inputChar;
+    charElem.classList.remove('active', 'filled'); if(i === currentInput.length) charElem.classList.add('active'); if(inputChar) charElem.classList.add('filled');
   }
 }
-
 function checkWord() {
-  const fb = document.getElementById('feedback');
-  const cleanInput = currentInput.trim().toLowerCase();
-  const cleanTarget = targetWord.trim().toLowerCase();
-  
+  const fb = document.getElementById('feedback'); const cleanInput = currentInput.trim().toLowerCase(); const cleanTarget = targetWord.trim().toLowerCase();
   if(!cleanInput) return; 
-  
   if(cleanInput === cleanTarget) {
-    fb.innerHTML = `<span style="color:var(--success)">太棒了！🎉</span>`;
-    document.querySelectorAll('.blank-char').forEach(c => c.classList.add('correct'));
-    playSuccessTone();
-
-    if(stage >= 2) { 
-        sessionMasteredSet.add(cleanTarget); 
-        if(currentSetDate === 'wrong_bank') removeFromWrongBank(targetWord);
-    }
+    fb.innerHTML = `<span style="color:var(--success)">太棒了！🎉</span>`; document.querySelectorAll('.blank-char').forEach(c => c.classList.add('correct')); playSuccessTone();
+    if(stage >= 2) { sessionMasteredSet.add(cleanTarget); if(currentSetDate === 'wrong_bank') removeFromWrongBank(targetWord); }
     setTimeout(() => { currentIndex++; loadWord(); }, 800);
   } else {
-    fb.innerHTML = `<span style="color:var(--lego-red)">正确: ${targetWord}</span>`;
-    document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
+    fb.innerHTML = `<span style="color:var(--lego-red)">正确: ${targetWord}</span>`; document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
     const btn = document.getElementById('confirmBtn');
-
     if(stage === 1) {
-        btn.innerText = "记住了 (清空重试) ↺";
-        btn.className = "btn btn-yellow";
-        btn.onclick = () => {
-            currentInput = "";
-            document.getElementById('hiddenInput').value = "";
-            updateBlanksUI();
-            document.querySelectorAll('.blank-char').forEach(c => c.classList.remove('wrong'));
-            fb.innerHTML = "";
-            btn.innerText = "✨ 确认 (Enter)";
-            btn.className = "btn btn-primary";
-            btn.onclick = checkWord;
-            document.getElementById('hiddenInput').focus();
-        };
+        btn.innerText = "记住了 (清空重试) ↺"; btn.className = "btn btn-yellow";
+        btn.onclick = () => { currentInput = ""; document.getElementById('hiddenInput').value = ""; updateBlanksUI(); document.querySelectorAll('.blank-char').forEach(c => c.classList.remove('wrong')); fb.innerHTML = ""; btn.innerText = "✨ 确认 (Enter)"; btn.className = "btn btn-primary"; btn.onclick = checkWord; document.getElementById('hiddenInput').focus(); };
     } else {
-        if(stage === 2) { 
-            const rawW = practiceList[currentIndex];
-            if(!wrongList.includes(rawW)) wrongList.push(rawW); 
-            addToWrongBank(rawW); 
-        }
-        btn.innerText = "记住了，继续 ›";
-        btn.className = "btn btn-outline";
-        btn.onclick = () => { currentIndex++; loadWord(); };
+        if(stage === 2) { const rawW = practiceList[currentIndex]; if(!wrongList.includes(rawW)) wrongList.push(rawW); addToWrongBank(rawW); }
+        btn.innerText = "记住了，继续 ›"; btn.className = "btn btn-outline"; btn.onclick = () => { currentIndex++; loadWord(); };
     }
   }
 }
-
 function skipWord() { currentIndex++; loadWord(); }
-
 function handleRoundComplete() {
-  if(stage === 1) { 
-    alert("第一轮记忆完成！\n请准备好，接下来开始听写挑战 💪"); 
-    stage = 2; currentIndex = 0; renderPracticeUI(); 
-  } else if (stage === 2) {
-    if(wrongList.length > 0) { 
-      alert(`听写完成！有 ${wrongList.length} 个单词需要订正。`); 
-      practiceList = [...wrongList]; wrongList = []; stage = 3; currentIndex = 0; renderPracticeUI(); 
-    } else {
-      finishAll();
-    }
-  } else {
-    finishAll();
-  }
+  if(stage === 1) { alert("第一轮记忆完成！\n请准备好，接下来开始听写挑战 💪"); stage = 2; currentIndex = 0; renderPracticeUI(); }
+  else if (stage === 2) { if(wrongList.length > 0) { alert(`听写完成！有 ${wrongList.length} 个单词需要订正。`); practiceList = [...wrongList]; wrongList = []; stage = 3; currentIndex = 0; renderPracticeUI(); } else finishAll(); }
+  else finishAll();
 }
-
 function finishAll() {
   const masteredCount = sessionMasteredSet.size;
-  if(masteredCount > 0) {
-    const tx = db.transaction('practiceLogs', 'readwrite');
-    tx.objectStore('practiceLogs').add({
-        date: new Date().toISOString().slice(0,10),
-        timestamp: Date.now(),
-        count: masteredCount,
-        words: Array.from(sessionMasteredSet), 
-        source: currentSetDate
-    });
-  }
-  app.innerHTML = `
-    <div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
-      <div style="font-size:70px;margin-bottom:10px">🚀</div>
-      <h2 style="font-size:28px;margin-bottom:10px;color:#333;font-weight:800">练习完成！</h2>
-      <p style="color:#666;font-size:18px">本次掌握: <b style="color:#fbc02d">${masteredCount} ⭐</b></p>
-      <div style="height:20px"></div>
-      <button class="btn btn-primary" onclick="renderHome()">返回首页</button>
-      <button class="btn btn-yellow" onclick="renderRecords()">查看成就</button>
-    </div>
-  `;
+  if(masteredCount > 0) { const tx = db.transaction('practiceLogs', 'readwrite'); tx.objectStore('practiceLogs').add({ date: new Date().toISOString().slice(0,10), timestamp: Date.now(), count: masteredCount, words: Array.from(sessionMasteredSet), source: currentSetDate }); }
+  document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px"><div style="font-size:70px;margin-bottom:10px">🚀</div><h2 style="font-size:28px;margin-bottom:10px;color:#333;font-weight:800">练习完成！</h2><p style="color:#666;font-size:18px">本次掌握: <b style="color:#fbc02d">${masteredCount} ⭐</b></p><div style="height:20px"></div><button class="btn btn-primary" onclick="renderHome()">返回首页</button><button class="btn btn-yellow" onclick="renderRecords()">查看成就</button></div>`;
+  syncToCloud(true);
 }
-
-// --- Helpers ---
-function getImprovedPhonics(w) {
-    const word = w.toLowerCase();
-    const chunks = word.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/gi);
-    if(!chunks || chunks.length <= 1) return word;
-    let res = [];
-    for(let i=0; i<chunks.length; i++) { res.push(chunks[i]); }
-    if(res.length > 1) {
-       const last = res[res.length-1];
-       if(last === 'e' || last === 'es') { res[res.length-2] += res.pop(); }
-    }
-    return res.join(' · ');
-}
-
+function getImprovedPhonics(w) { const word = w.toLowerCase(); const chunks = word.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/gi); if(!chunks || chunks.length <= 1) return word; let res = []; for(let i=0; i<chunks.length; i++) { res.push(chunks[i]); } if(res.length > 1) { const last = res[res.length-1]; if(last === 'e' || last === 'es') { res[res.length-2] += res.pop(); } } return res.join(' · '); }
 function getAll(store) { return new Promise((r) => { const req = store.getAll(); req.onsuccess = () => r(req.result); }); }
-function addToWrongBank(word) { 
-  const tx = db.transaction('wrongBank', 'readwrite'); 
-  tx.objectStore('wrongBank').put({ word: word, lastWrong: new Date().toISOString() }); 
-}
-function removeFromWrongBank(word) { 
-  const tx = db.transaction('wrongBank', 'readwrite'); 
-  tx.objectStore('wrongBank').delete(word); 
-}
+function addToWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').put({ word: word, lastWrong: new Date().toISOString() }); }
+function removeFromWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').delete(word); }
 function speak(text) {
-  speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.9;
-  const allVoices = speechSynthesis.getVoices();
-  const preferred = allVoices.find(v => v.name === 'Daniel') || allVoices.find(v => v.name === 'Samantha') || allVoices.find(v => v.lang.includes('en'));
-  if(preferred) u.voice = preferred;
-  speechSynthesis.speak(u);
+  speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.9;
+  const allVoices = speechSynthesis.getVoices(); const preferred = allVoices.find(v => v.name === 'Daniel') || allVoices.find(v => v.name === 'Samantha') || allVoices.find(v => v.lang.includes('en'));
+  if(preferred) u.voice = preferred; speechSynthesis.speak(u);
 }
 speechSynthesis.onvoiceschanged = () => { };
 </script>
