@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<!-- 优化视口设置，禁止缩放，适配 iPad -->
+<!-- 视口设置：禁止缩放，适配 iPad 尺寸 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,7 +18,8 @@
     --bg: #f2f6fa; --card: #ffffff; --primary: #007AFF; 
     --lego-yellow: #FFCF00; --lego-red: #ff3b30; --text: #1d1d1f; --success: #34C759; 
   }
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+  /* 禁止 iOS 点击高亮和长按菜单，体验更像 App */
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; user-select: none; }
   
   body { 
     margin: 0; padding: 0; 
@@ -26,7 +27,7 @@
     background: var(--bg); color: var(--text); 
     height: 100vh; width: 100vw;
     display: flex; flex-direction: column; 
-    overflow: hidden; /* 禁止整体页面橡皮筋效果 */
+    overflow: hidden; 
   }
 
   /* --- Layout --- */
@@ -35,7 +36,7 @@
     padding: 12px 20px; padding-top: max(12px, env(safe-area-inset-top)); 
     display: flex; align-items: center; justify-content: space-between; 
     border-bottom: 1px solid rgba(0,0,0,0.05); 
-    flex-shrink: 0; /* 防止头被压缩 */
+    flex-shrink: 0; 
   }
   .brand { display: flex; align-items: center; gap: 10px; }
   .avatar { 
@@ -46,7 +47,6 @@
   }
   .subtitle { font-size: 12px; color: #888; font-weight: 400; }
   
-  /* --- Main Container --- */
   #app { 
     flex: 1; overflow-y: auto; padding: 20px; 
     padding-bottom: max(30px, env(safe-area-inset-bottom)); 
@@ -59,13 +59,13 @@
     border: 1px solid rgba(0,0,0,0.02); 
   }
 
-  /* --- Buttons (iPad Optimized) --- */
+  /* --- Buttons --- */
   .btn { 
     display: flex; align-items: center; justify-content: center; gap: 10px; 
     width: 100%; padding: 18px; 
     border: none; border-radius: 14px; 
     font-size: 18px; font-weight: 600; cursor: pointer; 
-    margin-bottom: 14px; transition: transform 0.1s, opacity 0.1s; 
+    margin-bottom: 14px; transition: transform 0.1s; 
     text-align: center; box-shadow: 0 4px 0 rgba(0,0,0,0.05); 
   }
   .btn:active { transform: scale(0.98) translateY(2px); box-shadow: none; }
@@ -73,23 +73,19 @@
   .btn-yellow { background: var(--lego-yellow); color: #000; box-shadow: 0 4px 0 #d4ac00; }
   .btn-outline { background: #fff; color: var(--primary); border: 2px solid #eef2f6; box-shadow: none; }
   .btn-red { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; box-shadow: none; }
-  
   .btn-row { display: flex; gap: 12px; margin-top: 10px; }
-  .btn-small { 
-    flex: 1; padding: 12px; font-size: 15px; border-radius: 12px; 
-    background: #f1f3f7; color: #666; border: none; font-weight: 600; 
-  }
+  .btn-small { flex: 1; padding: 12px; font-size: 15px; border-radius: 12px; background: #f1f3f7; color: #666; border: none; font-weight: 600; }
 
   /* --- Practice Mode UI --- */
   .word-display { 
     text-align: center; margin: 10px 0 20px 0; 
     min-height: 100px; display: flex; flex-direction: column; justify-content: center; 
   }
-  .word-text { font-size: 56px; font-weight: 700; font-family: "Courier New", monospace; letter-spacing: 2px; color: #111; }
+  .word-text { font-size: 60px; font-weight: 700; font-family: "Courier New", monospace; letter-spacing: 3px; color: #111; }
   .phonics { 
-    font-size: 24px; color: #555; margin-top: 8px; font-weight: 500; 
+    font-size: 26px; color: #555; margin-top: 10px; font-weight: 600; 
     background:#e3f2fd; color:#1565c0; display:inline-block; 
-    padding:6px 16px; border-radius:20px; margin: 10px auto 0;
+    padding:6px 18px; border-radius:20px; 
   }
   
   .blanks-container { 
@@ -97,9 +93,9 @@
     margin: 20px 0 30px 0; cursor: text; 
   }
   .blank-char { 
-    width: 50px; height: 64px; 
+    width: 52px; height: 66px; 
     border-bottom: 5px solid #e0e0e0; 
-    font-size: 36px; font-weight: 600; 
+    font-size: 38px; font-weight: 600; 
     display: flex; align-items: center; justify-content: center; 
     background: #fff; color: #333; border-radius: 8px; 
     transition: all 0.1s; 
@@ -121,15 +117,15 @@
   .word-wall { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
   .wall-item { background: #fff; border: 1px solid #eee; padding: 8px 12px; border-radius: 8px; font-size: 15px; font-weight: 600; color: #444; }
   
-  /* --- Input Styles --- */
-  textarea { width: 100%; border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 16px; background: #fff; font-family: inherit; transition: border 0.2s;}
+  /* --- Inputs --- */
+  textarea { width: 100%; border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 16px; background: #fff; font-family: inherit; transition: border 0.2s; user-select: auto; }
   textarea:focus { border-color: var(--primary); outline: none; }
-  input { font-family: inherit; width: 100%; padding: 14px; border:2px solid #e0e0e0; border-radius:12px; margin: 5px 0 15px; font-size: 16px; }
+  input[type="date"] { font-family: inherit; width: 100%; padding: 14px; border:2px solid #e0e0e0; border-radius:12px; margin: 5px 0 15px; font-size: 16px; }
   
-  /* --- Hidden Input (Crucial for iPad) --- */
+  /* --- Hidden Input (The Magic) --- */
   #hiddenInput { 
-    position: fixed; top: -1000px; left: -1000px; 
-    opacity: 0; font-size: 16px; /* 16px prevents iOS zoom */
+    position: fixed; top: 0; left: -1000px; 
+    opacity: 0; font-size: 16px; height: 100px; /* Make it capturable */
   }
   #fileInput { display: none; }
   
@@ -138,8 +134,7 @@
 </head>
 <body>
 
-<!-- Hidden Input: Focus Guard -->
-<!-- autocapitalize=off 防止首字母自动大写，避免逻辑判断麻烦 -->
+<!-- 隐藏输入框：始终保持在DOM中 -->
 <input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <input type="file" id="fileInput" accept=".json" onchange="importData(this)">
 
@@ -168,13 +163,15 @@
    JSONBin.io CONFIG
    ============================================================= */
 const BIN_ID = '695b813c43b1c97be91a29d3'; 
-const API_KEY = '你的SecretKey(填在这里)'; 
+const API_KEY = '你的SecretKey(请填入)'; // 记得填入你的 Key
 // =============================================================
 
 // Global State
 let db;
 let currentSetDate = null;
 let practiceList = []; currentIndex = 0; stage = 1; wrongList = []; sessionMasteredSet = new Set();
+// 新增状态锁，防止动画期间误操作
+let isProcessing = false;
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function unlockAudio() {
@@ -198,37 +195,30 @@ DB_REQ.onsuccess = (e) => { db = e.target.result; };
 // --- 核心优化：键盘焦点守卫 ---
 function keepFocus() {
     const hidden = document.getElementById('hiddenInput');
-    // 如果当前焦点不在输入框，且不在文本域(单词管理时)，强制聚焦隐藏框
-    if(document.activeElement.tagName !== 'TEXTAREA' && document.activeElement.tagName !== 'INPUT') {
+    // 如果当前处于练习模式，强制拉回焦点
+    if(document.getElementById('practiceCard') && !isProcessing) {
         hidden.focus();
     }
 }
 
-// 全局监听：任何点击都尝试拉起键盘（除了特定按钮自己处理）
+// 全局点击劫持：点击任何非交互区域，都把焦点还给输入框
 document.addEventListener('click', (e) => {
-    // 忽略文件上传点击
-    if(e.target.type === 'file') return;
-    // 如果是在练习界面，点击任意地方都应聚焦
-    if(document.getElementById('practiceCard')) {
-        keepFocus();
-    }
-});
+    if(['INPUT', 'TEXTAREA', 'BUTTON'].includes(e.target.tagName)) return;
+    keepFocus();
+}, true);
 
 // --- Cloud Sync ---
 async function syncToCloud(isSilent = false) {
     if(!BIN_ID.includes('6')) { if(!isSilent) alert("请先配置 JSONBin ID"); return; }
-    
     const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
     const [sets, wrongs, logs] = await Promise.all([
         getAll(tx.objectStore('wordSets')),
         getAll(tx.objectStore('wrongBank')),
         getAll(tx.objectStore('practiceLogs'))
     ]);
-    
     const payload = { updatedAt: new Date(), data: { wordSets: sets, wrongBank: wrongs, practiceLogs: logs } };
     const btn = document.getElementById('headerBtn');
     if(isSilent) btn.innerHTML = '<span style="font-size:12px;color:#999">☁️</span>';
-
     try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
             method: 'PUT',
@@ -254,7 +244,6 @@ async function syncFromCloud() {
         const result = await res.json();
         const content = result.record.data; 
         if(!content) return alert("云端数据为空");
-
         const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
         tx.objectStore('wordSets').clear(); tx.objectStore('wrongBank').clear(); tx.objectStore('practiceLogs').clear();
         (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
@@ -275,7 +264,6 @@ function renderHome() {
     <button class="btn btn-primary" onclick="renderSetSelection()"><span style="font-size:24px">🚀</span> 开始练习</button>
     <button class="btn btn-yellow" onclick="renderRecords()"><span style="font-size:24px">🏆</span> 成就 & 记录</button>
     <button class="btn btn-outline" onclick="renderWordManager()"><span style="font-size:24px">📂</span> 单词管理</button>
-    
     <div class="card" style="margin-top:20px;background:#f0f7ff;border:1px solid #cce5ff">
         <h4 style="margin:0 0 10px 0;color:#007AFF;font-size:12px">CLOUD SYNC</h4>
         <div class="btn-row">
@@ -305,7 +293,6 @@ function renderWordManager() {
             <div><div style="font-weight:bold;color:#333">📅 ${s.date}</div><div style="font-size:12px;color:#888;margin-top:2px">${s.words.length} 个单词</div></div>
             <div style="color:var(--primary);font-size:14px;font-weight:600">编辑 ›</div>
         </div>`).join('') : '<div style="padding:15px;color:#999;text-align:center">暂无历史记录</div>';
-
     document.getElementById('app').innerHTML = `
       <div class="card" id="managerCard">
         <h3 style="margin-top:0" id="mgrTitle">录入 / 编辑单词</h3>
@@ -374,7 +361,7 @@ function renderWrongPractice() {
 }
 
 function renderPracticeUI() {
-  // 退出按钮增加 ontouchstart 防止抢焦点
+  // 退出按钮：使用 ontouchstart 避免 iOS 键盘收起
   document.getElementById('headerBtn').innerHTML = `<button class="btn-small" ontouchstart="if(confirm('退出练习？')) renderHome()">🏃 退出</button>`;
   let title = stage === 1 ? "第一轮: 认读记忆" : (stage === 2 ? "第二轮: 听写考核" : "错题重练");
   if(currentSetDate === 'wrong_bank') title = "错题突击";
@@ -384,6 +371,10 @@ function renderPracticeUI() {
 
 function loadWord() {
   if(currentIndex >= practiceList.length) { handleRoundComplete(); return; }
+  
+  // 每一题开始时，重置状态
+  isProcessing = false;
+  
   const rawWord = practiceList[currentIndex];
   const cleanWord = rawWord.replace(/[\/\-]/g, ''); 
   const container = document.getElementById('practiceCard');
@@ -391,7 +382,7 @@ function loadWord() {
   if(stage === 1) { phonicsDisplay = (rawWord.includes('/') || rawWord.includes('-')) ? rawWord.replace(/[\/\-]/g, ' · ') : getImprovedPhonics(cleanWord); }
   const displayWord = stage === 1 ? cleanWord : "???";
   
-  // 关键优化：发音按钮使用 ontouchstart 并阻止默认行为，防止键盘收起
+  // 关键：发音按钮使用 ontouchstart 阻止焦点转移
   container.innerHTML = `
     <div class="word-display"><div class="word-text" style="color:${stage===1?'#111':'#ccc'}">${displayWord}</div>${phonicsDisplay ? `<div class="phonics">${phonicsDisplay}</div>` : '<div style="height:38px"></div>'}</div>
     
@@ -402,7 +393,7 @@ function loadWord() {
         </button>
     </div>
 
-    <div class="blanks-container" id="blanksArea" ontouchstart="keepFocus()"></div>
+    <div class="blanks-container" id="blanksArea"></div>
     <div style="text-align:center;height:30px;margin-bottom:10px;font-weight:bold;font-size:18px" id="feedback"></div>
     
     <button class="btn btn-primary" id="confirmBtn" ontouchstart="event.preventDefault(); checkWord()" onclick="checkWord()">✨ 确认 (Enter)</button>
@@ -410,11 +401,10 @@ function loadWord() {
   `;
   
   setupInput(cleanWord); 
-  // 自动发音
   setTimeout(() => speak(cleanWord), 400);
 }
 
-// --- Input Logic (Fixed) ---
+// --- Input Logic (Fixed for iPad) ---
 let targetWord = "";
 let currentInput = "";
 
@@ -431,25 +421,21 @@ function setupInput(word) {
   }
   
   const hidden = document.getElementById('hiddenInput'); 
-  hidden.value = ''; // Reset input
+  hidden.value = ''; // Clear value
   
-  // 强制聚焦 (Wait slightly for DOM)
-  setTimeout(() => {
-      hidden.focus(); 
-  }, 50);
+  // 立即聚焦，不需要延时，因为是在 loadWord 流程中
+  hidden.focus();
 
-  // Input Handler
   hidden.oninput = (e) => { 
-      // 严格过滤，防止中文输入法残留
+      if(isProcessing) return; // 动画期间禁止输入
       let val = e.target.value.replace(/[^a-zA-Z]/g, '');
-      // 限制长度
       currentInput = val.slice(0, targetWord.length); 
       updateBlanksUI(); 
   };
   
   hidden.onkeydown = (e) => { 
       if(e.key === 'Enter') {
-          e.preventDefault(); // 防止回车换行
+          e.preventDefault(); 
           checkWord(); 
       }
   };
@@ -471,40 +457,42 @@ function updateBlanksUI() {
 }
 
 function checkWord() {
+  if(isProcessing) return; // Prevent double taps
+  
   const fb = document.getElementById('feedback'); 
   const cleanInput = currentInput.trim().toLowerCase(); 
   const cleanTarget = targetWord.trim().toLowerCase();
   
-  if(!cleanInput) return; // Empty? Do nothing.
+  if(!cleanInput) return;
   
-  // Logic
   if(cleanInput === cleanTarget) {
-    // Correct
+    // === CORRECT ===
+    isProcessing = true; // Lock input
     fb.innerHTML = `<span style="color:var(--success)">太棒了！🎉</span>`; 
     document.querySelectorAll('.blank-char').forEach(c => c.classList.add('correct')); 
     playSuccessTone();
+    
     if(stage >= 2) { 
         sessionMasteredSet.add(cleanTarget); 
         if(currentSetDate === 'wrong_bank') removeFromWrongBank(targetWord); 
     }
     
-    // 关键修正：确保 timer 执行，并重置输入状态
+    // 关键修正：不收起键盘，不失去焦点，只用 setTimeout 切换逻辑
     setTimeout(() => { 
         currentIndex++; 
         loadWord(); 
+        // isProcessing 会在 loadWord 里重置
     }, 800);
     
   } else {
-    // Wrong
+    // === WRONG ===
     fb.innerHTML = `<span style="color:var(--lego-red)">正确: ${targetWord}</span>`; 
     document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
     const btn = document.getElementById('confirmBtn');
     
-    // Change Button behavior but KEEP FOCUS
     if(stage === 1) {
         btn.innerText = "记住了 (清空重试) ↺"; 
         btn.className = "btn btn-yellow";
-        // 重写 onclick，点击后清空
         btn.ontouchstart = (e) => { e.preventDefault(); resetForRetry(btn); };
         btn.onclick = (e) => { e.preventDefault(); resetForRetry(btn); };
     } else {
@@ -520,7 +508,7 @@ function checkWord() {
     }
   }
   
-  // 无论对错，保持焦点在输入框
+  // 保持焦点，防止 iOS 键盘收起
   keepFocus();
 }
 
@@ -531,7 +519,6 @@ function resetForRetry(btn) {
     document.querySelectorAll('.blank-char').forEach(c => c.classList.remove('wrong'));
     document.getElementById('feedback').innerHTML = "";
     
-    // Restore button
     btn.innerText = "✨ 确认 (Enter)";
     btn.className = "btn btn-primary";
     btn.ontouchstart = (e) => { e.preventDefault(); checkWord(); };
