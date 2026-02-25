@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>汉字笔顺练习</title>
-    <!-- 引入最新的 Hanzi Writer -->
-    <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+    <title>汉字学习助手</title>
+    <!-- 使用知乎提供的镜像源，国内访问更稳定 -->
+    <script src="https://unpkg.zhimg.com/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
     <style>
         :root {
             --bg-color: #FFFDF5;
             --btn-blue: #4A90E2;
             --btn-green: #52C41A;
-            --btn-red: #FF4D4F;
         }
-
         body {
             margin: 0; padding: 0;
             background-color: var(--bg-color);
@@ -21,53 +19,20 @@
             display: flex; flex-direction: column; align-items: center;
             height: 100vh; overflow: hidden;
         }
-
-        /* 顶部输入栏 */
         .header {
             width: 100%; padding: 15px; background: #fff;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex; justify-content: center; gap: 10px;
+            display: flex; justify-content: center; gap: 10px; z-index: 100;
         }
-
-        input {
-            padding: 10px; font-size: 18px; border: 2px solid #ddd;
-            border-radius: 8px; width: 150px;
-        }
-
-        button {
-            padding: 10px 20px; font-size: 18px; border: none;
-            border-radius: 8px; cursor: pointer; color: white;
-            transition: opacity 0.2s;
-        }
-
-        button:active { opacity: 0.7; }
-
-        /* 中间汉字区 */
-        #main-display {
-            flex: 1; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; width: 100%;
-        }
-
-        #hanzi-box {
-            background: white; border: 4px solid #F0E68C;
-            border-radius: 20px; position: relative;
-        }
-
-        #loading-msg {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); color: #999;
-        }
-
-        /* 底部控制栏 */
-        .footer {
-            padding: 30px; display: flex; gap: 15px;
-        }
-
+        input { padding: 10px; font-size: 18px; border: 2px solid #ddd; border-radius: 8px; width: 120px; }
+        button { padding: 10px 20px; font-size: 18px; border: none; border-radius: 8px; cursor: pointer; color: white; }
+        #main-display { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; width: 100%; }
+        #hanzi-box { background: white; border: 4px solid #F0E68C; border-radius: 20px; min-width: 300px; min-height: 300px; position: relative; }
+        #loading-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #666; font-size: 20px; text-align: center; }
+        .footer { padding: 30px; display: flex; gap: 15px; }
         .btn-draw { background-color: var(--btn-green); width: 140px; height: 60px; font-weight: bold; }
-        .btn-reset { background-color: #888; }
         .btn-next { background-color: var(--btn-blue); }
-
-        .info { margin-top: 10px; color: #666; font-size: 14px; }
+        .info { margin-top: 10px; color: #666; font-size: 16px; height: 24px; }
     </style>
 </head>
 <body>
@@ -79,48 +44,57 @@
 
     <div id="main-display">
         <div id="hanzi-box">
-            <div id="loading-msg">加载中...</div>
+            <div id="loading-msg">等待输入...</div>
         </div>
-        <div class="info" id="status-info">点击“写一笔”开始</div>
+        <div class="info" id="status-info"></div>
     </div>
 
     <div class="footer">
         <button class="btn-draw" onclick="drawStroke()">写一笔</button>
-        <button class="btn-reset" onclick="reset()">重写</button>
         <button class="btn-next" onclick="nextWord()">下一个</button>
     </div>
 
     <script>
         let words = [];
         let wordIdx = 0;
-        let strokeIdx = 0; // 手动追踪写到第几笔
+        let strokeIdx = 0; 
         let writer;
         let totalStrokes = 0;
 
-        // 颜色配置
         const colors = ['#E74C3C', '#3498DB', '#27AE60', '#F1C40F', '#9B59B6', '#E67E22'];
 
-        function initWriter(char) {
-            // 清理旧内容
-            document.getElementById('hanzi-box').innerHTML = '<div id="loading-msg">加载中...</div>';
-            document.getElementById('status-info').innerText = "正在获取汉字数据...";
-            strokeIdx = 0; 
+        // 核心修正：指定国内可用的数据下载源
+        function charDataLoader(char, onComplete) {
+            fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${char}.json`)
+                .then(res => res.json())
+                .then(onComplete)
+                .catch(err => {
+                    document.getElementById('loading-msg').innerHTML = "数据加载失败<br>请检查网络或刷新";
+                    console.error(err);
+                });
+        }
 
-            const size = Math.min(window.innerWidth * 0.7, 400);
+        function initWriter(char) {
+            if (!char) return;
             
-            // 创建新实例
+            // 重置状态
+            document.getElementById('hanzi-box').innerHTML = '<div id="loading-msg">加载中...</div>';
+            document.getElementById('status-info').innerText = "";
+            strokeIdx = 0;
+
+            const size = Math.min(window.innerWidth * 0.8, 350);
+            
             writer = HanziWriter.create('hanzi-box', char, {
                 width: size,
                 height: size,
-                padding: 20,
+                padding: 25,
                 showOutline: true,
                 strokeAnimationSpeed: 2,
-                onDataLoadError: () => {
-                    document.getElementById('status-info').innerText = "加载失败，请检查网络";
-                }
+                // 使用国内稳定的数据源
+                charDataLoader: charDataLoader
             });
 
-            // 获取该字总共有多少笔划
+            // 监听数据加载成功
             writer.getCharData().then(data => {
                 totalStrokes = data.strokes.length;
                 document.getElementById('loading-msg').style.display = 'none';
@@ -129,34 +103,19 @@
         }
 
         function drawStroke() {
-            if (!writer || strokeIdx >= totalStrokes) {
-                if(strokeIdx >= totalStrokes) document.getElementById('status-info').innerText = "写完啦！";
-                return;
-            }
+            if (!writer || strokeIdx >= totalStrokes) return;
 
-            // 颜色判断逻辑
             let currentColor;
             if (totalStrokes <= 4) {
-                // 简单字：每笔划用不同颜色
                 currentColor = colors[strokeIdx % colors.length];
             } else {
-                // 复杂字：每3笔划换一个颜色（模拟结构分色）
-                // 因为程序很难精准判断部首，用这种方式可以让结构块在视觉上区分
                 const colorGroup = Math.floor(strokeIdx / 3);
                 currentColor = colors[colorGroup % colors.length];
             }
 
-            // 执行书写
-            writer.animateStroke(strokeIdx, {
-                strokeColor: currentColor
-            });
-
+            writer.animateStroke(strokeIdx, { strokeColor: currentColor });
             strokeIdx++;
             document.getElementById('status-info').innerText = `正在写第 ${strokeIdx} / ${totalStrokes} 笔`;
-        }
-
-        function reset() {
-            if (words[wordIdx]) initWriter(words[wordIdx]);
         }
 
         function start() {
@@ -167,11 +126,12 @@
         }
 
         function nextWord() {
+            if (words.length === 0) return;
             wordIdx = (wordIdx + 1) % words.length;
             initWriter(words[wordIdx]);
         }
 
-        // 页面加载后自动开始
+        // 自动初始化
         window.onload = start;
     </script>
 </body>
