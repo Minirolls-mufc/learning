@@ -2,206 +2,177 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <!-- 适配 iPad：禁止缩放，确保全屏感 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>汉字笔顺学习助手</title>
-    
-    <!-- 引入 Hanzi Writer 库 -->
+    <title>汉字笔顺练习</title>
+    <!-- 引入最新的 Hanzi Writer -->
     <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
-    
     <style>
         :root {
-            --bg-color: #FFF9E3; /* 护眼淡黄色背景，减少视觉疲劳 */
-            --text-color: #333;
-            --btn-color: #4A90E2;
-            --accent-color: #FF6B6B;
+            --bg-color: #FFFDF5;
+            --btn-blue: #4A90E2;
+            --btn-green: #52C41A;
+            --btn-red: #FF4D4F;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            margin: 0; padding: 0;
             background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden; /* 防止iPad上不必要的滚动 */
-            touch-action: none; /* 禁用系统手势干扰 */
+            font-family: sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+            height: 100vh; overflow: hidden;
         }
 
-        /* 输入区域 */
-        .input-section {
-            width: 100%;
-            padding: 20px;
-            background: #fff;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            z-index: 10;
+        /* 顶部输入栏 */
+        .header {
+            width: 100%; padding: 15px; background: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex; justify-content: center; gap: 10px;
         }
 
         input {
-            font-size: 1.2rem;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            width: 200px;
+            padding: 10px; font-size: 18px; border: 2px solid #ddd;
+            border-radius: 8px; width: 150px;
         }
 
         button {
-            font-size: 1.2rem;
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: var(--btn-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            transition: transform 0.1s;
+            padding: 10px 20px; font-size: 18px; border: none;
+            border-radius: 8px; cursor: pointer; color: white;
+            transition: opacity 0.2s;
         }
 
-        button:active {
-            transform: scale(0.95);
+        button:active { opacity: 0.7; }
+
+        /* 中间汉字区 */
+        #main-display {
+            flex: 1; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; width: 100%;
         }
 
-        /* 汉字展示区域 */
-        #target-word {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            position: relative;
+        #hanzi-box {
+            background: white; border: 4px solid #F0E68C;
+            border-radius: 20px; position: relative;
         }
 
-        #hanzi-container {
-            background: white;
-            border: 5px solid #E0D7B8;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        #loading-msg {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); color: #999;
         }
 
-        /* 控制按钮区域 */
-        .controls {
-            padding-bottom: 50px;
-            display: flex;
-            gap: 20px;
+        /* 底部控制栏 */
+        .footer {
+            padding: 30px; display: flex; gap: 15px;
         }
 
-        .btn-stroke {
-            background-color: #52C41A;
-            width: 120px;
-            height: 60px;
-            font-weight: bold;
-        }
+        .btn-draw { background-color: var(--btn-green); width: 140px; height: 60px; font-weight: bold; }
+        .btn-reset { background-color: #888; }
+        .btn-next { background-color: var(--btn-blue); }
 
-        .btn-next {
-            background-color: var(--accent-color);
-        }
-
-        /* 提示文字 */
-        .hint {
-            position: absolute;
-            bottom: 10px;
-            color: #888;
-            font-size: 0.9rem;
-        }
+        .info { margin-top: 10px; color: #666; font-size: 14px; }
     </style>
 </head>
 <body>
 
-    <div class="input-section">
-        <input type="text" id="word-list" placeholder="输入生字列表 (如: 天地人)" value="天地人">
-        <button onclick="updateList()">开始学习</button>
+    <div class="header">
+        <input type="text" id="input-words" value="人妈地" placeholder="输入汉字">
+        <button style="background: var(--btn-blue)" onclick="start()">开始</button>
     </div>
 
-    <div id="target-word">
-        <div id="hanzi-container"></div>
-        <div class="hint">点击下方按钮，一笔一笔跟着写</div>
+    <div id="main-display">
+        <div id="hanzi-box">
+            <div id="loading-msg">加载中...</div>
+        </div>
+        <div class="info" id="status-info">点击“写一笔”开始</div>
     </div>
 
-    <div class="controls">
-        <button class="btn-stroke" onclick="drawNext()">写一笔</button>
-        <button class="btn-stroke" style="background-color: #888;" onclick="resetChar()">重写</button>
-        <button class="btn-next" onclick="nextWord()">下一个字</button>
+    <div class="footer">
+        <button class="btn-draw" onclick="drawStroke()">写一笔</button>
+        <button class="btn-reset" onclick="reset()">重写</button>
+        <button class="btn-next" onclick="nextWord()">下一个</button>
     </div>
 
     <script>
         let words = [];
-        let currentIndex = 0;
+        let wordIdx = 0;
+        let strokeIdx = 0; // 手动追踪写到第几笔
         let writer;
-        
-        // 专门为读写障碍设计的“高辨识度颜色组”
-        // 如果是简单字，笔画会轮流使用这些颜色
-        const strokeColors = [
-            '#FF0000', // 红
-            '#0000FF', // 蓝
-            '#008000', // 绿
-            '#E67E22', // 橙
-            '#8E44AD', // 紫
-            '#2C3E50'  // 深蓝
-        ];
+        let totalStrokes = 0;
+
+        // 颜色配置
+        const colors = ['#E74C3C', '#3498DB', '#27AE60', '#F1C40F', '#9B59B6', '#E67E22'];
 
         function initWriter(char) {
-            document.getElementById('hanzi-container').innerHTML = '';
-            
-            // 宽度适配 iPad，取屏幕宽度的 60%
-            const size = Math.min(window.innerWidth * 0.6, 400);
+            // 清理旧内容
+            document.getElementById('hanzi-box').innerHTML = '<div id="loading-msg">加载中...</div>';
+            document.getElementById('status-info').innerText = "正在获取汉字数据...";
+            strokeIdx = 0; 
 
-            writer = HanziWriter.create('hanzi-container', char, {
+            const size = Math.min(window.innerWidth * 0.7, 400);
+            
+            // 创建新实例
+            writer = HanziWriter.create('hanzi-box', char, {
                 width: size,
                 height: size,
                 padding: 20,
                 showOutline: true,
-                strokeAnimationSpeed: 1, 
-                delayBetweenStrokes: 1000,
-                // 核心：设置笔画颜色
-                strokeColor: '#333' 
+                strokeAnimationSpeed: 2,
+                onDataLoadError: () => {
+                    document.getElementById('status-info').innerText = "加载失败，请检查网络";
+                }
+            });
+
+            // 获取该字总共有多少笔划
+            writer.getCharData().then(data => {
+                totalStrokes = data.strokes.length;
+                document.getElementById('loading-msg').style.display = 'none';
+                document.getElementById('status-info').innerText = `这个字共 ${totalStrokes} 笔`;
             });
         }
 
-        function updateList() {
-            const input = document.getElementById('word-list').value;
-            words = input.split('').filter(s => s.trim().length > 0);
-            currentIndex = 0;
-            if (words.length > 0) {
-                initWriter(words[currentIndex]);
+        function drawStroke() {
+            if (!writer || strokeIdx >= totalStrokes) {
+                if(strokeIdx >= totalStrokes) document.getElementById('status-info').innerText = "写完啦！";
+                return;
             }
-        }
 
-        function drawNext() {
-            if (!writer) return;
-            
-            // 获取当前笔画序号
-            writer.animateStroke(writer._currentStrokeIndex, {
-                // 每一笔换一个颜色，帮助孩子区分笔画顺序和空间位置
-                strokeColor: strokeColors[writer._currentStrokeIndex % strokeColors.length]
+            // 颜色判断逻辑
+            let currentColor;
+            if (totalStrokes <= 4) {
+                // 简单字：每笔划用不同颜色
+                currentColor = colors[strokeIdx % colors.length];
+            } else {
+                // 复杂字：每3笔划换一个颜色（模拟结构分色）
+                // 因为程序很难精准判断部首，用这种方式可以让结构块在视觉上区分
+                const colorGroup = Math.floor(strokeIdx / 3);
+                currentColor = colors[colorGroup % colors.length];
+            }
+
+            // 执行书写
+            writer.animateStroke(strokeIdx, {
+                strokeColor: currentColor
             });
+
+            strokeIdx++;
+            document.getElementById('status-info').innerText = `正在写第 ${strokeIdx} / ${totalStrokes} 笔`;
         }
 
-        function resetChar() {
-            if (words.length > 0) {
-                initWriter(words[currentIndex]);
-            }
+        function reset() {
+            if (words[wordIdx]) initWriter(words[wordIdx]);
+        }
+
+        function start() {
+            const val = document.getElementById('input-words').value;
+            words = val.split('').filter(s => s.trim());
+            wordIdx = 0;
+            if (words.length > 0) initWriter(words[wordIdx]);
         }
 
         function nextWord() {
-            currentIndex++;
-            if (currentIndex >= words.length) {
-                currentIndex = 0; // 循环回到第一个
-            }
-            initWriter(words[currentIndex]);
+            wordIdx = (wordIdx + 1) % words.length;
+            initWriter(words[wordIdx]);
         }
 
-        // 初始化
-        updateList();
-
-        // 处理窗口大小改变
-        window.onresize = () => {
-            if(words[currentIndex]) initWriter(words[currentIndex]);
-        };
+        // 页面加载后自动开始
+        window.onload = start;
     </script>
 </body>
 </html>
