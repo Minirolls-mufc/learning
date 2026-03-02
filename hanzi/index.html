@@ -1,935 +1,101 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>小朋友学汉字 🎒</title>
-<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Nunito:wght@400;600;700;800&display=swap');
+    <meta charset="UTF-8">
+    <title>汉字颜色分组 Demo</title>
+    <style>
+        body { background: #fdf6ec; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; }
+        
+        /* 汉字容器 */
+        #svg-container {
+            background: white; border: 2px solid #e8ddd0; border-radius: 12px;
+            width: 300px; height: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
 
-  :root {
-    --bg: #fdf6ec;
-    --card: #fff9f2;
-    --primary: #ff6b35;
-    --primary-light: #ff9a6c;
-    --secondary: #4ecdc4;
-    --accent: #ffd166;
-    --purple: #9b5de5;
-    --green: #06d6a0;
-    --text: #2d2d2d;
-    --muted: #888;
-    --border: #e8ddd0;
-    --shadow: 0 4px 20px rgba(0,0,0,0.08);
-    --shadow-hover: 0 8px 32px rgba(0,0,0,0.14);
-    --radius: 16px;
-  }
+        /* 笔画通用样式 */
+        .stroke {
+            fill: #eee; /* 未写时的底色（轮廓） */
+            transition: fill 0.3s ease;
+        }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Nunito', 'ZCOOL XiaoWei', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-  }
-
-  /* ── Header ── */
-  header {
-    background: linear-gradient(135deg, var(--primary) 0%, #ff8c42 100%);
-    color: white;
-    padding: 16px 28px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 16px rgba(255,107,53,0.3);
-  }
-  header .logo { font-size: 2rem; }
-  header h1 { font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; }
-  header .subtitle { font-size: 0.85rem; opacity: 0.85; margin-top: 2px; }
-  header .nav { margin-left: auto; display: flex; gap: 10px; }
-  header .nav button {
-    background: rgba(255,255,255,0.2);
-    border: 2px solid rgba(255,255,255,0.5);
-    color: white;
-    padding: 8px 18px;
-    border-radius: 24px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 700;
-    font-family: inherit;
-    transition: all 0.2s;
-  }
-  header .nav button:hover,
-  header .nav button.active {
-    background: white;
-    color: var(--primary);
-  }
-
-  /* ── Layout ── */
-  .page { display: none; padding: 28px; max-width: 1100px; margin: 0 auto; }
-  .page.active { display: block; }
-
-  /* ── Manage Page ── */
-  .manage-grid {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 20px;
-    align-items: start;
-  }
-
-  .card {
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 2px solid var(--border);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-  .card-head {
-    padding: 16px 20px;
-    font-weight: 800;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    border-bottom: 2px solid var(--border);
-    background: linear-gradient(to right, rgba(255,107,53,0.06), transparent);
-  }
-  .card-body { padding: 16px; }
-
-  /* Groups */
-  .group-list { display: flex; flex-direction: column; gap: 6px; }
-  .group-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s;
-    font-weight: 600;
-  }
-  .group-item:hover { background: rgba(255,107,53,0.07); }
-  .group-item.active {
-    background: rgba(255,107,53,0.12);
-    border-color: var(--primary-light);
-  }
-  .group-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .group-name { flex: 1; }
-  .group-count {
-    background: var(--border);
-    color: var(--muted);
-    font-size: 0.75rem;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-weight: 700;
-  }
-  .group-item.active .group-count { background: var(--primary); color: white; }
-  .group-del {
-    background: none; border: none; cursor: pointer;
-    color: var(--muted); font-size: 1rem; opacity: 0; transition: opacity 0.2s;
-    padding: 0 2px;
-  }
-  .group-item:hover .group-del { opacity: 1; }
-
-  .add-group-form { display: flex; gap: 8px; margin-top: 12px; }
-  .add-group-form input {
-    flex: 1; padding: 9px 12px; border: 2px solid var(--border);
-    border-radius: 10px; font-family: inherit; font-size: 0.9rem;
-    background: var(--bg); outline: none;
-  }
-  .add-group-form input:focus { border-color: var(--primary); }
-
-  /* Chars grid */
-  .chars-toolbar {
-    display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;
-  }
-  .chars-toolbar input {
-    flex: 1; min-width: 200px; padding: 10px 14px;
-    border: 2px solid var(--border); border-radius: 12px;
-    font-family: inherit; font-size: 1rem; background: var(--bg); outline: none;
-  }
-  .chars-toolbar input:focus { border-color: var(--primary); }
-
-  .btn {
-    padding: 10px 18px; border-radius: 12px; border: none;
-    cursor: pointer; font-weight: 700; font-family: inherit;
-    font-size: 0.9rem; transition: all 0.2s;
-  }
-  .btn-primary { background: var(--primary); color: white; }
-  .btn-primary:hover { background: #e55a28; transform: translateY(-1px); }
-  .btn-secondary { background: var(--secondary); color: white; }
-  .btn-secondary:hover { background: #3ab8b0; }
-  .btn-sm { padding: 6px 12px; font-size: 0.8rem; border-radius: 8px; }
-  .btn-danger { background: #ff4757; color: white; }
-  .btn-danger:hover { background: #e0364a; }
-  .btn-ghost {
-    background: none; border: 2px solid var(--border);
-    color: var(--text);
-  }
-  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
-
-  .chars-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 12px;
-  }
-  .char-card {
-    background: var(--bg);
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 8px 10px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-  }
-  .char-card:hover { border-color: var(--primary-light); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
-  .char-big { font-size: 2.4rem; font-family: 'ZCOOL XiaoWei', serif; line-height: 1; }
-  .char-pinyin { font-size: 0.72rem; color: var(--muted); margin-top: 4px; }
-  .char-del {
-    position: absolute; top: 5px; right: 5px;
-    background: none; border: none; color: var(--muted);
-    cursor: pointer; font-size: 0.85rem; opacity: 0; transition: opacity 0.15s;
-    line-height: 1;
-  }
-  .char-card:hover .char-del { opacity: 1; }
-
-  .empty-hint {
-    text-align: center; color: var(--muted); padding: 40px 20px;
-    font-size: 0.95rem;
-  }
-  .empty-hint .emoji { font-size: 3rem; display: block; margin-bottom: 8px; }
-
-  /* ── Practice Page ── */
-  .practice-layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 24px;
-    align-items: start;
-  }
-
-  .practice-char-panel {
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 2px solid var(--border);
-    box-shadow: var(--shadow);
-    padding: 28px;
-    text-align: center;
-    position: relative;
-  }
-  .practice-char-label {
-    font-size: 0.85rem; color: var(--muted); font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;
-  }
-  .practice-char-display {
-    font-size: 7rem;
-    font-family: 'ZCOOL XiaoWei', serif;
-    line-height: 1.1;
-    color: var(--text);
-    margin: 16px 0;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  }
-  .practice-char-pinyin {
-    font-size: 1.1rem; color: var(--muted); margin-bottom: 8px;
-  }
-  .char-nav {
-    display: flex; justify-content: center; align-items: center;
-    gap: 16px; margin-top: 20px;
-  }
-  .char-nav .btn { min-width: 48px; }
-  .char-progress {
-    font-size: 0.9rem; color: var(--muted); font-weight: 700;
-  }
-  .group-select-row {
-    display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;
-    justify-content: center;
-  }
-  .group-chip {
-    padding: 6px 14px; border-radius: 20px;
-    border: 2px solid var(--border);
-    cursor: pointer; font-size: 0.85rem; font-weight: 700;
-    transition: all 0.2s; background: white;
-  }
-  .group-chip.active { color: white; border-color: transparent; }
-
-  /* Writer panel */
-  .writer-panel {
-    background: var(--card);
-    border-radius: var(--radius);
-    border: 2px solid var(--border);
-    box-shadow: var(--shadow);
-    padding: 24px;
-  }
-  .writer-panel-title {
-    font-weight: 800; font-size: 1rem; margin-bottom: 16px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  #writer-container {
-    display: flex; justify-content: center;
-    margin: 12px 0 20px;
-  }
-  #writer-container svg {
-    border-radius: 12px;
-    background: white;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-  }
-
-  .stroke-controls {
-    display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
-    margin-bottom: 16px;
-  }
-  .stroke-info {
-    text-align: center; font-size: 0.88rem; color: var(--muted);
-    font-weight: 600; margin-bottom: 8px;
-  }
-  .stroke-progress-bar {
-    height: 6px; background: var(--border);
-    border-radius: 3px; overflow: hidden; margin-bottom: 16px;
-  }
-  .stroke-progress-fill {
-    height: 100%; background: linear-gradient(90deg, var(--secondary), var(--green));
-    border-radius: 3px; transition: width 0.3s;
-  }
-  .anim-controls {
-    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
-    border-top: 2px dashed var(--border); padding-top: 16px;
-  }
-
-  /* Color legend */
-  .color-legend {
-    display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;
-    margin-bottom: 12px;
-  }
-  .legend-item {
-    display: flex; align-items: center; gap: 5px;
-    font-size: 0.78rem; color: var(--muted); font-weight: 600;
-  }
-  .legend-dot {
-    width: 12px; height: 12px; border-radius: 3px;
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
-    background: #2d2d2d; color: white;
-    padding: 12px 24px; border-radius: 24px;
-    font-size: 0.9rem; font-weight: 700;
-    transition: transform 0.3s; z-index: 9999;
-    pointer-events: none;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* Modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.4); z-index: 1000;
-    align-items: center; justify-content: center;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: white; border-radius: 20px;
-    padding: 28px; width: 360px; max-width: 95vw;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-  }
-  .modal h3 { font-size: 1.2rem; margin-bottom: 16px; font-weight: 800; }
-  .modal input {
-    width: 100%; padding: 11px 14px; border: 2px solid var(--border);
-    border-radius: 10px; font-size: 1rem; font-family: inherit;
-    outline: none; margin-bottom: 8px;
-  }
-  .modal input:focus { border-color: var(--primary); }
-  .modal label { font-size: 0.85rem; color: var(--muted); display: block; margin-bottom: 6px; }
-  .modal-actions { display: flex; gap: 10px; margin-top: 16px; }
-
-  /* Responsive */
-  @media (max-width: 700px) {
-    .manage-grid { grid-template-columns: 1fr; }
-    .practice-layout { grid-template-columns: 1fr; }
-    .practice-char-display { font-size: 5rem; }
-  }
-</style>
+        .controls { margin-top: 20px; display: flex; gap: 10px; }
+        button { padding: 10px 20px; cursor: pointer; border-radius: 8px; border: none; background: #ff6b35; color: white; font-weight: bold; }
+        .info { margin-top: 10px; color: #666; }
+    </style>
 </head>
 <body>
 
-<header>
-  <div class="logo">📖</div>
-  <div>
-    <h1>小朋友学汉字</h1>
-    <div class="subtitle">Learn Chinese Characters</div>
-  </div>
-  <nav class="nav">
-    <button class="active" onclick="switchPage('manage')">📝 生字管理</button>
-    <button onclick="switchPage('practice')">✍️ 笔画练习</button>
-  </nav>
-</header>
-
-<!-- ══ MANAGE PAGE ══ -->
-<div class="page active" id="page-manage">
-  <div class="manage-grid">
-    <!-- Groups sidebar -->
-    <div class="card">
-      <div class="card-head">📁 分组管理</div>
-      <div class="card-body">
-        <div class="group-list" id="group-list"></div>
-        <div class="add-group-form">
-          <input id="new-group-input" placeholder="新建分组名..." maxlength="12">
-          <button class="btn btn-primary" onclick="addGroup()">+</button>
-        </div>
-      </div>
+    <h3>「人工定义结构」演示</h3>
+    
+    <div id="svg-container">
+        <!-- 这是一个“大”字的精美 SVG 路径（模拟 AnimCJK 数据） -->
+        <svg viewBox="0 0 1024 1024" id="hanzi-svg">
+            <!-- 第1笔：横 -->
+            <path class="stroke" d="M110,432 c10,-4 32,-11 48,-15 c150,-35 300,-45 450,-50 c120,-4 240,5 350,25 c15,3 35,10 42,15 s5,12 -5,15 c-20,6 -350,15 -430,15 H120 Z" />
+            <!-- 第2笔：撇 -->
+            <path class="stroke" d="M512,120 c15,40 10,150 -5,250 C440,650 320,850 100,950 c-10,5 -20,0 -15,-10 c150,-100 280,-300 340,-560 c10,-40 10,-200 5,-250 Z" />
+            <!-- 第3笔：捺 -->
+            <path class="stroke" d="M480,420 c50,50 150,200 250,350 c100,150 200,200 250,220 c15,5 20,0 10,-15 c-50,-50 -200,-300 -300,-450 c-50,-70 -100,-120 -120,-130 Z" />
+        </svg>
     </div>
 
-    <!-- Chars panel -->
-    <div class="card">
-      <div class="card-head">
-        <span id="chars-panel-title">📚 所有生字</span>
-        <span style="margin-left:auto">
-          <button class="btn btn-secondary btn-sm" onclick="openAddCharModal()">+ 添加汉字</button>
-        </span>
-      </div>
-      <div class="card-body">
-        <div id="chars-container"></div>
-      </div>
-    </div>
-  </div>
-</div>
+    <div class="info" id="status">准备开始</div>
 
-<!-- ══ PRACTICE PAGE ══ -->
-<div class="page" id="page-practice">
-  <div class="group-select-row" id="practice-group-row"></div>
-  <div class="practice-layout">
-    <!-- Left: character display -->
-    <div class="practice-char-panel">
-      <div class="practice-char-label">认识这个字</div>
-      <div class="practice-char-display" id="practice-char">选</div>
-      <div class="practice-char-pinyin" id="practice-pinyin">xuǎn</div>
-      <div class="char-nav">
-        <button class="btn btn-ghost" onclick="prevChar()">◀ 上一个</button>
-        <span class="char-progress" id="char-progress">-/-</span>
-        <button class="btn btn-ghost" onclick="nextChar()">下一个 ▶</button>
-      </div>
+    <div class="controls">
+        <button onclick="drawNext()">写一笔</button>
+        <button style="background:#888" onclick="reset()">重置</button>
     </div>
 
-    <!-- Right: stroke writer -->
-    <div class="writer-panel">
-      <div class="writer-panel-title">✏️ 跟我一笔一笔写</div>
-      <div class="color-legend" id="color-legend"></div>
-      <div class="stroke-info" id="stroke-info">第 0 / 0 笔</div>
-      <div class="stroke-progress-bar"><div class="stroke-progress-fill" id="stroke-fill" style="width:0%"></div></div>
-      <div id="writer-container"></div>
-      <div class="stroke-controls">
-        <button class="btn btn-primary" onclick="nextStroke()">✏️ 下一笔</button>
-        <button class="btn btn-ghost" onclick="prevStroke()">↩ 上一笔</button>
-        <button class="btn btn-ghost" onclick="resetStrokes()">🔄 重置</button>
-      </div>
-      <div class="anim-controls">
-        <button class="btn btn-secondary btn-sm" onclick="animateAll()">▶ 动画演示</button>
-        <button class="btn btn-ghost btn-sm" onclick="showAll()">👁 显示全部</button>
-        <button class="btn btn-ghost btn-sm" onclick="resetStrokes()">清空</button>
-      </div>
-    </div>
-  </div>
-</div>
+    <script>
+        // --- 人工配置区域 ---
+        // 你可以手动定义每个字的逻辑
+        const charConfigs = {
+            "大": {
+                type: "simple", // 简单字：一笔一色
+                groups: null
+            },
+            "妈": {
+                type: "complex", 
+                groups: [3, 3] // 复杂字：前3笔(女)一色，后3笔(马)一色
+            }
+        };
 
-<!-- Add Char Modal -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
-  <div class="modal">
-    <h3>➕ 添加汉字</h3>
-    <label>汉字（可输入多个，用空格分隔）</label>
-    <input id="modal-char-input" placeholder="例：你好世界" maxlength="50">
-    <label style="margin-top:10px">拼音（选填，用空格分隔）</label>
-    <input id="modal-pinyin-input" placeholder="例：nǐ hǎo shì jiè">
-    <div class="modal-actions">
-      <button class="btn btn-primary" style="flex:1" onclick="confirmAddChars()">确认添加</button>
-      <button class="btn btn-ghost" onclick="closeModal()">取消</button>
-    </div>
-  </div>
-</div>
+        const palette = ['#e74c3c', '#3498db', '#27ae60', '#f1c40f', '#9b59b6'];
+        let currentStroke = 0;
+        const config = charConfigs["大"]; // 假设当前学的是“大”
+        const strokes = document.querySelectorAll('.stroke');
 
-<div class="toast" id="toast"></div>
+        function drawNext() {
+            if (currentStroke >= strokes.length) return;
 
-<script>
-// ═══════════════════════════════════════════
-//  DATA LAYER
-// ═══════════════════════════════════════════
-const GROUP_COLORS = ['#ff6b35','#4ecdc4','#9b5de5','#ffd166','#06d6a0','#ff9a6c','#5e81f4','#f72585'];
+            let color;
+            if (config.type === "simple") {
+                // 简单字逻辑：每一笔一个颜色
+                color = palette[currentStroke % palette.length];
+            } else {
+                // 复杂字逻辑：按 groups 分组
+                let sum = 0;
+                for (let i = 0; i < config.groups.length; i++) {
+                    sum += config.groups[i];
+                    if (currentStroke < sum) {
+                        color = palette[i % palette.length];
+                        break;
+                    }
+                }
+            }
 
-let data = {
-  groups: [
-    { id: 'g1', name: '一年级上', color: GROUP_COLORS[0] },
-    { id: 'g2', name: '常用字',   color: GROUP_COLORS[1] },
-  ],
-  chars: [
-    { id: 'c1', char: '人', pinyin: 'rén',  groupId: 'g1' },
-    { id: 'c2', char: '大', pinyin: 'dà',   groupId: 'g1' },
-    { id: 'c3', char: '小', pinyin: 'xiǎo', groupId: 'g1' },
-    { id: 'c4', char: '山', pinyin: 'shān', groupId: 'g1' },
-    { id: 'c5', char: '水', pinyin: 'shuǐ', groupId: 'g1' },
-    { id: 'c6', char: '火', pinyin: 'huǒ',  groupId: 'g1' },
-    { id: 'c7', char: '木', pinyin: 'mù',   groupId: 'g1' },
-    { id: 'c8', char: '你', pinyin: 'nǐ',   groupId: 'g2' },
-    { id: 'c9', char: '好', pinyin: 'hǎo',  groupId: 'g2' },
-    { id: 'c10', char: '学', pinyin: 'xué', groupId: 'g2' },
-  ]
-};
+            // 直接给 SVG 笔画上色
+            strokes[currentStroke].style.fill = color;
+            currentStroke++;
+            
+            document.getElementById('status').innerText = `正在写第 ${currentStroke} 笔`;
+        }
 
-let selectedGroupId = null; // null = all
-let currentPage = 'manage';
-
-// Practice state
-let practiceChars = [];
-let practiceIdx = 0;
-let practiceGroupId = null;
-
-// Writer state
-let writer = null;
-let currentStrokes = 0;
-let totalStrokes = 0;
-
-// ═══════════════════════════════════════════
-//  STROKE COLORS  (simple: per-stroke rainbow; complex: by radical structure)
-// ═══════════════════════════════════════════
-const STROKE_PALETTE = [
-  '#e74c3c','#e67e22','#f1c40f','#2ecc71','#1abc9c',
-  '#3498db','#9b59b6','#e91e63','#ff5722','#00bcd4',
-  '#8bc34a','#ff9800','#673ab7','#009688','#f44336'
-];
-
-function getStrokeColor(index, total) {
-  // Cycle through palette
-  return STROKE_PALETTE[index % STROKE_PALETTE.length];
-}
-
-function buildStrokeColorMap(total) {
-  const map = {};
-  for (let i = 0; i < total; i++) {
-    map[i] = getStrokeColor(i, total);
-  }
-  return map;
-}
-
-// ═══════════════════════════════════════════
-//  PAGE SWITCH
-// ═══════════════════════════════════════════
-function switchPage(page) {
-  currentPage = page;
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + page).classList.add('active');
-  document.querySelectorAll('header .nav button').forEach((b, i) => {
-    b.classList.toggle('active', (i === 0 && page === 'manage') || (i === 1 && page === 'practice'));
-  });
-  if (page === 'practice') initPracticePage();
-}
-
-// ═══════════════════════════════════════════
-//  MANAGE PAGE
-// ═══════════════════════════════════════════
-function renderGroups() {
-  const el = document.getElementById('group-list');
-  el.innerHTML = `
-    <div class="group-item ${selectedGroupId === null ? 'active' : ''}" onclick="selectGroup(null)">
-      <span class="group-dot" style="background:#aaa"></span>
-      <span class="group-name">全部</span>
-      <span class="group-count">${data.chars.length}</span>
-    </div>
-  ` + data.groups.map(g => {
-    const count = data.chars.filter(c => c.groupId === g.id).length;
-    return `
-      <div class="group-item ${selectedGroupId === g.id ? 'active' : ''}" onclick="selectGroup('${g.id}')">
-        <span class="group-dot" style="background:${g.color}"></span>
-        <span class="group-name">${g.name}</span>
-        <span class="group-count">${count}</span>
-        <button class="group-del" title="删除分组" onclick="deleteGroup(event,'${g.id}')">×</button>
-      </div>
-    `;
-  }).join('');
-}
-
-function renderChars() {
-  const filtered = selectedGroupId
-    ? data.chars.filter(c => c.groupId === selectedGroupId)
-    : data.chars;
-
-  const title = document.getElementById('chars-panel-title');
-  if (selectedGroupId) {
-    const g = data.groups.find(g => g.id === selectedGroupId);
-    title.textContent = g ? `📚 ${g.name}` : '📚 分组';
-  } else {
-    title.textContent = '📚 所有生字';
-  }
-
-  const el = document.getElementById('chars-container');
-  if (filtered.length === 0) {
-    el.innerHTML = `<div class="empty-hint"><span class="emoji">🌱</span>还没有生字，点击右上角添加吧！</div>`;
-    return;
-  }
-  el.innerHTML = `<div class="chars-grid">${filtered.map(c => `
-    <div class="char-card" onclick="openEditCharModal('${c.id}')">
-      <button class="char-del" onclick="deleteChar(event,'${c.id}')">×</button>
-      <div class="char-big">${c.char}</div>
-      <div class="char-pinyin">${c.pinyin || ''}</div>
-    </div>
-  `).join('')}</div>`;
-}
-
-function render() {
-  renderGroups();
-  renderChars();
-}
-
-function selectGroup(id) {
-  selectedGroupId = id;
-  render();
-}
-
-function addGroup() {
-  const inp = document.getElementById('new-group-input');
-  const name = inp.value.trim();
-  if (!name) return;
-  const id = 'g' + Date.now();
-  const color = GROUP_COLORS[data.groups.length % GROUP_COLORS.length];
-  data.groups.push({ id, name, color });
-  inp.value = '';
-  render();
-  showToast(`已添加分组「${name}」`);
-}
-
-function deleteGroup(e, id) {
-  e.stopPropagation();
-  const g = data.groups.find(g => g.id === id);
-  if (!g) return;
-  if (data.chars.some(c => c.groupId === id)) {
-    if (!confirm(`分组「${g.name}」下还有生字，确定删除分组吗？\n（生字会保留在"全部"中）`)) return;
-    data.chars.forEach(c => { if (c.groupId === id) c.groupId = null; });
-  }
-  data.groups = data.groups.filter(g => g.id !== id);
-  if (selectedGroupId === id) selectedGroupId = null;
-  render();
-  showToast('已删除分组');
-}
-
-function deleteChar(e, id) {
-  e.stopPropagation();
-  const c = data.chars.find(c => c.id === id);
-  if (!c) return;
-  data.chars = data.chars.filter(c => c.id !== id);
-  render();
-  showToast(`已删除「${c.char}」`);
-}
-
-// Add/Edit modal
-let editingCharId = null;
-
-function openAddCharModal() {
-  editingCharId = null;
-  document.getElementById('modal-char-input').value = '';
-  document.getElementById('modal-pinyin-input').value = '';
-  document.querySelector('.modal h3').textContent = '➕ 添加汉字';
-  document.getElementById('modal-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('modal-char-input').focus(), 50);
-}
-
-function openEditCharModal(id) {
-  const c = data.chars.find(c => c.id === id);
-  if (!c) return;
-  editingCharId = id;
-  document.getElementById('modal-char-input').value = c.char;
-  document.getElementById('modal-pinyin-input').value = c.pinyin || '';
-  document.querySelector('.modal h3').textContent = `✏️ 修改汉字「${c.char}」`;
-  document.getElementById('modal-overlay').classList.add('open');
-  setTimeout(() => document.getElementById('modal-char-input').focus(), 50);
-}
-
-function closeModal(e) {
-  if (e && e.target !== document.getElementById('modal-overlay')) return;
-  document.getElementById('modal-overlay').classList.remove('open');
-}
-
-function confirmAddChars() {
-  const charInput = document.getElementById('modal-char-input').value.trim();
-  const pinyinInput = document.getElementById('modal-pinyin-input').value.trim();
-
-  if (!charInput) { showToast('请输入汉字！'); return; }
-
-  if (editingCharId) {
-    // Edit single char
-    const c = data.chars.find(c => c.id === editingCharId);
-    if (c) {
-      c.char = charInput;
-      c.pinyin = pinyinInput;
-    }
-    showToast(`已修改`);
-  } else {
-    // Add multiple
-    const chars = charInput.replace(/\s+/g, '').split('');
-    const pinyins = pinyinInput ? pinyinInput.split(/\s+/) : [];
-    let added = 0;
-    chars.forEach((ch, i) => {
-      if (!ch.trim()) return;
-      // Skip duplicates
-      if (data.chars.some(c => c.char === ch)) return;
-      data.chars.push({
-        id: 'c' + Date.now() + i,
-        char: ch,
-        pinyin: pinyins[i] || '',
-        groupId: selectedGroupId || (data.groups[0] ? data.groups[0].id : null)
-      });
-      added++;
-    });
-    showToast(added > 0 ? `已添加 ${added} 个汉字` : '这些字已经存在了');
-  }
-
-  document.getElementById('modal-overlay').classList.remove('open');
-  render();
-}
-
-// ═══════════════════════════════════════════
-//  PRACTICE PAGE
-// ═══════════════════════════════════════════
-function initPracticePage() {
-  renderPracticeGroups();
-  loadPracticeChars();
-}
-
-function renderPracticeGroups() {
-  const row = document.getElementById('practice-group-row');
-  const allActive = practiceGroupId === null;
-  row.innerHTML = `
-    <div class="group-chip ${allActive ? 'active' : ''}"
-      style="${allActive ? 'background:#ff6b35' : ''}"
-      onclick="selectPracticeGroup(null)">全部 (${data.chars.length})</div>
-  ` + data.groups.map(g => {
-    const count = data.chars.filter(c => c.groupId === g.id).length;
-    const active = practiceGroupId === g.id;
-    return `<div class="group-chip ${active ? 'active' : ''}"
-      style="${active ? 'background:' + g.color : ''}"
-      onclick="selectPracticeGroup('${g.id}')">${g.name} (${count})</div>`;
-  }).join('');
-}
-
-function selectPracticeGroup(id) {
-  practiceGroupId = id;
-  practiceIdx = 0;
-  renderPracticeGroups();
-  loadPracticeChars();
-}
-
-function loadPracticeChars() {
-  practiceChars = practiceGroupId
-    ? data.chars.filter(c => c.groupId === practiceGroupId)
-    : [...data.chars];
-
-  if (practiceChars.length === 0) {
-    document.getElementById('practice-char').textContent = '?';
-    document.getElementById('practice-pinyin').textContent = '没有生字';
-    document.getElementById('char-progress').textContent = '0/0';
-    document.getElementById('writer-container').innerHTML = '';
-    return;
-  }
-  if (practiceIdx >= practiceChars.length) practiceIdx = 0;
-  showPracticeChar();
-}
-
-function showPracticeChar() {
-  if (practiceChars.length === 0) return;
-  const c = practiceChars[practiceIdx];
-  document.getElementById('practice-char').textContent = c.char;
-  document.getElementById('practice-pinyin').textContent = c.pinyin || '';
-  document.getElementById('char-progress').textContent = `${practiceIdx + 1}/${practiceChars.length}`;
-  initWriter(c.char);
-}
-
-function prevChar() {
-  if (practiceChars.length === 0) return;
-  practiceIdx = (practiceIdx - 1 + practiceChars.length) % practiceChars.length;
-  showPracticeChar();
-}
-
-function nextChar() {
-  if (practiceChars.length === 0) return;
-  practiceIdx = (practiceIdx + 1) % practiceChars.length;
-  showPracticeChar();
-}
-
-// ═══════════════════════════════════════════
-//  HANZI WRITER
-// ═══════════════════════════════════════════
-function initWriter(char) {
-  currentStrokes = 0;
-  totalStrokes = 0;
-  const container = document.getElementById('writer-container');
-  container.innerHTML = '<svg id="hanzi-svg" xmlns="http://www.w3.org/2000/svg" width="280" height="280" viewBox="0 0 1024 1024"></svg>';
-
-  if (writer) {
-    try { writer = null; } catch(e) {}
-  }
-
-  document.getElementById('stroke-info').textContent = '加载中...';
-  document.getElementById('stroke-fill').style.width = '0%';
-  document.getElementById('color-legend').innerHTML = '';
-
-  writer = HanziWriter.create('hanzi-svg', char, {
-    width: 280,
-    height: 280,
-    padding: 24,
-    strokeColor: '#ccc',
-    radicalColor: '#ccc',
-    strokeAnimationSpeed: 1,
-    delayBetweenStrokes: 200,
-    showCharacter: false,
-    showOutline: true,
-    outlineColor: '#e8ddd0',
-    drawingWidth: 4,
-    onLoadCharDataSuccess: function(data) {
-      totalStrokes = data.strokes ? data.strokes.length : 0;
-      updateStrokeInfo();
-      buildLegend(totalStrokes);
-    },
-    onLoadCharDataError: function() {
-      document.getElementById('stroke-info').textContent = '该汉字数据暂不支持';
-    }
-  });
-}
-
-function buildLegend(total) {
-  const el = document.getElementById('color-legend');
-  // Show max 8 items to keep UI clean
-  const show = Math.min(total, 8);
-  let html = '';
-  for (let i = 0; i < show; i++) {
-    html += `<div class="legend-item">
-      <div class="legend-dot" style="background:${STROKE_PALETTE[i % STROKE_PALETTE.length]}"></div>
-      第${i+1}笔
-    </div>`;
-  }
-  if (total > 8) html += `<div class="legend-item" style="color:#aaa">...共${total}笔</div>`;
-  el.innerHTML = html;
-}
-
-function updateStrokeInfo() {
-  document.getElementById('stroke-info').textContent = `第 ${currentStrokes} / ${totalStrokes} 笔`;
-  const pct = totalStrokes > 0 ? (currentStrokes / totalStrokes * 100) : 0;
-  document.getElementById('stroke-fill').style.width = pct + '%';
-}
-
-function nextStroke() {
-  if (!writer || currentStrokes >= totalStrokes) return;
-  const color = STROKE_PALETTE[currentStrokes % STROKE_PALETTE.length];
-  writer.animateStroke(currentStrokes, {
-    strokeColor: color,
-    strokeAnimationSpeed: 1.5,
-  });
-  currentStrokes++;
-  updateStrokeInfo();
-  if (currentStrokes === totalStrokes) showToast('🎉 写完了！真棒！');
-}
-
-function prevStroke() {
-  if (!writer || currentStrokes <= 0) return;
-  currentStrokes--;
-  // HanziWriter doesn't support un-drawing, so reset & redraw
-  redrawUpTo(currentStrokes);
-}
-
-function redrawUpTo(n) {
-  const char = practiceChars[practiceIdx]?.char;
-  if (!char) return;
-  initWriter(char);
-  // After init, draw n strokes
-  setTimeout(() => {
-    for (let i = 0; i < n; i++) {
-      const color = STROKE_PALETTE[i % STROKE_PALETTE.length];
-      writer.setCharacterVisibility(false);
-      writer.showStroke(i, { strokeColor: color });
-    }
-    currentStrokes = n;
-    updateStrokeInfo();
-  }, 800);
-}
-
-function resetStrokes() {
-  const char = practiceChars[practiceIdx]?.char;
-  if (!char) return;
-  currentStrokes = 0;
-  initWriter(char);
-}
-
-function animateAll() {
-  if (!writer) return;
-  currentStrokes = 0;
-  initWriter(practiceChars[practiceIdx]?.char);
-  setTimeout(() => {
-    // Custom animate stroke by stroke with colors
-    animateStrokeSequence(0);
-  }, 600);
-}
-
-function animateStrokeSequence(idx) {
-  if (idx >= totalStrokes) {
-    currentStrokes = totalStrokes;
-    updateStrokeInfo();
-    showToast('🎉 写完了！');
-    return;
-  }
-  const color = STROKE_PALETTE[idx % STROKE_PALETTE.length];
-  writer.animateStroke(idx, {
-    strokeColor: color,
-    strokeAnimationSpeed: 1.5,
-    onComplete: function() {
-      currentStrokes = idx + 1;
-      updateStrokeInfo();
-      setTimeout(() => animateStrokeSequence(idx + 1), 150);
-    }
-  });
-}
-
-function showAll() {
-  if (!writer) return;
-  initWriter(practiceChars[practiceIdx]?.char);
-  setTimeout(() => {
-    for (let i = 0; i < totalStrokes; i++) {
-      const color = STROKE_PALETTE[i % STROKE_PALETTE.length];
-      writer.showStroke(i, { strokeColor: color });
-    }
-    currentStrokes = totalStrokes;
-    updateStrokeInfo();
-  }, 600);
-}
-
-// ═══════════════════════════════════════════
-//  TOAST
-// ═══════════════════════════════════════════
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
-}
-
-// ═══════════════════════════════════════════
-//  KEYBOARD
-// ═══════════════════════════════════════════
-document.addEventListener('keydown', e => {
-  if (currentPage !== 'practice') return;
-  if (e.key === 'ArrowRight') nextChar();
-  if (e.key === 'ArrowLeft') prevChar();
-  if (e.key === ' ') { e.preventDefault(); nextStroke(); }
-});
-
-// Enter to add group
-document.getElementById('new-group-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter') addGroup();
-});
-
-// ═══════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════
-render();
-</script>
+        function reset() {
+            currentStroke = 0;
+            strokes.forEach(s => s.style.fill = '#eee');
+            document.getElementById('status').innerText = "已重置";
+        }
+    </script>
 </body>
 </html>
