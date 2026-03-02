@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>汉字颜色分组 Demo</title>
+    <style>
+        body { background: #fdf6ec; display: flex; flex-direction: column; align-items: center; padding: 20px; font-family: sans-serif; }
+        
+        /* 汉字容器 */
+        #svg-container {
+            background: white; border: 2px solid #e8ddd0; border-radius: 12px;
+            width: 300px; height: 300px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        /* 笔画通用样式 */
+        .stroke {
+            fill: #eee; /* 未写时的底色（轮廓） */
+            transition: fill 0.3s ease;
+        }
+
+        .controls { margin-top: 20px; display: flex; gap: 10px; }
+        button { padding: 10px 20px; cursor: pointer; border-radius: 8px; border: none; background: #ff6b35; color: white; font-weight: bold; }
+        .info { margin-top: 10px; color: #666; }
+    </style>
+</head>
+<body>
+
+    <h3>「人工定义结构」演示</h3>
+    
+    <div id="svg-container">
+        <!-- 这是一个“大”字的精美 SVG 路径（模拟 AnimCJK 数据） -->
+        <svg viewBox="0 0 1024 1024" id="hanzi-svg">
+            <!-- 第1笔：横 -->
+            <path class="stroke" d="M110,432 c10,-4 32,-11 48,-15 c150,-35 300,-45 450,-50 c120,-4 240,5 350,25 c15,3 35,10 42,15 s5,12 -5,15 c-20,6 -350,15 -430,15 H120 Z" />
+            <!-- 第2笔：撇 -->
+            <path class="stroke" d="M512,120 c15,40 10,150 -5,250 C440,650 320,850 100,950 c-10,5 -20,0 -15,-10 c150,-100 280,-300 340,-560 c10,-40 10,-200 5,-250 Z" />
+            <!-- 第3笔：捺 -->
+            <path class="stroke" d="M480,420 c50,50 150,200 250,350 c100,150 200,200 250,220 c15,5 20,0 10,-15 c-50,-50 -200,-300 -300,-450 c-50,-70 -100,-120 -120,-130 Z" />
+        </svg>
+    </div>
+
+    <div class="info" id="status">准备开始</div>
+
+    <div class="controls">
+        <button onclick="drawNext()">写一笔</button>
+        <button style="background:#888" onclick="reset()">重置</button>
+    </div>
+
+    <script>
+        // --- 人工配置区域 ---
+        // 你可以手动定义每个字的逻辑
+        const charConfigs = {
+            "大": {
+                type: "simple", // 简单字：一笔一色
+                groups: null
+            },
+            "妈": {
+                type: "complex", 
+                groups: [3, 3] // 复杂字：前3笔(女)一色，后3笔(马)一色
+            }
+        };
+
+        const palette = ['#e74c3c', '#3498db', '#27ae60', '#f1c40f', '#9b59b6'];
+        let currentStroke = 0;
+        const config = charConfigs["大"]; // 假设当前学的是“大”
+        const strokes = document.querySelectorAll('.stroke');
+
+        function drawNext() {
+            if (currentStroke >= strokes.length) return;
+
+            let color;
+            if (config.type === "simple") {
+                // 简单字逻辑：每一笔一个颜色
+                color = palette[currentStroke % palette.length];
+            } else {
+                // 复杂字逻辑：按 groups 分组
+                let sum = 0;
+                for (let i = 0; i < config.groups.length; i++) {
+                    sum += config.groups[i];
+                    if (currentStroke < sum) {
+                        color = palette[i % palette.length];
+                        break;
+                    }
+                }
+            }
+
+            // 直接给 SVG 笔画上色
+            strokes[currentStroke].style.fill = color;
+            currentStroke++;
+            
+            document.getElementById('status').innerText = `正在写第 ${currentStroke} 笔`;
+        }
+
+        function reset() {
+            currentStroke = 0;
+            strokes.forEach(s => s.style.fill = '#eee');
+            document.getElementById('status').innerText = "已重置";
+        }
+    </script>
+</body>
+</html>
