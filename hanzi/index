@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>汉字小课堂</title>
+<script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.24.2/dist/index.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #2D2A26;
+    --bg:  #FFFDF5;
+    --paper: #FFF8E7;
+    --red:    #FF5C5C;
+    --orange: #FF9A3C;
+    --yellow: #FFD93D;
+    --green:  #52B788;
+    --blue:   #4D96FF;
+    --purple: #C77DFF;
+    --pink:   #FF6EB4;
+    --teal:   #00C9B1;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle, #FFD93D33 2px, transparent 2px),
+      radial-gradient(circle, #4D96FF22 2px, transparent 2px);
+    background-size: 60px 60px, 90px 90px;
+    background-position: 0 0, 30px 30px;
+    pointer-events: none; z-index: 0;
+  }
+  .page { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 24px 18px 60px; }
+
+  header { text-align: center; margin-bottom: 28px; }
+  .title-badge {
+    display: inline-block;
+    background: var(--ink); color: var(--yellow);
+    font-family: 'Ma Shan Zheng', cursive;
+    font-size: 2.4rem; padding: 10px 34px;
+    border-radius: 60px; letter-spacing: 6px;
+    box-shadow: 4px 4px 0 var(--red);
+  }
+  .subtitle { margin-top: 10px; color: #999; font-size: .9rem; letter-spacing: 1px; }
+
+  .card {
+    background: var(--paper);
+    border: 2.5px solid var(--ink);
+    border-radius: 18px;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+  .card-title {
+    font-weight: 900; font-size: .9rem;
+    letter-spacing: 2px; color: var(--ink);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+  .fg { flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 5px; }
+  .fg label { font-size: .78rem; font-weight: 700; color: #777; letter-spacing: 1px; }
+  input[type="text"] {
+    border: 2px solid var(--ink); border-radius: 10px;
+    padding: 9px 13px; font-size: 1rem; font-family: inherit;
+    background: #fff; outline: none; width: 100%;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  input[type="text"]:focus { border-color: var(--blue); box-shadow: 0 0 0 3px #4D96FF33; }
+
+  .mode-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mode-btn {
+    flex: 1; min-width: 130px; padding: 10px 14px;
+    border: 2.5px solid var(--ink); border-radius: 12px;
+    background: #fff; font-family: inherit; font-size: .88rem;
+    font-weight: 700; cursor: pointer; transition: all .15s; letter-spacing: 1px;
+  }
+  .mode-btn:hover { transform: translateY(-2px); }
+  .mode-btn.active { color: #fff; box-shadow: 3px 3px 0 var(--ink); }
+  .mode-btn.simple.active  { background: var(--green); }
+  .mode-btn.complex.active { background: var(--purple); }
+
+  #complex-config {
+    margin-top: 14px; padding: 16px;
+    background: #F3EEFF; border: 2px dashed var(--purple);
+    border-radius: 12px; display: none;
+  }
+  #complex-config.show { display: block; }
+  #complex-config p { font-size: .8rem; color: #555; margin-bottom: 10px; line-height: 1.7; }
+  .group-rows { display: flex; flex-direction: column; gap: 8px; }
+  .group-row {
+    display: flex; align-items: center; gap: 10px;
+    background: #fff; border: 1.5px solid #ddd;
+    border-radius: 10px; padding: 8px 12px;
+  }
+  .gcolor { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--ink); }
+  .group-row input { flex: 1; border: 1.5px solid #ccc; border-radius: 8px; padding: 5px 10px; font-size: .84rem; font-family: inherit; }
+  .glabel { font-size: .8rem; font-weight: 700; min-width: 56px; }
+  .add-btn { background: var(--purple); color: #fff; border: none; border-radius: 8px; padding: 6px 12px; cursor: pointer; font-family: inherit; font-weight: 700; font-size: .8rem; margin-top: 10px; }
+  .rm-btn  { background: #ffeeee; color: var(--red); border: none; border-radius: 8px; padding: 5px 9px; cursor: pointer; font-family: inherit; font-weight: 700; font-size: .8rem; }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn {
+    padding: 10px 20px; border: 2.5px solid var(--ink); border-radius: 12px;
+    font-family: inherit; font-size: .9rem; font-weight: 900;
+    cursor: pointer; letter-spacing: 1px;
+    transition: all .14s; box-shadow: 3px 3px 0 var(--ink);
+  }
+  .btn:hover  { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn:active { transform: translate(2px,2px);   box-shadow: 1px 1px 0 var(--ink); }
+  .btn-load  { background: var(--blue);   color:#fff; }
+  .btn-speak { background: var(--orange); color:#fff; }
+  .btn-anim  { background: var(--green);  color:#fff; }
+  .btn-quiz  { background: var(--pink);   color:#fff; }
+  .btn-reset { background: #eee; color: var(--ink); }
+
+  .display-card {
+    background: var(--paper); border: 2.5px solid var(--ink);
+    border-radius: 20px; padding: 28px 24px;
+    box-shadow: 5px 5px 0 var(--ink);
+  }
+  .stage { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .pinyin-label {
+    font-size: 2rem; color: var(--red); font-weight: 900;
+    letter-spacing: 8px; min-height: 2.4rem; text-align: center;
+  }
+
+  #canvas-wrap {
+    position: relative; width: 280px; height: 280px;
+    background: #fff; border: 2.5px solid var(--ink);
+    border-radius: 16px; overflow: hidden;
+    box-shadow: inset 0 2px 8px #0001;
+  }
+  #canvas-wrap::before {
+    content: ''; position: absolute; inset: 0; z-index: 0;
+    background-image:
+      linear-gradient(#e0d8c866 1px, transparent 1px),
+      linear-gradient(90deg, #e0d8c866 1px, transparent 1px),
+      linear-gradient(#e0d8c8bb 1px, transparent 1px),
+      linear-gradient(90deg, #e0d8c8bb 1px, transparent 1px);
+    background-size: 70px 70px, 70px 70px, 140px 140px, 140px 140px;
+    pointer-events: none;
+  }
+  /* Our custom SVG layer */
+  #hanzi-svg {
+    position: absolute; inset: 0; z-index: 1;
+    width: 100%; height: 100%;
+  }
+  /* HanziWriter quiz div on top */
+  #quiz-hw-div {
+    position: absolute; inset: 0; z-index: 3; display: none;
+  }
+
+  .stroke-info { font-size: .88rem; color: #888; letter-spacing: 1px; min-height: 1.4em; text-align: center; }
+  .quiz-msg    { font-size: 1rem; font-weight: 900; text-align: center; color: var(--ink); min-height: 1.4em; letter-spacing: 1px; }
+
+  .ctrl-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+  .ctrl-btn {
+    padding: 8px 18px; border: 2px solid var(--ink); border-radius: 10px;
+    font-family: inherit; font-size: .84rem; font-weight: 700;
+    cursor: pointer; box-shadow: 2px 2px 0 var(--ink); transition: all .12s;
+  }
+  .ctrl-btn:hover  { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink); }
+  .ctrl-btn:active { transform: translate(1px,1px);   box-shadow: 1px 1px 0 var(--ink); }
+
+  #legend { display: flex; flex-wrap: wrap; gap: 7px; justify-content: center; }
+  .leg-item {
+    display: flex; align-items: center; gap: 6px;
+    background: #fff; border: 1.5px solid #ddd;
+    border-radius: 8px; padding: 4px 11px;
+    font-size: .8rem; font-weight: 700;
+  }
+  .leg-dot { width: 13px; height: 13px; border-radius: 50%; }
+
+  @media (max-width:500px) {
+    #canvas-wrap { width: 230px; height: 230px; }
+    .title-badge { font-size: 1.8rem; padding: 8px 20px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="title-badge">汉字小课堂</div>
+  <p class="subtitle">一笔一划，认识汉字 ✏️</p>
+</header>
+
+<div class="card">
+  <div class="card-title"><span class="dot" style="background:var(--blue)"></span>输入汉字</div>
+  <div class="row">
+    <div class="fg">
+      <label>汉字（单个）</label>
+      <input type="text" id="inp-char" maxlength="1" placeholder="如：山" value="山">
+    </div>
+    <div class="fg">
+      <label>拼音（留空自动生成）</label>
+      <input type="text" id="inp-pinyin" placeholder="如：shān">
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-title"><span class="dot" style="background:var(--purple)"></span>颜色模式</div>
+  <div class="mode-row">
+    <button class="mode-btn simple active" onclick="setMode('simple')">
+      🎨 简单模式<br><small style="font-weight:400">一笔一个颜色</small>
+    </button>
+    <button class="mode-btn complex" onclick="setMode('complex')">
+      🧩 复杂模式<br><small style="font-weight:400">按部件结构分色</small>
+    </button>
+  </div>
+  <div id="complex-config">
+    <p>为每个部件填写它的<strong>笔画序号</strong>（逗号分隔，从 1 开始）。<br>
+    例如「讠」旁是第 1、2 笔 → 填 <strong>1,2</strong>；剩余归「未分组」显示为灰色。<br>
+    填好后点「✅ 加载汉字」重新渲染。</p>
+    <div class="group-rows" id="group-rows"></div>
+    <button class="add-btn" onclick="addGroup()">＋ 添加部件</button>
+  </div>
+</div>
+
+<div class="card" style="padding:16px 24px">
+  <div class="btn-row">
+    <button class="btn btn-load"  onclick="loadChar()">✅ 加载汉字</button>
+    <button class="btn btn-speak" onclick="speakChar()">🔊 朗读</button>
+    <button class="btn btn-anim"  onclick="animateAll()">▶ 全部演示</button>
+    <button class="btn btn-quiz"  onclick="startQuiz()">✏️ 练习写字</button>
+    <button class="btn btn-reset" onclick="resetView()">↺ 重置</button>
+  </div>
+</div>
+
+<div class="display-card">
+  <div class="stage">
+    <div class="pinyin-label" id="pinyin-label">shān</div>
+
+    <div id="canvas-wrap">
+      <!--
+        Strategy:
+        - #hanzi-svg: our custom SVG for outline + per-stroke colored fills
+        - #quiz-hw-div: HanziWriter takes over for quiz mode only
+        HanziWriter.loadCharacterData() gives us raw path data.
+        We flip Y-axis ourselves: transform="scale(1,-1) translate(0,-900)"
+        HW paths are in a 1024x1024 space, centered around y≈450-900.
+      -->
+      <svg id="hanzi-svg"
+           viewBox="0 0 1024 1024"
+           xmlns="http://www.w3.org/2000/svg"
+           style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
+      </svg>
+      <div id="quiz-hw-div"></div>
+    </div>
+
+    <div class="stroke-info" id="stroke-info">请先加载汉字</div>
+    <div class="quiz-msg"    id="quiz-msg"></div>
+
+    <div class="ctrl-row" id="ctrl-row" style="display:none">
+      <button class="ctrl-btn" style="background:var(--yellow)" onclick="stepPrev()">◀ 上一笔</button>
+      <button class="ctrl-btn" style="background:var(--green);color:#fff" onclick="stepNext()">下一笔 ▶</button>
+    </div>
+
+    <div id="legend"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ── palette ───────────────────────────────────────────────────────────────────
+const COLORS = [
+  '#FF5C5C','#FF9A3C','#FFD93D','#52B788',
+  '#4D96FF','#C77DFF','#FF6EB4','#00C9B1',
+  '#E85D04','#0077B6','#9B5DE5','#2D6A4F'
+];
+const OUTLINE_COLOR = '#DDDDDD';
+const UNGROUP_COLOR = '#BBBBBB';
+
+/*
+  HanziWriter character data uses a coordinate system where:
+  - viewBox is nominally 0-1024 wide, 0-1024 tall
+  - BUT the y-axis is flipped (SVG y goes down, HW data y goes up)
+  - Characters sit roughly in y=[0..900] in HW space
+  So to render correctly in a standard SVG we need:
+    transform="scale(1,-1) translate(0,-900)"
+  This flips y and shifts so characters appear in the upper portion.
+*/
+const HW_TRANSFORM = 'scale(1,-1) translate(0,-900)';
+
+// ── app state ─────────────────────────────────────────────────────────────────
+let mode         = 'simple';
+let groups       = [];
+let charData     = null;
+let stepIdx      = 0;
+let strokeColors = [];
+let animating    = false;
+let quizWriter   = null;
+
+// ── mode ──────────────────────────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.mode-btn.' + m).classList.add('active');
+  document.getElementById('complex-config').classList.toggle('show', m === 'complex');
+}
+
+// ── groups ────────────────────────────────────────────────────────────────────
+function renderGroups() {
+  const el = document.getElementById('group-rows');
+  el.innerHTML = '';
+  groups.forEach((g, i) => {
+    const d = document.createElement('div');
+    d.className = 'group-row';
+    d.innerHTML = `
+      <span class="gcolor" style="background:${g.color}"></span>
+      <span class="glabel">部件 ${i+1}</span>
+      <input type="text" placeholder="如 1,2,3" value="${g.strokes.join(',')}"
+             oninput="updateGroup(${i},this.value)">
+      <button class="rm-btn" onclick="removeGroup(${i})">✕</button>`;
+    el.appendChild(d);
+  });
+}
+function addGroup() {
+  groups.push({ strokes: [], color: COLORS[groups.length % COLORS.length] });
+  renderGroups();
+}
+function removeGroup(i) { groups.splice(i, 1); renderGroups(); }
+function updateGroup(i, val) {
+  groups[i].strokes = val.split(',')
+    .map(s => parseInt(s.trim()))
+    .filter(n => !isNaN(n) && n > 0);
+}
+addGroup(); addGroup(); // defaults
+
+// ── color map ─────────────────────────────────────────────────────────────────
+function buildColors(n) {
+  if (mode === 'simple') {
+    return Array.from({ length: n }, (_, i) => COLORS[i % COLORS.length]);
+  }
+  const arr = Array(n).fill(UNGROUP_COLOR);
+  groups.forEach(g => g.strokes.forEach(s => {
+    if (s >= 1 && s <= n) arr[s - 1] = g.color;
+  }));
+  return arr;
+}
+
+// ── SVG rendering ─────────────────────────────────────────────────────────────
+function getSvg() { return document.getElementById('hanzi-svg'); }
+function clearSvg() { getSvg().innerHTML = ''; }
+
+/**
+ * Core render function.
+ * - Draws all strokes as outline (OUTLINE_COLOR)
+ * - Then overlays colored fills for strokes 0..upTo-1
+ * - If animatingStroke >= 0, that stroke gets a fade-in animation class
+ */
+function renderStrokes(upTo, animatingStrokeIdx) {
+  if (!charData) return;
+  const svg = getSvg();
+  svg.innerHTML = '';
+
+  const strokes = charData.strokes;
+
+  // Layer 1: outlines for all strokes
+  strokes.forEach(d => {
+    const p = makePath(d, OUTLINE_COLOR);
+    svg.appendChild(p);
+  });
+
+  // Layer 2: colored fills for revealed strokes
+  for (let i = 0; i < upTo; i++) {
+    const p = makePath(strokes[i], strokeColors[i]);
+    if (i === animatingStrokeIdx) {
+      p.style.opacity = '0';
+      p.style.transition = 'opacity 0.45s ease';
+      svg.appendChild(p);
+      // Trigger reflow then fade in
+      requestAnimationFrame(() => requestAnimationFrame(() => { p.style.opacity = '1'; }));
+    } else {
+      svg.appendChild(p);
+    }
+  }
+}
+
+function makePath(d, color) {
+  const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  p.setAttribute('d', d);
+  p.setAttribute('fill', color);
+  p.setAttribute('transform', HW_TRANSFORM);
+  return p;
+}
+
+// ── load character ────────────────────────────────────────────────────────────
+function loadChar() {
+  const ch = document.getElementById('inp-char').value.trim();
+  if (!ch) { alert('请输入一个汉字！'); return; }
+
+  // Pinyin
+  const manualPy = document.getElementById('inp-pinyin').value.trim();
+  let py = manualPy;
+  if (!py && window.pinyinPro) {
+    try { py = pinyinPro.pinyin(ch, { toneType: 'symbol', type: 'string' }); } catch (e) {}
+  }
+  document.getElementById('pinyin-label').textContent = py || ch;
+
+  exitQuiz();
+  animating = false;
+  clearSvg();
+  document.getElementById('ctrl-row').style.display = 'none';
+  document.getElementById('legend').innerHTML = '';
+  document.getElementById('quiz-msg').textContent = '';
+  document.getElementById('stroke-info').textContent = '加载中…';
+
+  // Use HanziWriter.loadCharacterData to get raw path data
+  HanziWriter.loadCharacterData(ch, {
+    charDataLoader: (c, onLoad, onError) => {
+      fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(c)}.json`)
+        .then(r => { if (!r.ok) throw new Error('not found'); return r.json(); })
+        .then(onLoad)
+        .catch(onError);
+    },
+    onLoadCharDataSuccess: data => {
+      charData = data;
+      const n = data.strokes.length;
+      strokeColors = buildColors(n);
+      stepIdx = n; // show all by default
+      renderStrokes(stepIdx);
+      document.getElementById('stroke-info').textContent = `共 ${n} 笔`;
+      document.getElementById('ctrl-row').style.display = 'flex';
+      renderLegend();
+    },
+    onLoadCharDataError: () => {
+      charData = null;
+      document.getElementById('stroke-info').textContent = '⚠️ 暂无该字的笔画数据（生僻字或非汉字）';
+    }
+  });
+}
+
+// ── step controls ─────────────────────────────────────────────────────────────
+function stepNext() {
+  if (!charData || animating) return;
+  if (stepIdx >= charData.strokes.length) return;
+  const prev = stepIdx;
+  stepIdx++;
+  renderStrokes(stepIdx, prev); // animate the newly added stroke
+  updateStrokeInfo();
+}
+function stepPrev() {
+  if (!charData || animating) return;
+  if (stepIdx <= 0) return;
+  stepIdx--;
+  renderStrokes(stepIdx);
+  updateStrokeInfo();
+}
+function updateStrokeInfo() {
+  const n = charData ? charData.strokes.length : 0;
+  if (stepIdx === 0)      document.getElementById('stroke-info').textContent = `共 ${n} 笔（未显示）`;
+  else if (stepIdx === n) document.getElementById('stroke-info').textContent = `共 ${n} 笔`;
+  else                    document.getElementById('stroke-info').textContent = `第 ${stepIdx} / ${n} 笔`;
+}
+
+// ── animate all ───────────────────────────────────────────────────────────────
+function animateAll() {
+  if (!charData) { alert('请先加载汉字'); return; }
+  if (animating) return;
+  exitQuiz();
+  animating = true;
+  stepIdx = 0;
+  renderStrokes(0);
+
+  const n = charData.strokes.length;
+  const STROKE_DURATION = 480; // ms
+  const STROKE_DELAY    = 150; // ms between strokes
+
+  function next(i) {
+    if (i >= n) {
+      animating = false;
+      document.getElementById('stroke-info').textContent = `共 ${n} 笔 ✅`;
+      return;
+    }
+    document.getElementById('stroke-info').textContent = `第 ${i + 1} / ${n} 笔`;
+    stepIdx = i + 1;
+    renderStrokes(stepIdx, i); // i = animating stroke index
+    setTimeout(() => next(i + 1), STROKE_DURATION + STROKE_DELAY);
+  }
+  next(0);
+}
+
+// ── quiz mode ─────────────────────────────────────────────────────────────────
+function startQuiz() {
+  const ch = document.getElementById('inp-char').value.trim();
+  if (!ch) { alert('请先加载汉字'); return; }
+
+  exitQuiz();
+  animating = false;
+  clearSvg(); // hide our SVG; HanziWriter takes over
+  document.getElementById('ctrl-row').style.display = 'none';
+  document.getElementById('legend').innerHTML = '';
+
+  const wrap = document.getElementById('canvas-wrap');
+  const quizDiv = document.getElementById('quiz-hw-div');
+  quizDiv.style.display = 'block';
+
+  quizWriter = HanziWriter.create('quiz-hw-div', ch, {
+    width:  wrap.clientWidth  || 280,
+    height: wrap.clientHeight || 280,
+    padding: 12,
+    showCharacter: false,
+    showOutline: true,
+    strokeColor: '#444',
+    outlineColor: '#DDD',
+    drawingColor: '#4D96FF',
+    drawingWidth: 7,
+    showHintAfterMisses: 3,
+    highlightColor: '#FFD93D',
+    charDataLoader: (c, onLoad, onError) => {
+      fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(c)}.json`)
+        .then(r => { if (!r.ok) throw new Error(); return r.json(); })
+        .then(onLoad).catch(onError);
+    },
+    onLoadCharDataSuccess: () => {
+      quizWriter.quiz({
+        onMistake: d => {
+          document.getElementById('quiz-msg').textContent = `第 ${d.strokeNum + 1} 笔再试一次！😅`;
+        },
+        onCorrectStroke: d => {
+          document.getElementById('quiz-msg').textContent = `第 ${d.strokeNum + 1} 笔棒棒！👍`;
+        },
+        onComplete: s => {
+          document.getElementById('quiz-msg').textContent =
+            `🎉 完成！共错 ${s.totalMistakes} 次，真棒！`;
+        }
+      });
+      document.getElementById('stroke-info').textContent = '✏️ 跟着笔顺写字吧！';
+    },
+    onLoadCharDataError: () => {
+      document.getElementById('stroke-info').textContent = '⚠️ 加载失败';
+    }
+  });
+}
+
+function exitQuiz() {
+  document.getElementById('quiz-msg').textContent = '';
+  const quizDiv = document.getElementById('quiz-hw-div');
+  quizDiv.style.display = 'none';
+  quizDiv.innerHTML = '';
+  quizWriter = null;
+}
+
+// ── reset ─────────────────────────────────────────────────────────────────────
+function resetView() {
+  exitQuiz();
+  animating = false;
+  if (!charData) return;
+  stepIdx = charData.strokes.length;
+  renderStrokes(stepIdx);
+  document.getElementById('stroke-info').textContent = `共 ${charData.strokes.length} 笔`;
+  document.getElementById('ctrl-row').style.display = 'flex';
+  renderLegend();
+}
+
+// ── speak ─────────────────────────────────────────────────────────────────────
+function speakChar() {
+  const ch = document.getElementById('inp-char').value.trim();
+  if (!ch) { alert('请输入汉字'); return; }
+  if (!('speechSynthesis' in window)) { alert('浏览器不支持语音朗读'); return; }
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(ch);
+  u.lang = 'zh-CN'; u.rate = 0.8; u.pitch = 1.1;
+  window.speechSynthesis.speak(u);
+}
+
+// ── legend ────────────────────────────────────────────────────────────────────
+function renderLegend() {
+  const el = document.getElementById('legend');
+  el.innerHTML = '';
+  if (!charData) return;
+  const n = charData.strokes.length;
+
+  if (mode === 'simple') {
+    strokeColors.forEach((c, i) => {
+      const d = document.createElement('div');
+      d.className = 'leg-item';
+      d.innerHTML = `<span class="leg-dot" style="background:${c}"></span>第 ${i + 1} 笔`;
+      el.appendChild(d);
+    });
+  } else {
+    groups.forEach((g, i) => {
+      if (!g.strokes.length) return;
+      const d = document.createElement('div');
+      d.className = 'leg-item';
+      d.innerHTML = `<span class="leg-dot" style="background:${g.color}"></span>部件${i + 1}（第${g.strokes.join('、')}笔）`;
+      el.appendChild(d);
+    });
+    const used = new Set(groups.flatMap(g => g.strokes));
+    const unc  = Array.from({ length: n }, (_, i) => i + 1).filter(s => !used.has(s));
+    if (unc.length) {
+      const d = document.createElement('div');
+      d.className = 'leg-item';
+      d.innerHTML = `<span class="leg-dot" style="background:${UNGROUP_COLOR};border:1.5px solid #aaa"></span>未分组（第${unc.join('、')}笔）`;
+      el.appendChild(d);
+    }
+  }
+}
+
+// ── init ──────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  if (window.pinyinPro) {
+    try {
+      document.getElementById('pinyin-label').textContent =
+        pinyinPro.pinyin('山', { toneType: 'symbol', type: 'string' });
+    } catch (e) {}
+  }
+  setTimeout(loadChar, 400);
+});
+</script>
+</body>
+</html>
