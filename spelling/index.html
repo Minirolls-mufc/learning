@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/lego-head.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Literata:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 <title>Romeo's Spelling</title>
 <style>
 :root {
@@ -154,11 +154,13 @@ header {
 .phonics-display {
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: 0;
-  font-family: 'Fredoka One', cursive;
-  font-size: 72px;
-  line-height: 1.1;
-  min-height: 88px;
+  font-family: 'Literata', Georgia, serif;
+  font-size: 76px;
+  font-weight: 400;
+  line-height: 1.15;
+  min-height: 92px;
   align-items: center;
+  letter-spacing: 1px;
 }
 .phonics-chunk {
   display: inline-flex;
@@ -193,8 +195,8 @@ header {
   background: var(--primary);
   color: #fff;
   border-radius: 12px;
-  font-size: 32px; font-weight: 800;
-  font-family: 'Fredoka One', cursive;
+  font-size: 34px; font-weight: 400;
+  font-family: 'Literata', Georgia, serif;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
   box-shadow: 0 5px 0 var(--primary-dark);
@@ -213,7 +215,7 @@ header {
 .answer-slot {
   width: 58px; height: 68px;
   border-bottom: 5px solid #e0e0e0;
-  font-size: 32px; font-weight: 800; font-family: 'Fredoka One', cursive;
+  font-size: 34px; font-weight: 400; font-family: 'Literata', Georgia, serif;
   display: flex; align-items: center; justify-content: center;
   background: #fff; color: #333; border-radius: 8px;
   transition: all 0.2s;
@@ -226,7 +228,7 @@ header {
 .blank-char {
   width: 52px; height: 64px;
   border-bottom: 5px solid #e0e0e0;
-  font-size: 36px; font-weight: 800; font-family: 'Fredoka One', cursive;
+  font-size: 38px; font-weight: 400; font-family: 'Literata', Georgia, serif;
   display: flex; align-items: center; justify-content: center;
   background: #fff; color: #333; border-radius: 8px;
   transition: all 0.15s;
@@ -570,13 +572,45 @@ function loadLearnWord() {
 
 function renderLearnInitControls() {
   const controls = document.getElementById('learnControls');
+  // learnCovered tracks whether word is currently hidden
+  // learnRevealedCount tracks partial reveal progress (only active in step mode)
   controls.innerHTML = `
-    <button class="btn btn-yellow" onclick="learnCover()">🙈 遮住，逐步拼读</button>
     <div class="btn-row" style="margin-top:4px">
+      <button class="btn btn-yellow" style="flex:1;margin-bottom:0" id="toggleBtn" onclick="learnToggleVisibility()">🙈 隐藏</button>
+      <button class="btn btn-green" style="flex:1;margin-bottom:0" onclick="learnStartStep()">👁 逐步展示</button>
+    </div>
+    <div class="btn-row" style="margin-top:10px">
       ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
       <button class="btn btn-primary" style="flex:2;margin-bottom:0" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
     </div>
   `;
+}
+
+function learnToggleVisibility() {
+  learnCovered = !learnCovered;
+  if (learnCovered) {
+    renderLearnPhonics(0);
+    document.getElementById('learnStepHint').textContent = '词已隐藏，凭记忆说出来';
+    document.getElementById('toggleBtn').textContent = '👁 展示';
+    document.getElementById('toggleBtn').className = 'btn btn-outline' + ' ' + 'btn'; 
+    document.getElementById('toggleBtn').style.flex = '1';
+    document.getElementById('toggleBtn').style.marginBottom = '0';
+  } else {
+    renderLearnPhonics(learnChunks.length);
+    document.getElementById('learnStepHint').textContent = '👂 先听发音，记住整个单词';
+    document.getElementById('toggleBtn').textContent = '🙈 隐藏';
+    document.getElementById('toggleBtn').className = 'btn btn-yellow';
+    document.getElementById('toggleBtn').style.flex = '1';
+    document.getElementById('toggleBtn').style.marginBottom = '0';
+  }
+}
+
+function learnStartStep() {
+  learnCovered = true;
+  learnRevealedCount = 0;
+  renderLearnPhonics(0);
+  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
+  renderLearnRevealControls();
 }
 
 function renderLearnPhonics(visibleCount) {
@@ -592,26 +626,19 @@ function renderLearnPhonics(visibleCount) {
   });
 }
 
-function learnCover() {
-  if (learnCovered) return;
-  learnCovered = true;
-  learnRevealedCount = 0;
-  renderLearnPhonics(0);
-  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
-  renderLearnRevealControls();
-}
 
 function renderLearnRevealControls() {
   const controls = document.getElementById('learnControls');
   const allDone = learnRevealedCount >= learnChunks.length;
   controls.innerHTML = `
-    ${!allDone ? `
-    <button class="btn btn-green" onclick="learnRevealNext()">
-      👁 展示下一部分 (${learnRevealedCount}/${learnChunks.length})
-    </button>` : `
-    <button class="btn btn-yellow" onclick="learnHideAgain()">🙈 再隐藏</button>
-    `}
     <div class="btn-row" style="margin-top:4px">
+      ${!allDone
+        ? `<button class="btn btn-green" style="flex:1;margin-bottom:0" onclick="learnRevealNext()">👁 展示 (${learnRevealedCount}/${learnChunks.length})</button>`
+        : `<button class="btn btn-yellow" style="flex:1;margin-bottom:0" onclick="learnHideAgain()">🙈 再隐藏</button>`
+      }
+      <button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnCovered=false;renderLearnPhonics(learnChunks.length);document.getElementById('learnStepHint').textContent='';renderLearnInitControls()">✕ 退出逐步</button>
+    </div>
+    <div class="btn-row" style="margin-top:10px">
       ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
       <button class="btn btn-primary" style="flex:2;margin-bottom:0" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
     </div>
@@ -622,10 +649,9 @@ function learnRevealNext() {
   if (learnRevealedCount < learnChunks.length) {
     learnRevealedCount++;
     renderLearnPhonics(learnRevealedCount);
-    // No speaking here per user request
   }
   if (learnRevealedCount >= learnChunks.length) {
-    document.getElementById('learnStepHint').textContent = '✅ 全部展示完毕';
+    document.getElementById('learnStepHint').textContent = '✅ 全部展示，可以再隐藏试试';
   }
   renderLearnRevealControls();
 }
