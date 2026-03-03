@@ -129,12 +129,12 @@ header {
 .learn-word-card {
   background: #fff;
   border-radius: 24px;
-  padding: 36px 24px;
+  padding: 40px 24px;
   text-align: center;
   box-shadow: 0 8px 32px rgba(79,126,248,0.1);
   border: 2px solid #e8effd;
   margin-bottom: 16px;
-  min-height: 220px;
+  min-height: 160px;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
 }
@@ -153,11 +153,11 @@ header {
 /* Phonics colored display */
 .phonics-display {
   display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 0; margin-top: 10px;
+  gap: 0;
   font-family: 'Fredoka One', cursive;
-  font-size: 52px;
+  font-size: 72px;
   line-height: 1.1;
-  min-height: 72px;
+  min-height: 88px;
   align-items: center;
 }
 .phonics-chunk {
@@ -321,7 +321,7 @@ input[type="date"] { font-family: 'Nunito', sans-serif; width: 100%; padding: 13
    JSONBin.io CONFIG
    ============================================================ */
 const BIN_ID = '695b813c43b1c97be91a29d3';
-const API_KEY = '$2a$10$uEeLgIqeB1wImpeUneAhref2IXtkWjDsrQ1rh4tDTOdjMu8zDeYBC';
+const API_KEY = '你的SecretKey(请填入)';
 /* ============================================================ */
 
 let db;
@@ -516,15 +516,18 @@ function startLearn(date) {
   };
 }
 
+function exitLearn() { if(confirm('退出学习？')) renderHome(); }
+function exitPracticeSession() { if(confirm('退出练习？')) renderHome(); }
+
 function renderLearnUI() {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" ontouchstart="if(confirm('退出学习？')) renderHome()">🏃 退出</button>`;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="exitLearn()">🏃 退出</button>`;
   document.getElementById('app').innerHTML = `<div id="learnContainer"></div>`;
   loadLearnWord();
 }
 
 function loadLearnWord() {
   if (learnIndex >= learnList.length) {
-    // Learn complete
+    document.getElementById('headerBtn').innerHTML = '';
     document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
       <div style="font-size:70px;margin-bottom:12px">🎓</div>
       <h2 style="font-family:'Fredoka One',cursive;font-size:30px;margin-bottom:8px">学习完成！</h2>
@@ -546,30 +549,34 @@ function loadLearnWord() {
   container.innerHTML = `
     <div class="learn-progress">单词 ${learnIndex + 1} / ${learnList.length}</div>
     <div class="learn-word-card">
-      <div class="learn-full-word" id="learnFullWord">${cleanWord}</div>
       <div class="phonics-display" id="learnPhonics"></div>
     </div>
 
     <div style="text-align:center;margin-bottom:16px">
-      <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px"
+      <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:12px 28px;border-radius:30px;font-size:16px"
         ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
         🔊 <span style="font-weight:800">听发音</span>
       </button>
     </div>
 
     <div id="learnStepHint" class="learn-step-hint">👂 先听发音，记住整个单词</div>
-
-    <div class="learn-controls" id="learnControls">
-      <button class="btn btn-yellow" id="coverBtn" onclick="learnCover()">🙈 遮住，逐步展示</button>
-      <div class="btn-row">
-        ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
-        <button class="btn btn-primary" style="flex:2" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
-      </div>
-    </div>
+    <div class="learn-controls" id="learnControls"></div>
   `;
 
-  renderLearnPhonics(learnChunks.length); // all visible at start
+  renderLearnPhonics(learnChunks.length);
+  renderLearnInitControls();
   setTimeout(() => speak(cleanWord), 350);
+}
+
+function renderLearnInitControls() {
+  const controls = document.getElementById('learnControls');
+  controls.innerHTML = `
+    <button class="btn btn-yellow" onclick="learnCover()">🙈 遮住，逐步拼读</button>
+    <div class="btn-row" style="margin-top:4px">
+      ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
+      <button class="btn btn-primary" style="flex:2;margin-bottom:0" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
+    </div>
+  `;
 }
 
 function renderLearnPhonics(visibleCount) {
@@ -589,23 +596,24 @@ function learnCover() {
   if (learnCovered) return;
   learnCovered = true;
   learnRevealedCount = 0;
-
-  // Hide full word
-  const fullWord = document.getElementById('learnFullWord');
-  if (fullWord) fullWord.classList.add('hidden');
-
   renderLearnPhonics(0);
+  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
+  renderLearnRevealControls();
+}
 
-  document.getElementById('learnStepHint').textContent = '点击"展示下一部分"逐步揭示';
-
+function renderLearnRevealControls() {
   const controls = document.getElementById('learnControls');
-  const rawWord = learnList[learnIndex];
-  const cleanWord = rawWord.replace(/[\/\-]/g, '');
+  const allDone = learnRevealedCount >= learnChunks.length;
   controls.innerHTML = `
-    <button class="btn btn-green" id="revealBtn" onclick="learnRevealNext()">👁 展示下一部分</button>
-    <div class="btn-row">
-      ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
-      <button class="btn btn-primary" style="flex:2" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
+    ${!allDone ? `
+    <button class="btn btn-green" onclick="learnRevealNext()">
+      👁 展示下一部分 (${learnRevealedCount}/${learnChunks.length})
+    </button>` : `
+    <button class="btn btn-yellow" onclick="learnHideAgain()">🙈 再隐藏</button>
+    `}
+    <div class="btn-row" style="margin-top:4px">
+      ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
+      <button class="btn btn-primary" style="flex:2;margin-bottom:0" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
     </div>
   `;
 }
@@ -614,30 +622,19 @@ function learnRevealNext() {
   if (learnRevealedCount < learnChunks.length) {
     learnRevealedCount++;
     renderLearnPhonics(learnRevealedCount);
-    const rawWord = learnList[learnIndex];
-    const cleanWord = rawWord.replace(/[\/\-]/g, '');
-    // Speak the newly revealed chunk
-    speak(learnChunks[learnRevealedCount - 1]);
+    // No speaking here per user request
   }
-
   if (learnRevealedCount >= learnChunks.length) {
-    // All revealed — show hide / next options
     document.getElementById('learnStepHint').textContent = '✅ 全部展示完毕';
-    const rawWord = learnList[learnIndex];
-    const cleanWord = rawWord.replace(/[\/\-]/g, '');
-    document.getElementById('learnControls').innerHTML = `
-      <div class="btn-row">
-        <button class="btn btn-gray" style="flex:1" onclick="
-          document.getElementById('learnFullWord').classList.add('hidden');
-          renderLearnPhonics(0);
-          document.getElementById('learnStepHint').textContent='再试试？点击展示';
-          this.parentElement.parentElement.querySelector('#revealAllBtn2') && null;
-          this.outerHTML='';
-        ">🙈 再隐藏</button>
-        <button class="btn btn-primary" style="flex:2" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
-      </div>
-    `;
   }
+  renderLearnRevealControls();
+}
+
+function learnHideAgain() {
+  learnRevealedCount = 0;
+  renderLearnPhonics(0);
+  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
+  renderLearnRevealControls();
 }
 
 /* ==================== PRACTICE MODE SELECTION ==================== */
@@ -677,7 +674,7 @@ function startPractice(date, mode) {
 }
 
 function renderPracticeUI(mode) {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" ontouchstart="if(confirm('退出练习？')) renderHome()">🏃 退出</button>`;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="exitPracticeSession()">🏃 退出</button>`;
   const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
   document.getElementById('app').innerHTML = `
     <div style="text-align:center;margin-bottom:14px;color:var(--text-2);font-weight:700;font-size:13px">${modeLabel} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span></div>
@@ -747,7 +744,7 @@ function renderTiles(cleanWord) {
   easyTileOrder.forEach((origIdx) => {
     const tile = document.createElement('button');
     tile.className = 'letter-tile pop-in';
-    tile.textContent = cleanWord[origIdx].toUpperCase();
+    tile.textContent = cleanWord[origIdx].toLowerCase();
     tile.dataset.origIdx = origIdx;
     tile.id = `tile-${origIdx}`;
     tile.onclick = () => handleTileClick(origIdx, cleanWord);
@@ -773,7 +770,7 @@ function handleTileClick(origIdx, cleanWord) {
     easyAnswerArr[nextEmpty] = clickedChar;
     tile.classList.add('used');
     const slot = document.getElementById(`slot-${nextEmpty}`);
-    slot.textContent = clickedChar.toUpperCase();
+    slot.textContent = clickedChar.toLowerCase();
     slot.classList.add('filled');
     slot.classList.add('pop-in');
 
