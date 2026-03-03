@@ -99,25 +99,31 @@ header {
 }
 
 /* Mode selector cards */
+.home-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
 .mode-card {
   background: var(--card);
   border-radius: var(--radius);
-  padding: 24px;
-  margin-bottom: 14px;
+  padding: 20px 16px;
   cursor: pointer;
   box-shadow: var(--shadow);
   border: 2px solid transparent;
   transition: border-color 0.2s, transform 0.1s;
-  display: flex; align-items: center; gap: 18px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 10px;
 }
 .mode-card:active { transform: scale(0.98); }
 .mode-card.learn { border-color: #b3caff; background: linear-gradient(135deg, #f0f4ff 0%, #fff 60%); }
 .mode-card.practice { border-color: #fde68a; background: linear-gradient(135deg, #fffbea 0%, #fff 60%); }
 .mode-card.records { border-color: #a7f3c8; background: linear-gradient(135deg, #f0fdf6 0%, #fff 60%); }
 .mode-card.manage { border-color: #e0e7ff; background: linear-gradient(135deg, #f8f0ff 0%, #fff 60%); }
-.mode-icon { font-size: 44px; flex-shrink: 0; }
-.mode-info h3 { margin: 0 0 4px 0; font-size: 20px; font-weight: 800; }
-.mode-info p { margin: 0; font-size: 13px; color: var(--text-2); font-weight: 600; }
+.mode-icon { font-size: 38px; flex-shrink: 0; }
+.mode-info h3 { margin: 0 0 3px 0; font-size: 16px; font-weight: 800; }
+.mode-info p { margin: 0; font-size: 12px; color: var(--text-2); font-weight: 600; line-height: 1.4; }
 
 /* =================== LEARN MODULE =================== */
 .learn-progress {
@@ -259,13 +265,6 @@ input[type="date"] { font-family: 'Nunito', sans-serif; width: 100%; padding: 13
 #hiddenInput { position: fixed; top: 0; left: -1000px; opacity: 0; font-size: 16px; height: 100px; }
 #fileInput { display: none; }
 
-#startOverlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: linear-gradient(160deg, #e8f0fe 0%, #fff 60%);
-  z-index: 100; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-}
-
 /* Practice mode selector */
 .practice-mode-btn {
   background: #fff; border: 2px solid #e5eaf5; border-radius: 16px;
@@ -311,19 +310,12 @@ input[type="date"] { font-family: 'Nunito', sans-serif; width: 100%; padding: 13
 
 <div id="app"></div>
 
-<div id="startOverlay">
-  <div class="avatar" style="width:100px;height:100px;font-size:50px;margin-bottom:24px;box-shadow:0 12px 0 var(--yellow-dark)">R</div>
-  <h2 style="margin-bottom:8px;font-size:34px;font-family:'Fredoka One',cursive;margin-top:0">Ready?</h2>
-  <p style="color:#888;margin-bottom:32px;font-weight:700">点击开始以启用声音</p>
-  <button class="btn btn-primary" style="width:220px" onclick="unlockAudio()">🚀 LET'S GO</button>
-</div>
-
 <script>
 /* ============================================================
    JSONBin.io CONFIG
    ============================================================ */
 const BIN_ID = '695b813c43b1c97be91a29d3';
-const API_KEY = '$2a$10$uEeLgIqeB1wImpeUneAhref2IXtkWjDsrQ1rh4tDTOdjMu8zDeYBC';
+const API_KEY = '你的SecretKey(请填入)';
 /* ============================================================ */
 
 let db;
@@ -341,11 +333,12 @@ const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function unlockAudio() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
-  const u = new SpeechSynthesisUtterance('');
-  speechSynthesis.speak(u);
-  document.getElementById('startOverlay').style.display = 'none';
-  renderHome();
+  const u = new SpeechSynthesisUtterance(''); speechSynthesis.speak(u);
 }
+
+// Unlock audio on first user interaction anywhere
+document.addEventListener('touchstart', unlockAudio, { once: true });
+document.addEventListener('click', unlockAudio, { once: true });
 
 // DB Init
 const DB_REQ = indexedDB.open('romeo_spelling_v5', 1);
@@ -358,7 +351,7 @@ DB_REQ.onupgradeneeded = (e) => {
     }
   });
 };
-DB_REQ.onsuccess = (e) => { db = e.target.result; };
+DB_REQ.onsuccess = (e) => { db = e.target.result; renderHome(); };
 
 function getAll(store) { return new Promise(r => { const req = store.getAll(); req.onsuccess = () => r(req.result); }); }
 
@@ -415,27 +408,29 @@ async function syncFromCloud() {
 function renderHome() {
   document.getElementById('headerBtn').innerHTML = '';
   document.getElementById('app').innerHTML = `
-    <div style="margin: 20px 0 24px 4px">
+    <div style="margin: 16px 0 18px 4px">
       <div class="hero-title">Hi, Romeo!</div>
-      <div style="font-size:15px;color:var(--text-2);font-weight:700">今天想做点什么？</div>
+      <div style="font-size:14px;color:var(--text-2);font-weight:700">今天想做点什么？</div>
     </div>
-    <div class="mode-card learn" onclick="renderSetSelection('learn')">
-      <div class="mode-icon">📖</div>
-      <div class="mode-info"><h3 style="color:#3563d4">单词学习</h3><p>认读、拼读、逐步揭示单词</p></div>
+    <div class="home-grid">
+      <div class="mode-card learn" onclick="renderSetSelection('learn')">
+        <div class="mode-icon">📖</div>
+        <div class="mode-info"><h3 style="color:#3563d4">单词学习</h3><p>认读、拼读、逐步揭示</p></div>
+      </div>
+      <div class="mode-card practice" onclick="renderSetSelection('practice')">
+        <div class="mode-icon">✏️</div>
+        <div class="mode-info"><h3 style="color:#b45309">拼写练习</h3><p>字母拼图 / 听写输入</p></div>
+      </div>
+      <div class="mode-card records" onclick="renderRecords()">
+        <div class="mode-icon">🏆</div>
+        <div class="mode-info"><h3 style="color:#059669">成就记录</h3><p>星星、火箭、足迹</p></div>
+      </div>
+      <div class="mode-card manage" onclick="renderWordManager()">
+        <div class="mode-icon">📂</div>
+        <div class="mode-info"><h3 style="color:#7c3aed">单词管理</h3><p>录入、编辑、删除</p></div>
+      </div>
     </div>
-    <div class="mode-card practice" onclick="renderSetSelection('practice')">
-      <div class="mode-icon">✏️</div>
-      <div class="mode-info"><h3 style="color:#b45309">拼写练习</h3><p>打乱字母 / 听写输入，挑战测试</p></div>
-    </div>
-    <div class="mode-card records" onclick="renderRecords()">
-      <div class="mode-icon">🏆</div>
-      <div class="mode-info"><h3 style="color:#059669">成就 & 记录</h3><p>查看星星、火箭和历史足迹</p></div>
-    </div>
-    <div class="mode-card manage" onclick="renderWordManager()">
-      <div class="mode-icon">📂</div>
-      <div class="mode-info"><h3 style="color:#7c3aed">单词管理</h3><p>录入、编辑、删除词组</p></div>
-    </div>
-    <div class="card" style="margin-top:4px;background:#f5f8ff;border:1.5px solid #d4e1ff">
+    <div class="card" style="background:#f5f8ff;border:1.5px solid #d4e1ff">
       <div style="font-size:11px;font-weight:800;color:var(--primary);margin-bottom:10px;letter-spacing:1px">CLOUD SYNC</div>
       <div class="btn-row">
         <button class="btn btn-primary btn-sm" style="flex:1" onclick="syncToCloud()">☁️ 上传</button>
@@ -463,9 +458,16 @@ function renderSetSelection(mode) {
       </div>`;
 
     if (mode === 'practice' && wrongs.length > 0) {
-      html += `<div class="mode-card" style="border-color:#ffd5d3;background:#fff5f5;margin-bottom:14px;cursor:pointer" onclick="renderPracticeMode('wrong_bank')">
-        <div class="mode-icon">🔥</div>
+      html += `<div class="mode-card" style="border-color:#ffd5d3;background:#fff5f5;margin-bottom:14px;cursor:pointer;flex-direction:row;text-align:left;gap:16px" onclick="renderPracticeMode('wrong_bank')">
+        <div class="mode-icon" style="font-size:36px">🔥</div>
         <div class="mode-info"><h3 style="color:#d32f2f">错题突击</h3><p>${wrongs.length} 个错词等待攻克</p></div>
+      </div>`;
+    }
+
+    if (mode === 'learn' && wrongs.length > 0) {
+      html += `<div class="mode-card" style="border-color:#ffd5d3;background:#fff5f5;margin-bottom:14px;cursor:pointer;flex-direction:row;text-align:left;gap:16px" onclick="startLearnWrong()">
+        <div class="mode-icon" style="font-size:36px">🔥</div>
+        <div class="mode-info"><h3 style="color:#d32f2f">错词复习</h3><p>${wrongs.length} 个错词，可选择复习哪些</p></div>
       </div>`;
     }
 
@@ -518,6 +520,53 @@ function startLearn(date) {
   };
 }
 
+function startLearnWrong() {
+  const tx = db.transaction('wrongBank', 'readonly');
+  getAll(tx.objectStore('wrongBank')).then(wrongs => {
+    if (wrongs.length === 0) return alert("错题本是空的！");
+    const words = wrongs.map(w => w.word);
+    // Show selection UI
+    document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderSetSelection('learn')">‹ 返回</button>`;
+    let html = `
+      <h3 style="margin:0 0 6px 0">🔥 错词复习</h3>
+      <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:16px">选择要复习的单词（可多选）</div>
+      <div style="margin-bottom:14px;display:flex;gap:8px">
+        <button class="btn btn-gray btn-sm" onclick="toggleAllWrong(true)">全选</button>
+        <button class="btn btn-gray btn-sm" onclick="toggleAllWrong(false)">全不选</button>
+      </div>
+      <div class="card" style="padding:10px 4px" id="wrongSelectList">
+    `;
+    words.forEach((w, i) => {
+      const clean = w.replace(/[\/\-]/g, '');
+      html += `<label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer">
+        <input type="checkbox" id="wchk-${i}" checked style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer">
+        <span style="font-family:'Literata',Georgia,serif;font-size:22px;color:#1a1a2e">${clean}</span>
+      </label>`;
+    });
+    html += `</div>
+      <button class="btn btn-primary" style="margin-top:16px" onclick="startLearnWrongSelected(${JSON.stringify(words).replace(/"/g, '&quot;')})">开始复习 ›</button>
+    `;
+    document.getElementById('app').innerHTML = html;
+  });
+}
+
+function toggleAllWrong(checked) {
+  document.querySelectorAll('[id^="wchk-"]').forEach(cb => cb.checked = checked);
+}
+
+function startLearnWrongSelected(words) {
+  const selected = words.filter((_, i) => {
+    const cb = document.getElementById(`wchk-${i}`);
+    return cb && cb.checked;
+  });
+  if (selected.length === 0) return alert("请至少选择一个单词");
+  currentSetDate = 'wrong_bank';
+  learnList = selected;
+  learnIndex = 0;
+  renderLearnUI();
+}
+
+
 function exitLearn() { if(confirm('退出学习？')) renderHome(); }
 function exitPracticeSession() { if(confirm('退出练习？')) renderHome(); }
 
@@ -546,6 +595,7 @@ function loadLearnWord() {
   learnChunks = parseChunks(rawWord);
   learnRevealedCount = learnChunks.length; // start fully visible
   learnCovered = false;
+  learnInStepMode = false;
 
   const container = document.getElementById('learnContainer');
   container.innerHTML = `
@@ -570,13 +620,16 @@ function loadLearnWord() {
   setTimeout(() => speak(cleanWord), 350);
 }
 
+// learnCovered: true = word hidden, false = word shown
+// learnInStepMode: true = currently doing step-by-step reveal
+let learnInStepMode = false;
+
 function renderLearnInitControls() {
+  learnInStepMode = false;
   const controls = document.getElementById('learnControls');
-  // learnCovered tracks whether word is currently hidden
-  // learnRevealedCount tracks partial reveal progress (only active in step mode)
   controls.innerHTML = `
     <div class="btn-row" style="margin-top:4px">
-      <button class="btn btn-yellow" style="flex:1;margin-bottom:0" id="toggleBtn" onclick="learnToggleVisibility()">🙈 隐藏</button>
+      <button class="btn btn-yellow" style="flex:1;margin-bottom:0" id="toggleBtn" onclick="learnToggle()">🙈 隐藏</button>
       <button class="btn btn-green" style="flex:1;margin-bottom:0" onclick="learnStartStep()">👁 逐步展示</button>
     </div>
     <div class="btn-row" style="margin-top:10px">
@@ -586,31 +639,71 @@ function renderLearnInitControls() {
   `;
 }
 
-function learnToggleVisibility() {
+function learnToggle() {
   learnCovered = !learnCovered;
   if (learnCovered) {
     renderLearnPhonics(0);
     document.getElementById('learnStepHint').textContent = '词已隐藏，凭记忆说出来';
-    document.getElementById('toggleBtn').textContent = '👁 展示';
-    document.getElementById('toggleBtn').className = 'btn btn-outline' + ' ' + 'btn'; 
-    document.getElementById('toggleBtn').style.flex = '1';
-    document.getElementById('toggleBtn').style.marginBottom = '0';
+    const btn = document.getElementById('toggleBtn');
+    btn.textContent = '👁 展示'; btn.className = 'btn btn-outline'; btn.style.cssText = 'flex:1;margin-bottom:0';
   } else {
+    learnInStepMode = false;
     renderLearnPhonics(learnChunks.length);
     document.getElementById('learnStepHint').textContent = '👂 先听发音，记住整个单词';
-    document.getElementById('toggleBtn').textContent = '🙈 隐藏';
-    document.getElementById('toggleBtn').className = 'btn btn-yellow';
-    document.getElementById('toggleBtn').style.flex = '1';
-    document.getElementById('toggleBtn').style.marginBottom = '0';
+    const btn = document.getElementById('toggleBtn');
+    btn.textContent = '🙈 隐藏'; btn.className = 'btn btn-yellow'; btn.style.cssText = 'flex:1;margin-bottom:0';
   }
 }
 
 function learnStartStep() {
+  learnInStepMode = true;
   learnCovered = true;
   learnRevealedCount = 0;
   renderLearnPhonics(0);
   document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
-  renderLearnRevealControls();
+  renderLearnStepControls();
+}
+
+function renderLearnStepControls() {
+  const allDone = learnRevealedCount >= learnChunks.length;
+  // Left btn: if hidden → "展示" (全展示退出逐步); if allDone → "隐藏"
+  const leftBtn = (allDone && !learnCovered)
+    ? `<button class="btn btn-yellow" style="flex:1;margin-bottom:0" onclick="learnStepHide()">🙈 隐藏</button>`
+    : `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnStepShowAll()">👁 展示</button>`;
+  // Right btn: step progress or done
+  const rightBtn = !allDone
+    ? `<button class="btn btn-green" style="flex:1;margin-bottom:0" onclick="learnRevealNext()">+1 展示 (${learnRevealedCount}/${learnChunks.length})</button>`
+    : `<span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--green);padding:10px 0">✅ 展示完毕</span>`;
+
+  const controls = document.getElementById('learnControls');
+  controls.innerHTML = `
+    <div class="btn-row" style="margin-top:4px">
+      ${leftBtn}
+      ${rightBtn}
+    </div>
+    <div class="btn-row" style="margin-top:10px">
+      ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
+      <button class="btn btn-primary" style="flex:2;margin-bottom:0" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
+    </div>
+  `;
+}
+
+function learnStepShowAll() {
+  // "展示" clicked during step mode → show everything, exit step mode
+  learnInStepMode = false;
+  learnCovered = false;
+  learnRevealedCount = learnChunks.length;
+  renderLearnPhonics(learnChunks.length);
+  document.getElementById('learnStepHint').textContent = '👂 先听发音，记住整个单词';
+  renderLearnInitControls();
+}
+
+function learnStepHide() {
+  learnCovered = true;
+  learnRevealedCount = 0;
+  renderLearnPhonics(0);
+  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
+  renderLearnStepControls();
 }
 
 function renderLearnPhonics(visibleCount) {
@@ -626,41 +719,16 @@ function renderLearnPhonics(visibleCount) {
   });
 }
 
-
-function renderLearnRevealControls() {
-  const controls = document.getElementById('learnControls');
-  const allDone = learnRevealedCount >= learnChunks.length;
-  controls.innerHTML = `
-    <div class="btn-row" style="margin-top:4px">
-      ${!allDone
-        ? `<button class="btn btn-green" style="flex:1;margin-bottom:0" onclick="learnRevealNext()">👁 展示 (${learnRevealedCount}/${learnChunks.length})</button>`
-        : `<button class="btn btn-yellow" style="flex:1;margin-bottom:0" onclick="learnHideAgain()">🙈 再隐藏</button>`
-      }
-      <button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnCovered=false;renderLearnPhonics(learnChunks.length);document.getElementById('learnStepHint').textContent='';renderLearnInitControls()">✕ 退出逐步</button>
-    </div>
-    <div class="btn-row" style="margin-top:10px">
-      ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
-      <button class="btn btn-primary" style="flex:2;margin-bottom:0" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
-    </div>
-  `;
-}
-
 function learnRevealNext() {
   if (learnRevealedCount < learnChunks.length) {
     learnRevealedCount++;
     renderLearnPhonics(learnRevealedCount);
   }
   if (learnRevealedCount >= learnChunks.length) {
-    document.getElementById('learnStepHint').textContent = '✅ 全部展示，可以再隐藏试试';
+    learnCovered = false;
+    document.getElementById('learnStepHint').textContent = '✅ 全部展示，可以隐藏再试试';
   }
-  renderLearnRevealControls();
-}
-
-function learnHideAgain() {
-  learnRevealedCount = 0;
-  renderLearnPhonics(0);
-  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
-  renderLearnRevealControls();
+  renderLearnStepControls();
 }
 
 /* ==================== PRACTICE MODE SELECTION ==================== */
