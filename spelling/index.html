@@ -2,7 +2,6 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<!-- 视口设置：禁止缩放，适配 iPad 尺寸 -->
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -10,131 +9,290 @@
 <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/lego-head.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <title>Romeo's Spelling</title>
 <style>
-  :root { 
-    --bg: #f2f6fa; --card: #ffffff; --primary: #007AFF; 
-    --lego-yellow: #FFCF00; --lego-red: #ff3b30; --text: #1d1d1f; --success: #34C759; 
-  }
-  /* 禁止 iOS 点击高亮和长按菜单，体验更像 App */
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; user-select: none; }
-  
-  body { 
-    margin: 0; padding: 0; 
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-    background: var(--bg); color: var(--text); 
-    height: 100vh; width: 100vw;
-    display: flex; flex-direction: column; 
-    overflow: hidden; 
-  }
+:root {
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --primary: #4f7ef8;
+  --primary-dark: #3563d4;
+  --yellow: #ffd60a;
+  --yellow-dark: #e6c200;
+  --red: #ff453a;
+  --green: #30d158;
+  --text: #1a1a2e;
+  --text-2: #6b7280;
+  --radius: 20px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.07);
+  --phonics-colors: #e63946, #4f7ef8;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; user-select: none; }
+body {
+  margin: 0; padding: 0;
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg); color: var(--text);
+  height: 100vh; width: 100vw;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+header {
+  background: #fff;
+  padding: 12px 20px;
+  padding-top: max(12px, env(safe-area-inset-top));
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.brand { display: flex; align-items: center; gap: 10px; }
+.avatar {
+  width: 40px; height: 40px; background: var(--yellow);
+  border-radius: 12px; display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 22px; color: #333;
+  box-shadow: 0 4px 0 var(--yellow-dark);
+  font-family: 'Fredoka One', cursive;
+}
+.brand-name { font-weight: 900; font-size: 17px; font-family: 'Fredoka One', cursive; }
+.brand-sub { font-size: 11px; color: var(--text-2); font-weight: 600; }
 
-  /* --- Layout --- */
-  header { 
-    background: rgba(255,255,255,0.95); 
-    padding: 12px 20px; padding-top: max(12px, env(safe-area-inset-top)); 
-    display: flex; align-items: center; justify-content: space-between; 
-    border-bottom: 1px solid rgba(0,0,0,0.05); 
-    flex-shrink: 0; 
-  }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .avatar { 
-    width: 40px; height: 40px; background: var(--lego-yellow); 
-    border-radius: 10px; display: flex; align-items: center; justify-content: center; 
-    font-weight: 900; font-size: 22px; color: #333; 
-    box-shadow: 0 4px 0 rgba(0,0,0,0.1); font-family: 'Fredoka One', cursive; 
-  }
-  .subtitle { font-size: 12px; color: #888; font-weight: 400; }
-  
-  #app { 
-    flex: 1; overflow-y: auto; padding: 20px; 
-    padding-bottom: max(30px, env(safe-area-inset-bottom)); 
-    -webkit-overflow-scrolling: touch;
-  }
+#app {
+  flex: 1; overflow-y: auto; padding: 20px;
+  padding-bottom: max(30px, env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
 
-  .card { 
-    background: var(--card); border-radius: 18px; padding: 24px; 
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 16px; 
-    border: 1px solid rgba(0,0,0,0.02); 
-  }
+/* Cards */
+.card {
+  background: var(--card); border-radius: var(--radius); padding: 22px;
+  box-shadow: var(--shadow); margin-bottom: 14px;
+  border: 1px solid rgba(0,0,0,0.03);
+}
 
-  /* --- Buttons --- */
-  .btn { 
-    display: flex; align-items: center; justify-content: center; gap: 10px; 
-    width: 100%; padding: 18px; 
-    border: none; border-radius: 14px; 
-    font-size: 18px; font-weight: 600; cursor: pointer; 
-    margin-bottom: 14px; transition: transform 0.1s; 
-    text-align: center; box-shadow: 0 4px 0 rgba(0,0,0,0.05); 
-  }
-  .btn:active { transform: scale(0.98) translateY(2px); box-shadow: none; }
-  .btn-primary { background: var(--primary); color: #fff; box-shadow: 0 4px 0 #005bb5; }
-  .btn-yellow { background: var(--lego-yellow); color: #000; box-shadow: 0 4px 0 #d4ac00; }
-  .btn-outline { background: #fff; color: var(--primary); border: 2px solid #eef2f6; box-shadow: none; }
-  .btn-red { background: #ffebee; color: #d32f2f; border: 1px solid #ffcdd2; box-shadow: none; }
-  .btn-row { display: flex; gap: 12px; margin-top: 10px; }
-  .btn-small { flex: 1; padding: 12px; font-size: 15px; border-radius: 12px; background: #f1f3f7; color: #666; border: none; font-weight: 600; }
+/* Buttons */
+.btn {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 17px;
+  border: none; border-radius: 14px;
+  font-size: 17px; font-weight: 800; cursor: pointer;
+  margin-bottom: 12px; transition: transform 0.1s, box-shadow 0.1s;
+  font-family: 'Nunito', sans-serif;
+}
+.btn:active { transform: scale(0.97) translateY(2px); box-shadow: none !important; }
+.btn-primary { background: var(--primary); color: #fff; box-shadow: 0 5px 0 var(--primary-dark); }
+.btn-yellow { background: var(--yellow); color: #1a1a2e; box-shadow: 0 5px 0 var(--yellow-dark); }
+.btn-green { background: var(--green); color: #fff; box-shadow: 0 5px 0 #1fa846; }
+.btn-outline { background: #fff; color: var(--primary); border: 2px solid #e5eaf5; box-shadow: none; }
+.btn-red { background: #fff0f0; color: var(--red); border: 1.5px solid #ffd5d3; box-shadow: none; }
+.btn-gray { background: #f1f3f7; color: #555; border: none; box-shadow: none; }
+.btn-row { display: flex; gap: 10px; }
+.btn-row .btn { margin-bottom: 0; }
+.btn-sm { padding: 10px 16px; font-size: 14px; border-radius: 10px; width: auto; }
 
-  /* --- Practice Mode UI --- */
-  .word-display { 
-    text-align: center; margin: 10px 0 20px 0; 
-    min-height: 100px; display: flex; flex-direction: column; justify-content: center; 
-  }
-  .word-text { font-size: 60px; font-weight: 700; font-family: "Courier New", monospace; letter-spacing: 3px; color: #111; }
-  .phonics { 
-    font-size: 26px; color: #555; margin-top: 10px; font-weight: 600; 
-    background:#e3f2fd; color:#1565c0; display:inline-block; 
-    padding:6px 18px; border-radius:20px; 
-  }
-  
-  .blanks-container { 
-    display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; 
-    margin: 20px 0 30px 0; cursor: text; 
-  }
-  .blank-char { 
-    width: 52px; height: 66px; 
-    border-bottom: 5px solid #e0e0e0; 
-    font-size: 38px; font-weight: 600; 
-    display: flex; align-items: center; justify-content: center; 
-    background: #fff; color: #333; border-radius: 8px; 
-    transition: all 0.1s; 
-  }
-  .blank-char.active { border-bottom-color: var(--primary); background: #f0f7ff; transform: translateY(-3px); }
-  .blank-char.filled { border-bottom-color: #333; }
-  .blank-char.correct { color: #fff; background: var(--success); border-bottom-color: var(--success); border:none; }
-  .blank-char.wrong { color: #fff; background: var(--lego-red); border-bottom-color: var(--lego-red); border:none; }
+/* Home hero */
+.hero-title {
+  font-family: 'Fredoka One', cursive;
+  font-size: 52px; color: #1a1a2e;
+  text-shadow: 3px 3px 0 #dce3ef;
+  margin: 0 0 6px 0;
+  letter-spacing: 1px;
+}
 
-  /* --- Other Views --- */
-  .hero-title { font-family: 'Fredoka One', cursive; font-size: 56px; color: #333; text-shadow: 3px 3px 0px #ddd; margin-bottom: 10px; letter-spacing: 1px; }
-  .icons-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 15px; font-size: 24px; }
-  .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-  .history-item { background: #fff; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); overflow: hidden; }
-  .history-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; }
-  .history-details { padding: 0 16px 16px 16px; display: none; border-top: 1px solid #f0f0f0; }
-  .history-details.show { display: block; }
-  .detail-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 6px 10px; border-radius: 8px; font-size: 14px; margin: 8px 4px 0 0; font-weight: 600; }
-  .word-wall { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-  .wall-item { background: #fff; border: 1px solid #eee; padding: 8px 12px; border-radius: 8px; font-size: 15px; font-weight: 600; color: #444; }
-  
-  /* --- Inputs --- */
-  textarea { width: 100%; border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 16px; background: #fff; font-family: inherit; transition: border 0.2s; user-select: auto; }
-  textarea:focus { border-color: var(--primary); outline: none; }
-  input[type="date"] { font-family: inherit; width: 100%; padding: 14px; border:2px solid #e0e0e0; border-radius:12px; margin: 5px 0 15px; font-size: 16px; }
-  
-  /* --- Hidden Input (The Magic) --- */
-  #hiddenInput { 
-    position: fixed; top: 0; left: -1000px; 
-    opacity: 0; font-size: 16px; height: 100px; /* Make it capturable */
-  }
-  #fileInput { display: none; }
-  
-  #startOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.98); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+/* Mode selector cards */
+.mode-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+  transition: border-color 0.2s, transform 0.1s;
+  display: flex; align-items: center; gap: 18px;
+}
+.mode-card:active { transform: scale(0.98); }
+.mode-card.learn { border-color: #b3caff; background: linear-gradient(135deg, #f0f4ff 0%, #fff 60%); }
+.mode-card.practice { border-color: #fde68a; background: linear-gradient(135deg, #fffbea 0%, #fff 60%); }
+.mode-card.records { border-color: #a7f3c8; background: linear-gradient(135deg, #f0fdf6 0%, #fff 60%); }
+.mode-card.manage { border-color: #e0e7ff; background: linear-gradient(135deg, #f8f0ff 0%, #fff 60%); }
+.mode-icon { font-size: 44px; flex-shrink: 0; }
+.mode-info h3 { margin: 0 0 4px 0; font-size: 20px; font-weight: 800; }
+.mode-info p { margin: 0; font-size: 13px; color: var(--text-2); font-weight: 600; }
+
+/* =================== LEARN MODULE =================== */
+.learn-progress {
+  text-align: center;
+  font-size: 13px; color: var(--text-2); font-weight: 700;
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
+}
+.learn-word-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 36px 24px;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(79,126,248,0.1);
+  border: 2px solid #e8effd;
+  margin-bottom: 16px;
+  min-height: 220px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.learn-full-word {
+  font-family: 'Fredoka One', cursive;
+  font-size: 64px;
+  color: #1a1a2e;
+  letter-spacing: 3px;
+  line-height: 1.1;
+  transition: opacity 0.3s;
+  min-height: 80px;
+  display: flex; align-items: center; justify-content: center;
+}
+.learn-full-word.hidden { opacity: 0; }
+
+/* Phonics colored display */
+.phonics-display {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 0; margin-top: 10px;
+  font-family: 'Fredoka One', cursive;
+  font-size: 52px;
+  line-height: 1.1;
+  min-height: 72px;
+  align-items: center;
+}
+.phonics-chunk {
+  display: inline-flex;
+  transition: opacity 0.3s, transform 0.3s;
+}
+.phonics-chunk.hidden-chunk { opacity: 0; transform: translateY(8px); pointer-events: none; }
+.phonics-chunk.color-0 { color: #e63946; }
+.phonics-chunk.color-1 { color: #4f7ef8; }
+.phonics-chunk.color-2 { color: #e63946; }
+.phonics-chunk.color-3 { color: #4f7ef8; }
+.phonics-chunk.color-4 { color: #e63946; }
+.phonics-chunk.color-5 { color: #4f7ef8; }
+
+/* Learn controls */
+.learn-controls {
+  display: flex; flex-direction: column; gap: 10px;
+}
+.learn-step-hint {
+  text-align: center; color: var(--text-2); font-size: 13px; font-weight: 700;
+  letter-spacing: 0.5px; padding: 8px; background: #f8faff; border-radius: 10px;
+}
+
+/* =================== PRACTICE MODULE =================== */
+
+/* Easy mode: letter tiles */
+.tiles-container {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px; margin: 20px 0;
+}
+.letter-tile {
+  width: 58px; height: 68px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 12px;
+  font-size: 32px; font-weight: 800;
+  font-family: 'Fredoka One', cursive;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 5px 0 var(--primary-dark);
+  transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
+  border: none;
+}
+.letter-tile:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--primary-dark); }
+.letter-tile.used { opacity: 0; pointer-events: none; }
+.letter-tile.wrong-tile { background: var(--red); box-shadow: 0 5px 0 #c0392b; animation: shake 0.35s ease; }
+
+/* Answer slots */
+.slots-container {
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 10px; margin: 18px 0 24px 0;
+}
+.answer-slot {
+  width: 58px; height: 68px;
+  border-bottom: 5px solid #e0e0e0;
+  font-size: 32px; font-weight: 800; font-family: 'Fredoka One', cursive;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; color: #333; border-radius: 8px;
+  transition: all 0.2s;
+}
+.answer-slot.filled { border-bottom-color: var(--primary); background: #f0f4ff; color: var(--primary); }
+.answer-slot.correct { background: var(--green); border-bottom-color: var(--green); color: #fff; border-radius: 12px; border-bottom-width: 0; }
+.answer-slot.wrong { background: var(--red); border-bottom-color: var(--red); color: #fff; border-radius: 12px; border-bottom-width: 0; }
+
+/* Normal mode: typing blanks */
+.blank-char {
+  width: 52px; height: 64px;
+  border-bottom: 5px solid #e0e0e0;
+  font-size: 36px; font-weight: 800; font-family: 'Fredoka One', cursive;
+  display: flex; align-items: center; justify-content: center;
+  background: #fff; color: #333; border-radius: 8px;
+  transition: all 0.15s;
+}
+.blank-char.active { border-bottom-color: var(--primary); background: #f0f5ff; transform: translateY(-3px); }
+.blank-char.filled { border-bottom-color: #333; }
+.blank-char.correct { color: #fff; background: var(--green); border: none; border-radius: 12px; }
+.blank-char.wrong { color: #fff; background: var(--red); border: none; border-radius: 12px; }
+.blanks-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0 28px 0; }
+
+/* Other UI */
+.manage-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+.history-item { background: #fff; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: hidden; }
+.history-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; }
+.history-details { padding: 0 16px 16px 16px; display: none; border-top: 1px solid #f0f0f0; }
+.history-details.show { display: block; }
+.detail-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 8px; font-size: 14px; margin: 6px 4px 0 0; font-weight: 700; }
+.word-wall { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.wall-item { background: #f0f4ff; border: 1.5px solid #c7d8ff; padding: 7px 12px; border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--primary); }
+.icons-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; font-size: 22px; }
+.score-header { background: linear-gradient(135deg, #4f7ef8, #7c3aed); border-radius: var(--radius); padding: 28px 22px; color: #fff; margin-bottom: 14px; }
+.big-score { font-size: 72px; font-family: 'Fredoka One', cursive; margin: 6px 0; line-height: 1; }
+
+textarea { width: 100%; border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 16px; background: #fff; font-family: 'Nunito', sans-serif; font-weight: 600; transition: border 0.2s; user-select: auto; }
+textarea:focus { border-color: var(--primary); outline: none; }
+input[type="date"] { font-family: 'Nunito', sans-serif; width: 100%; padding: 13px 14px; border: 2px solid #e0e0e0; border-radius: 12px; margin: 5px 0 14px; font-size: 16px; font-weight: 600; }
+
+#hiddenInput { position: fixed; top: 0; left: -1000px; opacity: 0; font-size: 16px; height: 100px; }
+#fileInput { display: none; }
+
+#startOverlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(160deg, #e8f0fe 0%, #fff 60%);
+  z-index: 100; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+
+/* Practice mode selector */
+.practice-mode-btn {
+  background: #fff; border: 2px solid #e5eaf5; border-radius: 16px;
+  padding: 20px; cursor: pointer; transition: all 0.15s;
+  text-align: left; width: 100%; margin-bottom: 12px;
+  font-family: 'Nunito', sans-serif;
+}
+.practice-mode-btn:active { transform: scale(0.98); }
+.practice-mode-btn.easy { border-color: #fde68a; background: #fffdf0; }
+.practice-mode-btn.normal { border-color: #b3caff; background: #f5f7ff; }
+.pmb-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+.pmb-desc { font-size: 13px; color: var(--text-2); font-weight: 600; }
+
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+@keyframes pop-in {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.pop-in { animation: pop-in 0.2s ease; }
+
+.feedback-text { text-align: center; height: 30px; margin-bottom: 8px; font-weight: 800; font-size: 17px; }
 </style>
 </head>
 <body>
 
-<!-- 隐藏输入框：始终保持在DOM中 -->
 <input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
 <input type="file" id="fileInput" accept=".json" onchange="importData(this)">
 
@@ -142,8 +300,8 @@
   <div class="brand">
     <div class="avatar">R</div>
     <div>
-      <div style="font-weight:800;font-size:16px">Romeo's Spelling</div>
-      <div class="subtitle">Cloud Edition</div>
+      <div class="brand-name">Romeo's Spelling</div>
+      <div class="brand-sub">Cloud Edition</div>
     </div>
   </div>
   <div id="headerBtn"></div>
@@ -152,26 +310,31 @@
 <div id="app"></div>
 
 <div id="startOverlay">
-  <div class="avatar" style="width:100px;height:100px;font-size:50px;margin-bottom:24px;box-shadow:0 12px 24px rgba(0,0,0,0.15)">R</div>
-  <h2 style="margin-bottom:8px;font-size:32px;font-family:'Fredoka One',cursive">Ready?</h2>
-  <p style="color:#888;margin-bottom:32px">点击开始以启用声音</p>
+  <div class="avatar" style="width:100px;height:100px;font-size:50px;margin-bottom:24px;box-shadow:0 12px 0 var(--yellow-dark)">R</div>
+  <h2 style="margin-bottom:8px;font-size:34px;font-family:'Fredoka One',cursive;margin-top:0">Ready?</h2>
+  <p style="color:#888;margin-bottom:32px;font-weight:700">点击开始以启用声音</p>
   <button class="btn btn-primary" style="width:220px" onclick="unlockAudio()">🚀 LET'S GO</button>
 </div>
 
 <script>
-/* =============================================================
+/* ============================================================
    JSONBin.io CONFIG
-   ============================================================= */
-const BIN_ID = '695b813c43b1c97be91a29d3'; 
-const API_KEY = '你的SecretKey(请填入)'; // 记得填入你的 Key
-// =============================================================
+   ============================================================ */
+const BIN_ID = '695b813c43b1c97be91a29d3';
+const API_KEY = '你的SecretKey(请填入)';
+/* ============================================================ */
 
-// Global State
 let db;
 let currentSetDate = null;
-let practiceList = []; currentIndex = 0; stage = 1; wrongList = []; sessionMasteredSet = new Set();
-// 新增状态锁，防止动画期间误操作
+let practiceList = [], currentIndex = 0, wrongList = [], sessionMasteredSet = new Set();
 let isProcessing = false;
+
+// Learn module state
+let learnList = [], learnIndex = 0, learnChunks = [], learnRevealedCount = 0, learnCovered = false;
+
+// Easy practice state
+let easyAnswerArr = [], easyTileArr = [], easyTileOrder = [];
+
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
 function unlockAudio() {
@@ -182,437 +345,759 @@ function unlockAudio() {
   renderHome();
 }
 
-// Database Init
-const DB_REQ = indexedDB.open('romeo_spelling_v4', 1);
+// DB Init
+const DB_REQ = indexedDB.open('romeo_spelling_v5', 1);
 DB_REQ.onupgradeneeded = (e) => {
   db = e.target.result;
-  if (!db.objectStoreNames.contains('wordSets')) db.createObjectStore('wordSets', { keyPath: 'date' });
-  if (!db.objectStoreNames.contains('wrongBank')) db.createObjectStore('wrongBank', { keyPath: 'word' });
-  if (!db.objectStoreNames.contains('practiceLogs')) db.createObjectStore('practiceLogs', { keyPath: 'id', autoIncrement: true });
+  ['wordSets', 'wrongBank', 'practiceLogs'].forEach(name => {
+    if (!db.objectStoreNames.contains(name)) {
+      const ks = name === 'practiceLogs' ? { keyPath: 'id', autoIncrement: true } : { keyPath: name === 'wrongBank' ? 'word' : 'date' };
+      db.createObjectStore(name, ks);
+    }
+  });
 };
 DB_REQ.onsuccess = (e) => { db = e.target.result; };
 
-// --- 核心优化：键盘焦点守卫 ---
-function keepFocus() {
-    const hidden = document.getElementById('hiddenInput');
-    // 如果当前处于练习模式，强制拉回焦点
-    if(document.getElementById('practiceCard') && !isProcessing) {
-        hidden.focus();
-    }
-}
+function getAll(store) { return new Promise(r => { const req = store.getAll(); req.onsuccess = () => r(req.result); }); }
 
-// 全局点击劫持：点击任何非交互区域，都把焦点还给输入框
+function keepFocus() {
+  const hidden = document.getElementById('hiddenInput');
+  if (document.querySelector('.blanks-container') && !isProcessing) hidden.focus();
+}
 document.addEventListener('click', (e) => {
-    if(['INPUT', 'TEXTAREA', 'BUTTON'].includes(e.target.tagName)) return;
-    keepFocus();
+  if (['INPUT', 'TEXTAREA', 'BUTTON'].includes(e.target.tagName)) return;
+  keepFocus();
 }, true);
 
-// --- Cloud Sync ---
+/* ==================== CLOUD SYNC ==================== */
 async function syncToCloud(isSilent = false) {
-    if(!BIN_ID.includes('6')) { if(!isSilent) alert("请先配置 JSONBin ID"); return; }
-    const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
-    const [sets, wrongs, logs] = await Promise.all([
-        getAll(tx.objectStore('wordSets')),
-        getAll(tx.objectStore('wrongBank')),
-        getAll(tx.objectStore('practiceLogs'))
-    ]);
-    const payload = { updatedAt: new Date(), data: { wordSets: sets, wrongBank: wrongs, practiceLogs: logs } };
-    const btn = document.getElementById('headerBtn');
-    if(isSilent) btn.innerHTML = '<span style="font-size:12px;color:#999">☁️</span>';
-    try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
-            body: JSON.stringify(payload)
-        });
-        if(!res.ok) throw new Error("API Error");
-        if(isSilent) {
-            btn.innerHTML = '<span style="font-size:12px;color:#34C759">✅</span>';
-            setTimeout(() => btn.innerHTML = '', 3000);
-        } else alert("✅ 云端同步成功！");
-    } catch(e) {
-        if(!isSilent) alert("同步失败");
-        else btn.innerHTML = '<span style="font-size:12px;color:red">❌</span>';
-    }
+  if (!BIN_ID.includes('6')) { if (!isSilent) alert("请先配置 JSONBin ID"); return; }
+  const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
+  const [sets, wrongs, logs] = await Promise.all([
+    getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
+  ]);
+  const payload = { updatedAt: new Date(), data: { wordSets: sets, wrongBank: wrongs, practiceLogs: logs } };
+  const btn = document.getElementById('headerBtn');
+  if (isSilent) btn.innerHTML = '<span style="font-size:12px;color:#999">☁️</span>';
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error();
+    if (isSilent) { btn.innerHTML = '<span style="font-size:12px;color:#30d158">✅</span>'; setTimeout(() => btn.innerHTML = '', 3000); }
+    else alert("✅ 云端同步成功！");
+  } catch (e) {
+    if (!isSilent) alert("同步失败"); else btn.innerHTML = '<span style="font-size:12px;color:red">❌</span>';
+  }
 }
 
 async function syncFromCloud() {
-    if(!BIN_ID.includes('6')) return alert("请先配置 JSONBin ID");
-    if(!confirm("⚠️ 警告：将从云端下载并【覆盖】当前设备的所有数据。\n确定吗？")) return;
-    try {
-        const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { method: 'GET', headers: { 'X-Master-Key': API_KEY } });
-        const result = await res.json();
-        const content = result.record.data; 
-        if(!content) return alert("云端数据为空");
-        const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
-        tx.objectStore('wordSets').clear(); tx.objectStore('wrongBank').clear(); tx.objectStore('practiceLogs').clear();
-        (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
-        (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
-        (content.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
-        tx.oncomplete = () => { alert("✅ 恢复成功！"); renderHome(); };
-    } catch(e) { alert("下载失败"); }
+  if (!BIN_ID.includes('6')) return alert("请先配置 JSONBin ID");
+  if (!confirm("⚠️ 警告：将从云端下载并【覆盖】当前设备的所有数据。\n确定吗？")) return;
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { headers: { 'X-Master-Key': API_KEY } });
+    const result = await res.json();
+    const content = result.record.data;
+    if (!content) return alert("云端数据为空");
+    const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
+    ['wordSets', 'wrongBank', 'practiceLogs'].forEach(s => tx.objectStore(s).clear());
+    (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
+    (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
+    (content.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
+    tx.oncomplete = () => { alert("✅ 恢复成功！"); renderHome(); };
+  } catch (e) { alert("下载失败"); }
 }
 
-// --- Home & UI ---
+/* ==================== HOME ==================== */
 function renderHome() {
   document.getElementById('headerBtn').innerHTML = '';
   document.getElementById('app').innerHTML = `
-    <div style="margin-top:20px;text-align:center;margin-bottom:30px">
-        <div class="hero-title">Hi, Romeo!</div>
-        <div style="font-size:16px;color:#666;font-weight:600">今天想做点什么？</div>
+    <div style="margin: 20px 0 24px 4px">
+      <div class="hero-title">Hi, Romeo!</div>
+      <div style="font-size:15px;color:var(--text-2);font-weight:700">今天想做点什么？</div>
     </div>
-    <button class="btn btn-primary" onclick="renderSetSelection()"><span style="font-size:24px">🚀</span> 开始练习</button>
-    <button class="btn btn-yellow" onclick="renderRecords()"><span style="font-size:24px">🏆</span> 成就 & 记录</button>
-    <button class="btn btn-outline" onclick="renderWordManager()"><span style="font-size:24px">📂</span> 单词管理</button>
-    <div class="card" style="margin-top:20px;background:#f0f7ff;border:1px solid #cce5ff">
-        <h4 style="margin:0 0 10px 0;color:#007AFF;font-size:12px">CLOUD SYNC</h4>
-        <div class="btn-row">
-            <button class="btn-small" style="background:#007AFF;color:#fff" onclick="syncToCloud()">☁️ 手动上传</button>
-            <button class="btn-small" style="background:#fff;border:1px solid #007AFF;color:#007AFF" onclick="syncFromCloud()">📥 从云端恢复</button>
-        </div>
+    <div class="mode-card learn" onclick="renderSetSelection('learn')">
+      <div class="mode-icon">📖</div>
+      <div class="mode-info"><h3 style="color:#3563d4">单词学习</h3><p>认读、拼读、逐步揭示单词</p></div>
     </div>
-    <div class="card" style="margin-top:10px;background:#fff">
-      <h4 style="margin:0 0 10px 0;color:#888;font-size:12px">LOCAL BACKUP</h4>
+    <div class="mode-card practice" onclick="renderSetSelection('practice')">
+      <div class="mode-icon">✏️</div>
+      <div class="mode-info"><h3 style="color:#b45309">拼写练习</h3><p>打乱字母 / 听写输入，挑战测试</p></div>
+    </div>
+    <div class="mode-card records" onclick="renderRecords()">
+      <div class="mode-icon">🏆</div>
+      <div class="mode-info"><h3 style="color:#059669">成就 & 记录</h3><p>查看星星、火箭和历史足迹</p></div>
+    </div>
+    <div class="mode-card manage" onclick="renderWordManager()">
+      <div class="mode-icon">📂</div>
+      <div class="mode-info"><h3 style="color:#7c3aed">单词管理</h3><p>录入、编辑、删除词组</p></div>
+    </div>
+    <div class="card" style="margin-top:4px;background:#f5f8ff;border:1.5px solid #d4e1ff">
+      <div style="font-size:11px;font-weight:800;color:var(--primary);margin-bottom:10px;letter-spacing:1px">CLOUD SYNC</div>
       <div class="btn-row">
-         <button class="btn-small" onclick="exportAllData()">📤 导出文件</button>
-         <button class="btn-small" onclick="document.getElementById('fileInput').click()">📥 导入文件</button>
+        <button class="btn btn-primary btn-sm" style="flex:1" onclick="syncToCloud()">☁️ 上传</button>
+        <button class="btn btn-outline btn-sm" style="flex:1" onclick="syncFromCloud()">📥 恢复</button>
+        <button class="btn btn-gray btn-sm" style="flex:1" onclick="exportAllData()">📤 导出</button>
+        <button class="btn btn-gray btn-sm" style="flex:1" onclick="document.getElementById('fileInput').click()">📥 导入</button>
       </div>
     </div>
   `;
 }
 
-// --- Manager ---
-function renderWordManager() {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
-  const today = new Date().toISOString().slice(0, 10);
-  const tx = db.transaction('wordSets', 'readonly');
-  getAll(tx.objectStore('wordSets')).then(sets => {
-    sets.sort((a,b) => b.date.localeCompare(a.date));
-    let setsListHtml = sets.length ? sets.map(s => `
-        <div class="manage-item" onclick="editSet('${s.date}')">
-            <div><div style="font-weight:bold;color:#333">📅 ${s.date}</div><div style="font-size:12px;color:#888;margin-top:2px">${s.words.length} 个单词</div></div>
-            <div style="color:var(--primary);font-size:14px;font-weight:600">编辑 ›</div>
-        </div>`).join('') : '<div style="padding:15px;color:#999;text-align:center">暂无历史记录</div>';
-    document.getElementById('app').innerHTML = `
-      <div class="card" id="managerCard">
-        <h3 style="margin-top:0" id="mgrTitle">录入 / 编辑单词</h3>
-        <label class="subtitle">日期 (ID)</label>
-        <input type="date" id="newDate" value="${today}">
-        <label class="subtitle">单词列表 (每行一个)</label>
-        <textarea id="newWords" rows="6" placeholder="例如：&#10;apple&#10;banana&#10;happy"></textarea>
-        <div style="margin-top:20px;display:flex;gap:10px">
-          <button class="btn btn-primary" style="flex:2" onclick="saveSet()">💾 保存 / 更新</button>
-          <button class="btn btn-red" id="delBtn" style="flex:1;display:none" onclick="deleteSetByDate()">🗑️ 删除</button>
-        </div>
-        <button class="btn-small" id="cancelBtn" style="margin-top:10px;width:100%;display:none" onclick="renderWordManager()">取消编辑 (返回新建)</button>
-      </div>
-      <h4 style="margin-left:10px;margin-bottom:10px;color:#666">历史词组管理</h4>
-      <div class="card" style="padding:0">${setsListHtml}</div>`;
-  });
-}
-function editSet(date) {
-    const tx = db.transaction('wordSets', 'readonly');
-    tx.objectStore('wordSets').get(date).onsuccess = (e) => {
-        const data = e.target.result; if (!data) return;
-        document.getElementById('mgrTitle').innerText = "正在编辑: " + date;
-        document.getElementById('newDate').value = data.date;
-        document.getElementById('newDate').disabled = true; 
-        document.getElementById('newWords').value = data.words.join('\n');
-        document.getElementById('delBtn').style.display = 'block';
-        document.getElementById('cancelBtn').style.display = 'block';
-        document.getElementById('app').scrollTop = 0;
-    };
-}
-
-function renderSetSelection() {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
+/* ==================== SET SELECTION ==================== */
+function renderSetSelection(mode) {
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
   const tx = db.transaction(['wordSets', 'wrongBank'], 'readonly');
   Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank'))]).then(([sets, wrongs]) => {
-    sets.sort((a,b) => b.date.localeCompare(a.date));
-    let html = `<div style="margin-bottom:15px;display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">选择课程</h3><span style="background:#eef;padding:4px 10px;border-radius:12px;font-size:12px;color:#558;font-weight:bold">${sets.length} 个任务</span></div>`;
-    if(wrongs.length > 0) html += `<button class="btn btn-red" style="background:#ffebee;color:#d32f2f;box-shadow:none;border:2px solid #ffcdd2" onclick="renderWrongPractice()">🔥 错题突击 (${wrongs.length} 词)</button><div style="height:10px"></div>`;
-    if(sets.length === 0) html += `<div style="text-align:center;padding:40px;color:#999">暂无练习，快去录入新词吧！</div>`;
-    else html += sets.map(s => {
-        const previewWords = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0,5).join(', ');
-        return `<div class="set-item" style="display:flex;justify-content:space-between;align-items:center;padding:16px;background:#fff;border-radius:12px;margin-bottom:10px;box-shadow:0 2px 5px rgba(0,0,0,0.02);cursor:pointer" onclick="startPractice('${s.date}')">
-              <div class="set-info"><strong style="font-size:17px;color:#333">📅 ${s.date}</strong><span style="font-size:13px;color:#888">${previewWords}${s.words.length>5?'...':''}</span></div>
-              <div style="font-weight:bold;color:var(--primary);background:#eef6ff;padding:6px 12px;border-radius:10px">${s.words.length}词 ›</div></div>`;
-    }).join('');
+    sets.sort((a, b) => b.date.localeCompare(a.date));
+    const modeLabel = mode === 'learn' ? '选择要学习的词组' : '选择要练习的词组';
+    const modeIcon = mode === 'learn' ? '📖' : '✏️';
+
+    let html = `
+      <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0;font-size:20px">${modeIcon} ${modeLabel}</h3>
+        <span style="background:#eef2ff;padding:4px 12px;border-radius:12px;font-size:12px;color:#4f7ef8;font-weight:800">${sets.length} 个</span>
+      </div>`;
+
+    if (mode === 'practice' && wrongs.length > 0) {
+      html += `<div class="mode-card" style="border-color:#ffd5d3;background:#fff5f5;margin-bottom:14px;cursor:pointer" onclick="renderPracticeMode('wrong_bank')">
+        <div class="mode-icon">🔥</div>
+        <div class="mode-info"><h3 style="color:#d32f2f">错题突击</h3><p>${wrongs.length} 个错词等待攻克</p></div>
+      </div>`;
+    }
+
+    if (sets.length === 0) {
+      html += `<div class="card" style="text-align:center;padding:40px;color:#999">
+        <div style="font-size:48px;margin-bottom:12px">📭</div>
+        <div style="font-weight:700">暂无词组，去管理页面录入吧！</div>
+      </div>`;
+    } else {
+      sets.forEach(s => {
+        const preview = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0, 4).join('  ');
+        const fn = mode === 'learn' ? `startLearn('${s.date}')` : `renderPracticeMode('${s.date}')`;
+        html += `<div class="card" style="cursor:pointer;padding:18px;display:flex;justify-content:space-between;align-items:center" onclick="${fn}">
+          <div>
+            <div style="font-weight:800;font-size:17px;margin-bottom:4px">📅 ${s.date}</div>
+            <div style="font-size:13px;color:var(--text-2);font-weight:600">${preview}${s.words.length > 4 ? '...' : ''}</div>
+          </div>
+          <div style="font-weight:800;color:var(--primary);background:#eef2ff;padding:8px 14px;border-radius:12px;font-size:15px">${s.words.length}词 ›</div>
+        </div>`;
+      });
+    }
     document.getElementById('app').innerHTML = html;
   });
 }
 
-// --- Practice Core ---
-function startPractice(date) {
+/* ==================== LEARN MODULE ==================== */
+function parseChunks(rawWord) {
+  const clean = rawWord.replace(/[\/\-]/g, '');
+  if (rawWord.includes('/') || rawWord.includes('-')) {
+    return rawWord.split(/[\/\-]/).filter(c => c.length > 0);
+  }
+  // Auto phonics split
+  const chunks = clean.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/gi);
+  if (!chunks || chunks.length <= 1) return [clean];
+  if (chunks.length > 1) {
+    const last = chunks[chunks.length - 1];
+    if (last === 'e' || last === 'es') chunks[chunks.length - 2] += chunks.pop();
+  }
+  return chunks;
+}
+
+function startLearn(date) {
   const tx = db.transaction('wordSets', 'readonly');
   tx.objectStore('wordSets').get(date).onsuccess = (e) => {
-    const data = e.target.result; if(!data) return;
-    currentSetDate = date; practiceList = data.words; currentIndex = 0; stage = 1; wrongList = []; sessionMasteredSet = new Set();
-    renderPracticeUI();
+    const data = e.target.result; if (!data) return;
+    currentSetDate = date;
+    learnList = data.words;
+    learnIndex = 0;
+    renderLearnUI();
   };
 }
-function renderWrongPractice() {
-  const tx = db.transaction('wrongBank', 'readonly');
-  getAll(tx.objectStore('wrongBank')).then(list => {
-    if(list.length === 0) return alert("错题本是空的！");
-    currentSetDate = 'wrong_bank'; practiceList = list.map(i => i.word); currentIndex = 0; stage = 2; wrongList = []; sessionMasteredSet = new Set();
-    renderPracticeUI();
+
+function renderLearnUI() {
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" ontouchstart="if(confirm('退出学习？')) renderHome()">🏃 退出</button>`;
+  document.getElementById('app').innerHTML = `<div id="learnContainer"></div>`;
+  loadLearnWord();
+}
+
+function loadLearnWord() {
+  if (learnIndex >= learnList.length) {
+    // Learn complete
+    document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
+      <div style="font-size:70px;margin-bottom:12px">🎓</div>
+      <h2 style="font-family:'Fredoka One',cursive;font-size:30px;margin-bottom:8px">学习完成！</h2>
+      <p style="color:var(--text-2);font-size:16px;font-weight:600">所有单词都学过啦，可以去练习了！</p>
+      <div style="height:20px"></div>
+      <button class="btn btn-primary" onclick="renderHome()">🏠 返回首页</button>
+      <button class="btn btn-yellow" onclick="renderSetSelection('practice')">✏️ 开始练习</button>
+    </div>`;
+    return;
+  }
+
+  const rawWord = learnList[learnIndex];
+  const cleanWord = rawWord.replace(/[\/\-]/g, '');
+  learnChunks = parseChunks(rawWord);
+  learnRevealedCount = learnChunks.length; // start fully visible
+  learnCovered = false;
+
+  const container = document.getElementById('learnContainer');
+  container.innerHTML = `
+    <div class="learn-progress">单词 ${learnIndex + 1} / ${learnList.length}</div>
+    <div class="learn-word-card">
+      <div class="learn-full-word" id="learnFullWord">${cleanWord}</div>
+      <div class="phonics-display" id="learnPhonics"></div>
+    </div>
+
+    <div style="text-align:center;margin-bottom:16px">
+      <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px"
+        ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
+        🔊 <span style="font-weight:800">听发音</span>
+      </button>
+    </div>
+
+    <div id="learnStepHint" class="learn-step-hint">👂 先听发音，记住整个单词</div>
+
+    <div class="learn-controls" id="learnControls">
+      <button class="btn btn-yellow" id="coverBtn" onclick="learnCover()">🙈 遮住，逐步展示</button>
+      <div class="btn-row">
+        ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
+        <button class="btn btn-primary" style="flex:2" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
+      </div>
+    </div>
+  `;
+
+  renderLearnPhonics(learnChunks.length); // all visible at start
+  setTimeout(() => speak(cleanWord), 350);
+}
+
+function renderLearnPhonics(visibleCount) {
+  const container = document.getElementById('learnPhonics');
+  if (!container) return;
+  container.innerHTML = '';
+  learnChunks.forEach((chunk, i) => {
+    const span = document.createElement('span');
+    span.className = `phonics-chunk color-${i % 2}`;
+    span.textContent = chunk;
+    if (i >= visibleCount) span.classList.add('hidden-chunk');
+    container.appendChild(span);
   });
 }
 
-function renderPracticeUI() {
-  // 退出按钮：使用 ontouchstart 避免 iOS 键盘收起
-  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" ontouchstart="if(confirm('退出练习？')) renderHome()">🏃 退出</button>`;
-  let title = stage === 1 ? "第一轮: 认读记忆" : (stage === 2 ? "第二轮: 听写考核" : "错题重练");
-  if(currentSetDate === 'wrong_bank') title = "错题突击";
-  document.getElementById('app').innerHTML = `<div style="text-align:center;margin-bottom:15px;color:#888;font-weight:600;font-size:14px">${title} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span></div><div class="card" id="practiceCard" style="min-height:300px"></div>`;
-  loadWord();
-}
+function learnCover() {
+  if (learnCovered) return;
+  learnCovered = true;
+  learnRevealedCount = 0;
 
-function loadWord() {
-  if(currentIndex >= practiceList.length) { handleRoundComplete(); return; }
-  
-  // 每一题开始时，重置状态
-  isProcessing = false;
-  
-  const rawWord = practiceList[currentIndex];
-  const cleanWord = rawWord.replace(/[\/\-]/g, ''); 
-  const container = document.getElementById('practiceCard');
-  let phonicsDisplay = "";
-  if(stage === 1) { phonicsDisplay = (rawWord.includes('/') || rawWord.includes('-')) ? rawWord.replace(/[\/\-]/g, ' · ') : getImprovedPhonics(cleanWord); }
-  const displayWord = stage === 1 ? cleanWord : "???";
-  
-  // 关键：发音按钮使用 ontouchstart 阻止焦点转移
-  container.innerHTML = `
-    <div class="word-display"><div class="word-text" style="color:${stage===1?'#111':'#ccc'}">${displayWord}</div>${phonicsDisplay ? `<div class="phonics">${phonicsDisplay}</div>` : '<div style="height:38px"></div>'}</div>
-    
-    <div style="text-align:center;margin-bottom:20px">
-        <button class="btn-outline" style="display:inline-flex;width:auto;padding:10px 20px;border-radius:30px;align-items:center;gap:5px" 
-        ontouchstart="event.preventDefault(); speak('${cleanWord}')" onclick="speak('${cleanWord}')">
-            <span>🔊</span> <span style="font-weight:600">听发音</span>
-        </button>
+  // Hide full word
+  const fullWord = document.getElementById('learnFullWord');
+  if (fullWord) fullWord.classList.add('hidden');
+
+  renderLearnPhonics(0);
+
+  document.getElementById('learnStepHint').textContent = '点击"展示下一部分"逐步揭示';
+
+  const controls = document.getElementById('learnControls');
+  const rawWord = learnList[learnIndex];
+  const cleanWord = rawWord.replace(/[\/\-]/g, '');
+  controls.innerHTML = `
+    <button class="btn btn-green" id="revealBtn" onclick="learnRevealNext()">👁 展示下一部分</button>
+    <div class="btn-row">
+      ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
+      <button class="btn btn-primary" style="flex:2" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
     </div>
-
-    <div class="blanks-container" id="blanksArea"></div>
-    <div style="text-align:center;height:30px;margin-bottom:10px;font-weight:bold;font-size:18px" id="feedback"></div>
-    
-    <button class="btn btn-primary" id="confirmBtn" ontouchstart="event.preventDefault(); checkWord()" onclick="checkWord()">✨ 确认 (Enter)</button>
-    <button class="btn btn-outline" id="skipBtn" style="margin-top:0;border:none;color:#999" ontouchstart="event.preventDefault(); skipWord()" onclick="skipWord()">跳过 ›</button>
   `;
-  
-  setupInput(cleanWord); 
-  setTimeout(() => speak(cleanWord), 400);
 }
 
-// --- Input Logic (Fixed for iPad) ---
-let targetWord = "";
-let currentInput = "";
-
-function setupInput(word) {
-  targetWord = word; 
-  currentInput = "";
-  
-  const blanks = document.getElementById('blanksArea'); 
-  blanks.innerHTML = '';
-  for(let i=0; i<word.length; i++) { 
-      const b = document.createElement('div'); b.className = 'blank-char'; 
-      if(word[i] === ' ' || word[i] === '-') { b.textContent = word[i]; b.style.borderBottom = 'none'; } 
-      blanks.appendChild(b); 
+function learnRevealNext() {
+  if (learnRevealedCount < learnChunks.length) {
+    learnRevealedCount++;
+    renderLearnPhonics(learnRevealedCount);
+    const rawWord = learnList[learnIndex];
+    const cleanWord = rawWord.replace(/[\/\-]/g, '');
+    // Speak the newly revealed chunk
+    speak(learnChunks[learnRevealedCount - 1]);
   }
-  
-  const hidden = document.getElementById('hiddenInput'); 
-  hidden.value = ''; // Clear value
-  
-  // 立即聚焦，不需要延时，因为是在 loadWord 流程中
-  hidden.focus();
 
-  hidden.oninput = (e) => { 
-      if(isProcessing) return; // 动画期间禁止输入
-      let val = e.target.value.replace(/[^a-zA-Z]/g, '');
-      currentInput = val.slice(0, targetWord.length); 
-      updateBlanksUI(); 
-  };
-  
-  hidden.onkeydown = (e) => { 
-      if(e.key === 'Enter') {
-          e.preventDefault(); 
-          checkWord(); 
-      }
-  };
-  
-  updateBlanksUI();
-}
-
-function updateBlanksUI() {
-  const chars = document.querySelectorAll('.blank-char');
-  for(let i=0; i<targetWord.length; i++) {
-    if(targetWord[i] === ' ' || targetWord[i] === '-') continue;
-    const charElem = chars[i]; 
-    const inputChar = currentInput[i] || ''; 
-    charElem.textContent = inputChar;
-    charElem.classList.remove('active', 'filled'); 
-    if(i === currentInput.length) charElem.classList.add('active'); 
-    if(inputChar) charElem.classList.add('filled');
+  if (learnRevealedCount >= learnChunks.length) {
+    // All revealed — show hide / next options
+    document.getElementById('learnStepHint').textContent = '✅ 全部展示完毕';
+    const rawWord = learnList[learnIndex];
+    const cleanWord = rawWord.replace(/[\/\-]/g, '');
+    document.getElementById('learnControls').innerHTML = `
+      <div class="btn-row">
+        <button class="btn btn-gray" style="flex:1" onclick="
+          document.getElementById('learnFullWord').classList.add('hidden');
+          renderLearnPhonics(0);
+          document.getElementById('learnStepHint').textContent='再试试？点击展示';
+          this.parentElement.parentElement.querySelector('#revealAllBtn2') && null;
+          this.outerHTML='';
+        ">🙈 再隐藏</button>
+        <button class="btn btn-primary" style="flex:2" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
+      </div>
+    `;
   }
 }
 
-function checkWord() {
-  if(isProcessing) return; // Prevent double taps
-  
-  const fb = document.getElementById('feedback'); 
-  const cleanInput = currentInput.trim().toLowerCase(); 
-  const cleanTarget = targetWord.trim().toLowerCase();
-  
-  if(!cleanInput) return;
-  
-  if(cleanInput === cleanTarget) {
-    // === CORRECT ===
-    isProcessing = true; // Lock input
-    fb.innerHTML = `<span style="color:var(--success)">太棒了！🎉</span>`; 
-    document.querySelectorAll('.blank-char').forEach(c => c.classList.add('correct')); 
-    playSuccessTone();
-    
-    if(stage >= 2) { 
-        sessionMasteredSet.add(cleanTarget); 
-        if(currentSetDate === 'wrong_bank') removeFromWrongBank(targetWord); 
+/* ==================== PRACTICE MODE SELECTION ==================== */
+function renderPracticeMode(date) {
+  currentSetDate = date;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderSetSelection('practice')">‹ 返回</button>`;
+  document.getElementById('app').innerHTML = `
+    <h3 style="margin:0 0 18px 0">选择练习方式</h3>
+    <button class="practice-mode-btn easy" onclick="startPractice('${date}', 'easy')">
+      <div class="pmb-title">🎮 简单模式 — 字母拼图</div>
+      <div class="pmb-desc">打乱字母展示成磁贴，按顺序点击拼出单词</div>
+    </button>
+    <button class="practice-mode-btn normal" onclick="startPractice('${date}', 'normal')">
+      <div class="pmb-title">✍️ 普通模式 — 听写输入</div>
+      <div class="pmb-desc">听到发音，用键盘逐一输入字母</div>
+    </button>
+  `;
+}
+
+/* ==================== PRACTICE CORE ==================== */
+function startPractice(date, mode) {
+  if (date === 'wrong_bank') {
+    const tx = db.transaction('wrongBank', 'readonly');
+    getAll(tx.objectStore('wrongBank')).then(list => {
+      if (list.length === 0) return alert("错题本是空的！");
+      practiceList = list.map(i => i.word); currentIndex = 0; wrongList = []; sessionMasteredSet = new Set();
+      renderPracticeUI(mode);
+    });
+    return;
+  }
+  const tx = db.transaction('wordSets', 'readonly');
+  tx.objectStore('wordSets').get(date).onsuccess = (e) => {
+    const data = e.target.result; if (!data) return;
+    practiceList = data.words; currentIndex = 0; wrongList = []; sessionMasteredSet = new Set();
+    renderPracticeUI(mode);
+  };
+}
+
+function renderPracticeUI(mode) {
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" ontouchstart="if(confirm('退出练习？')) renderHome()">🏃 退出</button>`;
+  const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
+  document.getElementById('app').innerHTML = `
+    <div style="text-align:center;margin-bottom:14px;color:var(--text-2);font-weight:700;font-size:13px">${modeLabel} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span></div>
+    <div class="card" id="practiceCard" style="min-height:320px"></div>
+  `;
+  loadPracticeWord(mode);
+}
+
+function loadPracticeWord(mode) {
+  if (currentIndex >= practiceList.length) { finishPractice(); return; }
+  isProcessing = false;
+  const rawWord = practiceList[currentIndex];
+  const cleanWord = rawWord.replace(/[\/\-]/g, '');
+
+  // Update progress counter
+  const progressEl = document.querySelector('[style*="margin-bottom:14px"]');
+  if (progressEl) {
+    const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
+    progressEl.innerHTML = `${modeLabel} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span>`;
+  }
+
+  if (mode === 'easy') loadEasyWord(cleanWord, rawWord);
+  else loadNormalWord(cleanWord, rawWord, mode);
+}
+
+/* ---------- EASY MODE ---------- */
+function loadEasyWord(cleanWord, rawWord) {
+  easyAnswerArr = new Array(cleanWord.length).fill('');
+  // Shuffle letters
+  easyTileArr = cleanWord.split('');
+  easyTileOrder = shuffleArr([...Array(cleanWord.length).keys()]);
+
+  const container = document.getElementById('practiceCard');
+  container.innerHTML = `
+    <div style="text-align:center;margin-bottom:16px">
+      <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px"
+        ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
+        🔊 <span style="font-weight:800">听发音</span>
+      </button>
+    </div>
+    <div class="slots-container" id="answerSlots"></div>
+    <div class="feedback-text" id="feedback"></div>
+    <div style="font-size:12px;color:var(--text-2);font-weight:700;text-align:center;margin-bottom:12px">点击字母磁贴，按顺序拼出单词</div>
+    <div class="tiles-container" id="letterTiles"></div>
+    <button class="btn btn-gray" style="margin-top:12px;font-size:14px" ontouchstart="event.preventDefault();skipEasy()" onclick="skipEasy()">跳过 ›</button>
+  `;
+
+  renderSlots(cleanWord);
+  renderTiles(cleanWord);
+  setTimeout(() => speak(cleanWord), 350);
+}
+
+function renderSlots(cleanWord) {
+  const container = document.getElementById('answerSlots');
+  container.innerHTML = '';
+  for (let i = 0; i < cleanWord.length; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'answer-slot';
+    slot.id = `slot-${i}`;
+    container.appendChild(slot);
+  }
+}
+
+function renderTiles(cleanWord) {
+  const container = document.getElementById('letterTiles');
+  container.innerHTML = '';
+  easyTileOrder.forEach((origIdx) => {
+    const tile = document.createElement('button');
+    tile.className = 'letter-tile pop-in';
+    tile.textContent = cleanWord[origIdx].toUpperCase();
+    tile.dataset.origIdx = origIdx;
+    tile.id = `tile-${origIdx}`;
+    tile.onclick = () => handleTileClick(origIdx, cleanWord);
+    tile.ontouchstart = (e) => { e.preventDefault(); handleTileClick(origIdx, cleanWord); };
+    container.appendChild(tile);
+  });
+}
+
+function handleTileClick(origIdx, cleanWord) {
+  if (isProcessing) return;
+  const tile = document.getElementById(`tile-${origIdx}`);
+  if (!tile || tile.classList.contains('used')) return;
+
+  // Find next empty slot
+  const nextEmpty = easyAnswerArr.findIndex(c => c === '');
+  if (nextEmpty === -1) return;
+
+  const expectedChar = cleanWord[nextEmpty];
+  const clickedChar = cleanWord[origIdx];
+
+  if (clickedChar.toLowerCase() === expectedChar.toLowerCase()) {
+    // Correct
+    easyAnswerArr[nextEmpty] = clickedChar;
+    tile.classList.add('used');
+    const slot = document.getElementById(`slot-${nextEmpty}`);
+    slot.textContent = clickedChar.toUpperCase();
+    slot.classList.add('filled');
+    slot.classList.add('pop-in');
+
+    if (easyAnswerArr.every(c => c !== '')) {
+      // All filled correctly
+      isProcessing = true;
+      document.querySelectorAll('.answer-slot').forEach(s => { s.classList.remove('filled'); s.classList.add('correct'); });
+      document.getElementById('feedback').innerHTML = `<span style="color:var(--green)">太棒了！🎉</span>`;
+      playSuccessTone();
+      sessionMasteredSet.add(cleanWord.toLowerCase());
+      if (currentSetDate === 'wrong_bank') removeFromWrongBank(practiceList[currentIndex]);
+      setTimeout(() => { currentIndex++; loadPracticeWord('easy'); }, 900);
     }
-    
-    // 关键修正：不收起键盘，不失去焦点，只用 setTimeout 切换逻辑
-    setTimeout(() => { 
-        currentIndex++; 
-        loadWord(); 
-        // isProcessing 会在 loadWord 里重置
-    }, 800);
-    
   } else {
-    // === WRONG ===
-    fb.innerHTML = `<span style="color:var(--lego-red)">正确: ${targetWord}</span>`; 
-    document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
-    const btn = document.getElementById('confirmBtn');
-    
-    if(stage === 1) {
-        btn.innerText = "记住了 (清空重试) ↺"; 
-        btn.className = "btn btn-yellow";
-        btn.ontouchstart = (e) => { e.preventDefault(); resetForRetry(btn); };
-        btn.onclick = (e) => { e.preventDefault(); resetForRetry(btn); };
-    } else {
-        if(stage === 2) { 
-            const rawW = practiceList[currentIndex]; 
-            if(!wrongList.includes(rawW)) wrongList.push(rawW); 
-            addToWrongBank(rawW); 
-        }
-        btn.innerText = "记住了，继续 ›"; 
-        btn.className = "btn btn-outline";
-        btn.ontouchstart = (e) => { e.preventDefault(); currentIndex++; loadWord(); };
-        btn.onclick = (e) => { e.preventDefault(); currentIndex++; loadWord(); };
-    }
+    // Wrong
+    tile.classList.add('wrong-tile');
+    const slot = document.getElementById(`slot-${nextEmpty}`);
+    slot.classList.add('wrong');
+    document.getElementById('feedback').innerHTML = `<span style="color:var(--red)">不对，再想想！</span>`;
+    addToWrongBank(practiceList[currentIndex]);
+
+    // Flash wrong, then reset that slot and tile
+    setTimeout(() => {
+      tile.classList.remove('wrong-tile');
+      slot.classList.remove('wrong');
+      document.getElementById('feedback').innerHTML = '';
+    }, 600);
   }
-  
-  // 保持焦点，防止 iOS 键盘收起
+}
+
+function skipEasy() { currentIndex++; loadPracticeWord('easy'); }
+
+/* ---------- NORMAL MODE ---------- */
+let targetWord = "", currentInput = "";
+
+function loadNormalWord(cleanWord, rawWord, mode) {
+  const container = document.getElementById('practiceCard');
+  container.innerHTML = `
+    <div style="text-align:center;margin-bottom:18px">
+      <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px"
+        ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
+        🔊 <span style="font-weight:800">听发音</span>
+      </button>
+    </div>
+    <div class="blanks-container" id="blanksArea"></div>
+    <div class="feedback-text" id="feedback"></div>
+    <button class="btn btn-primary" id="confirmBtn" ontouchstart="event.preventDefault();checkNormal('${mode}')" onclick="checkNormal('${mode}')">✨ 确认 (Enter)</button>
+    <button class="btn btn-gray" style="margin-top:0;font-size:14px" ontouchstart="event.preventDefault();skipNormal('${mode}')" onclick="skipNormal('${mode}')">跳过 ›</button>
+  `;
+  setupNormalInput(cleanWord, mode);
+  setTimeout(() => speak(cleanWord), 350);
+}
+
+function setupNormalInput(word, mode) {
+  targetWord = word; currentInput = "";
+  const blanks = document.getElementById('blanksArea');
+  blanks.innerHTML = '';
+  for (let i = 0; i < word.length; i++) {
+    const b = document.createElement('div');
+    b.className = 'blank-char';
+    blanks.appendChild(b);
+  }
+  const hidden = document.getElementById('hiddenInput');
+  hidden.value = '';
+  hidden.focus();
+  hidden.oninput = (e) => {
+    if (isProcessing) return;
+    currentInput = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, targetWord.length);
+    updateNormalBlanks();
+  };
+  hidden.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); checkNormal(mode); } };
+  updateNormalBlanks();
+}
+
+function updateNormalBlanks() {
+  const chars = document.querySelectorAll('.blank-char');
+  for (let i = 0; i < targetWord.length; i++) {
+    const ch = chars[i];
+    const inp = currentInput[i] || '';
+    ch.textContent = inp;
+    ch.classList.remove('active', 'filled');
+    if (i === currentInput.length) ch.classList.add('active');
+    if (inp) ch.classList.add('filled');
+  }
+}
+
+function checkNormal(mode) {
+  if (isProcessing) return;
+  const fb = document.getElementById('feedback');
+  if (!currentInput.trim()) return;
+  const cleanInput = currentInput.trim().toLowerCase();
+  const cleanTarget = targetWord.trim().toLowerCase();
+
+  if (cleanInput === cleanTarget) {
+    isProcessing = true;
+    fb.innerHTML = `<span style="color:var(--green)">太棒了！🎉</span>`;
+    document.querySelectorAll('.blank-char').forEach(c => c.classList.add('correct'));
+    playSuccessTone();
+    sessionMasteredSet.add(cleanTarget);
+    if (currentSetDate === 'wrong_bank') removeFromWrongBank(practiceList[currentIndex]);
+    setTimeout(() => { currentIndex++; loadPracticeWord(mode); }, 800);
+  } else {
+    fb.innerHTML = `<span style="color:var(--red)">正确: ${targetWord}</span>`;
+    document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
+    addToWrongBank(practiceList[currentIndex]);
+    const btn = document.getElementById('confirmBtn');
+    btn.innerText = "记住了 ↺ 重试";
+    btn.className = "btn btn-yellow";
+    btn.ontouchstart = (e) => { e.preventDefault(); resetNormal(btn, mode); };
+    btn.onclick = () => resetNormal(btn, mode);
+    keepFocus();
+  }
+}
+
+function resetNormal(btn, mode) {
+  currentInput = "";
+  document.getElementById('hiddenInput').value = "";
+  updateNormalBlanks();
+  document.querySelectorAll('.blank-char').forEach(c => c.classList.remove('wrong'));
+  document.getElementById('feedback').innerHTML = "";
+  btn.innerText = "✨ 确认 (Enter)";
+  btn.className = "btn btn-primary";
+  btn.ontouchstart = (e) => { e.preventDefault(); checkNormal(mode); };
+  btn.onclick = () => checkNormal(mode);
   keepFocus();
 }
 
-function resetForRetry(btn) {
-    currentInput = "";
-    document.getElementById('hiddenInput').value = "";
-    updateBlanksUI();
-    document.querySelectorAll('.blank-char').forEach(c => c.classList.remove('wrong'));
-    document.getElementById('feedback').innerHTML = "";
-    
-    btn.innerText = "✨ 确认 (Enter)";
-    btn.className = "btn btn-primary";
-    btn.ontouchstart = (e) => { e.preventDefault(); checkWord(); };
-    btn.onclick = () => checkWord();
-    
-    keepFocus();
-}
+function skipNormal(mode) { currentIndex++; loadPracticeWord(mode); }
 
-function skipWord() { currentIndex++; loadWord(); }
-
-// --- Helpers ---
-function handleRoundComplete() {
-  if(stage === 1) { alert("第一轮记忆完成！\n请准备好，接下来开始听写挑战 💪"); stage = 2; currentIndex = 0; renderPracticeUI(); }
-  else if (stage === 2) { if(wrongList.length > 0) { alert(`听写完成！有 ${wrongList.length} 个单词需要订正。`); practiceList = [...wrongList]; wrongList = []; stage = 3; currentIndex = 0; renderPracticeUI(); } else finishAll(); }
-  else finishAll();
-}
-function finishAll() {
+function finishPractice() {
   const masteredCount = sessionMasteredSet.size;
-  if(masteredCount > 0) { const tx = db.transaction('practiceLogs', 'readwrite'); tx.objectStore('practiceLogs').add({ date: new Date().toISOString().slice(0,10), timestamp: Date.now(), count: masteredCount, words: Array.from(sessionMasteredSet), source: currentSetDate }); }
-  document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px"><div style="font-size:70px;margin-bottom:10px">🚀</div><h2 style="font-size:28px;margin-bottom:10px;color:#333;font-weight:800">练习完成！</h2><p style="color:#666;font-size:18px">本次掌握: <b style="color:#fbc02d">${masteredCount} ⭐</b></p><div style="height:20px"></div><button class="btn btn-primary" onclick="renderHome()">返回首页</button><button class="btn btn-yellow" onclick="renderRecords()">查看成就</button></div>`;
+  if (masteredCount > 0) {
+    const tx = db.transaction('practiceLogs', 'readwrite');
+    tx.objectStore('practiceLogs').add({
+      date: new Date().toISOString().slice(0, 10), timestamp: Date.now(),
+      count: masteredCount, words: Array.from(sessionMasteredSet), source: currentSetDate
+    });
+  }
+  document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
+    <div style="font-size:70px;margin-bottom:12px">🎉</div>
+    <h2 style="font-family:'Fredoka One',cursive;font-size:30px;margin-bottom:8px">练习完成！</h2>
+    <p style="color:var(--text-2);font-size:17px;font-weight:700">本次掌握: <b style="color:#f59e0b">${masteredCount} ⭐</b></p>
+    <div style="height:20px"></div>
+    <button class="btn btn-primary" onclick="renderHome()">🏠 返回首页</button>
+    <button class="btn btn-yellow" onclick="renderRecords()">🏆 查看成就</button>
+  </div>`;
   syncToCloud(true);
 }
-function getImprovedPhonics(w) { const word = w.toLowerCase(); const chunks = word.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/gi); if(!chunks || chunks.length <= 1) return word; let res = []; for(let i=0; i<chunks.length; i++) { res.push(chunks[i]); } if(res.length > 1) { const last = res[res.length-1]; if(last === 'e' || last === 'es') { res[res.length-2] += res.pop(); } } return res.join(' · '); }
-function getAll(store) { return new Promise((r) => { const req = store.getAll(); req.onsuccess = () => r(req.result); }); }
-function addToWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').put({ word: word, lastWrong: new Date().toISOString() }); }
-function removeFromWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').delete(word); }
-function renderRecords() {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn-small" onclick="renderHome()">🏠 首页</button>`;
-  const tx = db.transaction('practiceLogs', 'readonly');
-  getAll(tx.objectStore('practiceLogs')).then(logs => {
-    logs.sort((a,b) => b.timestamp - a.timestamp);
-    let totalStars = 0; let allMasteredWords = new Set();
-    logs.forEach(l => { totalStars += l.count; if(l.words) l.words.forEach(w => allMasteredWords.add(w.toLowerCase())); });
-    const rockets = Math.floor(totalStars / 10);
-    const currentStars = totalStars % 10;
-    let rocketsHtml = ''; for(let i=0; i<rockets; i++) rocketsHtml += '🚀 ';
-    let starsHtml = ''; for(let i=0; i<currentStars; i++) starsHtml += '⭐ '; for(let i=currentStars; i<10; i++) starsHtml += '<span style="opacity:0.2">⭐</span> ';
-    let historyHtml = logs.length === 0 ? '<div style="text-align:center;padding:20px;color:#999">暂无记录</div>' : '';
-    logs.forEach((log, index) => {
-        const wordsHtml = (log.words || []).map(w => `<span class="detail-tag">${w}</span>`).join('');
-        historyHtml += `<div class="history-item"><div class="history-header" onclick="toggleHistory(${index})"><div><div class="history-date">${log.date}</div><div class="history-count"><span>完成 ${log.count} 个单词</span><span style="font-size:10px;color:#999">▼</span></div></div><div style="font-weight:bold;color:#fbc02d">⭐ +${log.count}</div></div><div class="history-details" id="hist-detail-${index}">${wordsHtml || '<span style="font-size:12px;color:#ccc">无详细记录</span>'}</div></div>`;
-    });
-    const wallHtml = Array.from(allMasteredWords).sort().map(w => `<div class="wall-item">${w}</div>`).join('');
-    document.getElementById('app').innerHTML = `<div class="rocket-stage"><div style="position:relative;z-index:2"><div style="font-size:14px;opacity:0.8;text-transform:uppercase;letter-spacing:1px">Total Score</div><div class="big-score">${totalStars}</div><div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-top:10px"><div style="font-size:12px;margin-bottom:5px;opacity:0.7">火箭收藏馆 (${rockets})</div><div class="icons-grid" style="font-size:20px">${rocketsHtml || '<span style="font-size:14px;opacity:0.6">加油！</span>'}</div></div><div style="background:rgba(255,255,255,0.1);border-radius:12px;padding:15px;margin-top:10px"><div style="font-size:12px;margin-bottom:5px;opacity:0.7">当前进度 (${currentStars}/10)</div><div class="icons-grid">${starsHtml}</div></div></div></div><div class="card"><h3 style="margin:0 0 10px 0">单词墙 (${allMasteredWords.size})</h3><div class="word-wall">${wallHtml || '<span style="color:#999;font-size:13px">还没有掌握单词哦</span>'}</div></div><h3 style="margin-left:5px;margin-top:20px">练习足迹</h3><div class="history-list">${historyHtml}</div>`;
+
+/* ==================== WORD MANAGER ==================== */
+function renderWordManager() {
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
+  const today = new Date().toISOString().slice(0, 10);
+  const tx = db.transaction('wordSets', 'readonly');
+  getAll(tx.objectStore('wordSets')).then(sets => {
+    sets.sort((a, b) => b.date.localeCompare(a.date));
+    const listHtml = sets.length ? sets.map(s => `
+      <div class="manage-item" onclick="editSet('${s.date}')">
+        <div><div style="font-weight:800;color:#333">📅 ${s.date}</div><div style="font-size:12px;color:#999;margin-top:2px">${s.words.length} 个单词</div></div>
+        <div style="color:var(--primary);font-size:14px;font-weight:700">编辑 ›</div>
+      </div>`).join('') : '<div style="padding:20px;color:#999;text-align:center;font-weight:600">暂无记录</div>';
+
+    document.getElementById('app').innerHTML = `
+      <div class="card" id="managerCard">
+        <h3 style="margin-top:0" id="mgrTitle">录入 / 编辑单词</h3>
+        <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">日期 (唯一ID)</div>
+        <input type="date" id="newDate" value="${today}">
+        <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">单词列表（每行一个，可用 / 标注音节，如 <b>hap/py</b>）</div>
+        <textarea id="newWords" rows="7" placeholder="例如：&#10;apple&#10;ba/na/na&#10;hap/py&#10;beau/ti/ful"></textarea>
+        <div style="margin-top:18px;display:flex;gap:10px">
+          <button class="btn btn-primary" style="flex:2" onclick="saveSet()">💾 保存 / 更新</button>
+          <button class="btn btn-red" id="delBtn" style="flex:1;display:none" onclick="deleteSetByDate()">🗑️ 删除</button>
+        </div>
+        <button id="cancelBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="renderWordManager()">取消编辑</button>
+      </div>
+      <h4 style="margin-left:6px;color:var(--text-2)">历史词组</h4>
+      <div class="card" style="padding:0">${listHtml}</div>`;
   });
 }
-function toggleHistory(idx) { const el = document.getElementById(`hist-detail-${idx}`); if(el) el.classList.toggle('show'); }
+
+function editSet(date) {
+  const tx = db.transaction('wordSets', 'readonly');
+  tx.objectStore('wordSets').get(date).onsuccess = (e) => {
+    const data = e.target.result; if (!data) return;
+    document.getElementById('mgrTitle').innerText = "正在编辑: " + date;
+    document.getElementById('newDate').value = data.date;
+    document.getElementById('newDate').disabled = true;
+    document.getElementById('newWords').value = data.words.join('\n');
+    document.getElementById('delBtn').style.display = 'block';
+    document.getElementById('cancelBtn').style.display = 'block';
+    document.getElementById('app').scrollTop = 0;
+  };
+}
+
 function saveSet() {
-  const date = document.getElementById('newDate').value; const text = document.getElementById('newWords').value;
-  if(!text.trim()) return alert("请输入单词");
+  const date = document.getElementById('newDate').value;
+  const text = document.getElementById('newWords').value;
+  if (!text.trim()) return alert("请输入单词");
   const words = text.split(/\n+/).map(w => w.trim()).filter(w => w);
   const tx = db.transaction('wordSets', 'readwrite');
   tx.objectStore('wordSets').put({ date, words });
-  tx.oncomplete = () => { alert("保存成功!"); renderWordManager(); syncToCloud(true); };
+  tx.oncomplete = () => { alert("保存成功！"); renderWordManager(); syncToCloud(true); };
 }
+
 function deleteSetByDate() {
-  const date = document.getElementById('newDate').value; if(!confirm(`确认删除?`)) return;
+  const date = document.getElementById('newDate').value;
+  if (!confirm(`确认删除 ${date}？`)) return;
   const tx = db.transaction('wordSets', 'readwrite');
-  tx.objectStore('wordSets').delete(date); tx.oncomplete = () => { alert("已删除"); renderWordManager(); syncToCloud(true); };
+  tx.objectStore('wordSets').delete(date);
+  tx.oncomplete = () => { alert("已删除"); renderWordManager(); syncToCloud(true); };
 }
+
+/* ==================== RECORDS ==================== */
+function renderRecords() {
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
+  const tx = db.transaction('practiceLogs', 'readonly');
+  getAll(tx.objectStore('practiceLogs')).then(logs => {
+    logs.sort((a, b) => b.timestamp - a.timestamp);
+    let totalStars = 0; let allWords = new Set();
+    logs.forEach(l => { totalStars += l.count; (l.words || []).forEach(w => allWords.add(w.toLowerCase())); });
+    const rockets = Math.floor(totalStars / 10);
+    const currentStars = totalStars % 10;
+    let rockHtml = ''; for (let i = 0; i < rockets; i++) rockHtml += '🚀 ';
+    let starHtml = ''; for (let i = 0; i < 10; i++) starHtml += i < currentStars ? '⭐ ' : '<span style="opacity:0.2">⭐</span> ';
+
+    let histHtml = logs.length === 0 ? '<div style="text-align:center;padding:24px;color:#999;font-weight:600">暂无记录</div>' : '';
+    logs.forEach((log, idx) => {
+      const wordsHtml = (log.words || []).map(w => `<span class="detail-tag">${w}</span>`).join('');
+      histHtml += `<div class="history-item"><div class="history-header" onclick="toggleHistory(${idx})">
+        <div><div style="font-weight:800">${log.date}</div><div style="font-size:13px;color:var(--text-2);font-weight:600">完成 ${log.count} 个单词 <span style="font-size:10px">▼</span></div></div>
+        <div style="font-weight:800;color:#f59e0b;font-size:18px">⭐ +${log.count}</div>
+      </div><div class="history-details" id="hist-detail-${idx}">${wordsHtml || '<span style="font-size:12px;color:#ccc">无详细记录</span>'}</div></div>`;
+    });
+    const wallHtml = Array.from(allWords).sort().map(w => `<div class="wall-item">${w}</div>`).join('');
+
+    document.getElementById('app').innerHTML = `
+      <div class="score-header">
+        <div style="font-size:13px;font-weight:700;opacity:0.8;letter-spacing:1px">TOTAL SCORE</div>
+        <div class="big-score">${totalStars}</div>
+        <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;margin-top:12px">
+          <div style="font-size:12px;margin-bottom:6px;opacity:0.7">火箭收藏 (${rockets})</div>
+          <div class="icons-grid" style="font-size:18px">${rockHtml || '<span style="font-size:14px;opacity:0.6">加油攒火箭！</span>'}</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.12);border-radius:14px;padding:14px;margin-top:10px">
+          <div style="font-size:12px;margin-bottom:6px;opacity:0.7">进度 (${currentStars}/10)</div>
+          <div class="icons-grid">${starHtml}</div>
+        </div>
+      </div>
+      <div class="card"><h3 style="margin:0 0 10px 0">单词墙 (${allWords.size})</h3><div class="word-wall">${wallHtml || '<span style="color:#999;font-size:13px;font-weight:600">还没有掌握单词哦</span>'}</div></div>
+      <h3 style="margin-left:6px">练习足迹</h3>
+      ${histHtml}
+    `;
+  });
+}
+
+function toggleHistory(idx) { const el = document.getElementById(`hist-detail-${idx}`); if (el) el.classList.toggle('show'); }
+
+/* ==================== UTILS ==================== */
+function shuffleArr(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function speak(text) {
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; u.rate = 0.85;
+  const all = speechSynthesis.getVoices();
+  const pref = all.find(v => v.name === 'Daniel') || all.find(v => v.name === 'Samantha') || all.find(v => v.lang.includes('en'));
+  if (pref) u.voice = pref;
+  speechSynthesis.speak(u);
+}
+speechSynthesis.onvoiceschanged = () => { };
+
+function playSuccessTone() {
+  try {
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination);
+    osc.frequency.setValueAtTime(523, audioCtx.currentTime);
+    osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.12);
+    osc.frequency.setValueAtTime(784, audioCtx.currentTime + 0.24);
+    gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.55);
+    osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + 0.55);
+  } catch (e) { }
+}
+
+function addToWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').put({ word: word, lastWrong: new Date().toISOString() }); }
+function removeFromWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').delete(word); }
+
 function exportAllData() {
   const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
   Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))])
-  .then(([sets, wrongs, logs]) => {
+    .then(([sets, wrongs, logs]) => {
       const data = { wordSets: sets, wrongBank: wrongs, practiceLogs: logs, exportDate: new Date().toISOString() };
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `romeo_backup_${new Date().toISOString().slice(0,10)}.json`;
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+      a.download = `romeo_backup_${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  });
+    });
 }
+
 function importData(inputElement) {
   const file = inputElement.files[0]; if (!file) return;
-  if(!confirm("⚠️ 警告：覆盖数据？")) { inputElement.value = ''; return; }
+  if (!confirm("⚠️ 警告：覆盖现有数据？")) { inputElement.value = ''; return; }
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
-      if (!data.wordSets) throw new Error("Format error");
+      if (!data.wordSets) throw new Error();
       const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
-      tx.objectStore('wordSets').clear(); tx.objectStore('wrongBank').clear(); tx.objectStore('practiceLogs').clear();
+      ['wordSets', 'wrongBank', 'practiceLogs'].forEach(s => tx.objectStore(s).clear());
       (data.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
       (data.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
       (data.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
       tx.oncomplete = () => { alert("恢复成功！"); renderHome(); inputElement.value = ''; syncToCloud(true); };
-    } catch (err) { alert("文件错误"); inputElement.value = ''; }
+    } catch (err) { alert("文件格式错误"); inputElement.value = ''; }
   };
   reader.readAsText(file);
 }
-function speak(text) {
-  speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.rate = 0.9;
-  const allVoices = speechSynthesis.getVoices(); const preferred = allVoices.find(v => v.name === 'Daniel') || allVoices.find(v => v.name === 'Samantha') || allVoices.find(v => v.lang.includes('en'));
-  if(preferred) u.voice = preferred; speechSynthesis.speak(u);
-}
-speechSynthesis.onvoiceschanged = () => { };
 </script>
 </body>
 </html>
