@@ -395,18 +395,33 @@ async function syncToCloud(isSilent = false) {
     getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
   ]);
   const payload = { updatedAt: new Date(), data: { wordSets: sets, wrongBank: wrongs, practiceLogs: logs } };
-  const btn = document.getElementById('headerBtn');
-  if (isSilent) btn.innerHTML = '<span style="font-size:12px;color:#999">☁️</span>';
+
+  // Silent mode: show a floating toast, never touch headerBtn
+  let toast = null;
+  if (isSilent) {
+    toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:30px;right:20px;background:#333;color:#fff;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:700;z-index:999;opacity:0.9';
+    toast.textContent = '☁️ 同步中…';
+    document.body.appendChild(toast);
+  }
   try {
     const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
       body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error();
-    if (isSilent) { btn.innerHTML = '<span style="font-size:12px;color:#30d158">✅</span>'; setTimeout(() => btn.innerHTML = '', 3000); }
-    else alert("✅ 云端同步成功！");
+    if (isSilent && toast) {
+      toast.textContent = '✅ 已同步';
+      toast.style.background = '#1a7f45';
+      setTimeout(() => toast.remove(), 2000);
+    } else alert("✅ 云端同步成功！");
   } catch (e) {
-    if (!isSilent) alert("同步失败"); else btn.innerHTML = '<span style="font-size:12px;color:red">❌</span>';
+    if (!isSilent) alert("同步失败");
+    else if (toast) {
+      toast.textContent = '❌ 同步失败';
+      toast.style.background = '#c0392b';
+      setTimeout(() => toast.remove(), 3000);
+    }
   }
 }
 
@@ -1046,11 +1061,20 @@ function renderWordManager() {
   const tx = db.transaction('wordSets', 'readonly');
   getAll(tx.objectStore('wordSets')).then(sets => {
     sets.sort((a, b) => a.id.localeCompare(b.id));
-    const listHtml = sets.length ? sets.map(s => `
+    const listHtml = sets.length ? sets.map(s => {
+      const preview = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0, 6).join('　');
+      return `
       <div class="manage-item" onclick="editSet('${s.id.replace(/'/g, "\\'")}')">
-        <div><div style="font-weight:800;color:#333">${s.id}</div><div style="font-size:12px;color:#999;margin-top:2px">${s.words.length} 个单词</div></div>
-        <div style="color:var(--primary);font-size:14px;font-weight:700">编辑 ›</div>
-      </div>`).join('') : '<div style="padding:20px;color:#999;text-align:center;font-weight:600">暂无记录</div>';
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:800;color:#333;display:flex;align-items:center;gap:8px">
+            ${s.id}
+            <span style="font-size:11px;font-weight:700;color:#fff;background:var(--primary);padding:2px 8px;border-radius:20px;flex-shrink:0">${s.words.length}词</span>
+          </div>
+          <div style="font-size:13px;color:#aaa;margin-top:3px;font-family:'Literata',Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${preview}${s.words.length > 6 ? ' …' : ''}</div>
+        </div>
+        <div style="color:var(--primary);font-size:14px;font-weight:700;flex-shrink:0;margin-left:10px">编辑 ›</div>
+      </div>`;
+    }).join('') : '<div style="padding:20px;color:#999;text-align:center;font-weight:600">暂无记录</div>';
 
     document.getElementById('app').innerHTML = `
       <div class="card" id="managerCard">
