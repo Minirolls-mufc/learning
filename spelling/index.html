@@ -340,16 +340,39 @@ function unlockAudio() {
 document.addEventListener('touchstart', unlockAudio, { once: true });
 document.addEventListener('click', unlockAudio, { once: true });
 
-// DB Init
-const DB_REQ = indexedDB.open('romeo_spelling_v5', 1);
+// DB Init - v6: wordSets key changed from 'date' to 'id'
+const DB_REQ = indexedDB.open('romeo_spelling_v6', 2);
 DB_REQ.onupgradeneeded = (e) => {
   db = e.target.result;
-  ['wordSets', 'wrongBank', 'practiceLogs'].forEach(name => {
-    if (!db.objectStoreNames.contains(name)) {
-      const ks = name === 'practiceLogs' ? { keyPath: 'id', autoIncrement: true } : { keyPath: name === 'wrongBank' ? 'word' : 'date' };
-      db.createObjectStore(name, ks);
-    }
-  });
+  const oldDb = e.oldVersion;
+
+  // wordSets: recreate with keyPath 'id'
+  if (db.objectStoreNames.contains('wordSets')) db.deleteObjectStore('wordSets');
+  db.createObjectStore('wordSets', { keyPath: 'id' });
+
+  if (!db.objectStoreNames.contains('wrongBank'))
+    db.createObjectStore('wrongBank', { keyPath: 'word' });
+  if (!db.objectStoreNames.contains('practiceLogs'))
+    db.createObjectStore('practiceLogs', { keyPath: 'id', autoIncrement: true });
+
+  // Migrate old data from v5 (romeo_spelling_v5)
+  if (oldDb < 2) {
+    const migrateReq = indexedDB.open('romeo_spelling_v5', 1);
+    migrateReq.onsuccess = (me) => {
+      const oldDb5 = me.target.result;
+      if (!oldDb5.objectStoreNames.contains('wordSets')) { oldDb5.close(); return; }
+      const oldTx = oldDb5.transaction('wordSets', 'readonly');
+      getAll(oldTx.objectStore('wordSets')).then(oldSets => {
+        oldDb5.close();
+        if (!oldSets.length) return;
+        const newTx = db.transaction('wordSets', 'readwrite');
+        oldSets.forEach(s => {
+          // Remap: use existing 'date' field as 'id', drop 'date'
+          newTx.objectStore('wordSets').put({ id: s.id || s.date, words: s.words });
+        });
+      });
+    };
+  }
 };
 DB_REQ.onsuccess = (e) => { db = e.target.result; renderHome(); };
 
@@ -397,7 +420,10 @@ async function syncFromCloud() {
     if (!content) return alert("云端数据为空");
     const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
     ['wordSets', 'wrongBank', 'practiceLogs'].forEach(s => tx.objectStore(s).clear());
-    (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
+    // Normalize: support both old {date, words} and new {id, words}
+    (content.wordSets || []).forEach(s => {
+      tx.objectStore('wordSets').put({ id: s.id || s.date, words: s.words });
+    });
     (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
     (content.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
     tx.oncomplete = () => { alert("✅ 恢复成功！"); renderHome(); };
@@ -447,7 +473,7 @@ function renderSetSelection(mode) {
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
   const tx = db.transaction(['wordSets', 'wrongBank'], 'readonly');
   Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank'))]).then(([sets, wrongs]) => {
-    sets.sort((a, b) => b.date.localeCompare(a.date));
+    sets.sort((a, b) => a.id.localeCompare(b.id));
     const modeLabel = mode === 'learn' ? '选择要学习的词组' : '选择要练习的词组';
     const modeIcon = mode === 'learn' ? '📖' : '✏️';
 
@@ -479,10 +505,10 @@ function renderSetSelection(mode) {
     } else {
       sets.forEach(s => {
         const preview = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0, 4).join('  ');
-        const fn = mode === 'learn' ? `startLearn('${s.date}')` : `renderPracticeMode('${s.date}')`;
+        const fn = mode === 'learn' ? `startLearn('${s.id}')` : `renderPracticeMode('${s.id}')`;
         html += `<div class="card" style="cursor:pointer;padding:18px;display:flex;justify-content:space-between;align-items:center" onclick="${fn}">
           <div>
-            <div style="font-weight:800;font-size:17px;margin-bottom:4px">📅 ${s.date}</div>
+            <div style="font-weight:800;font-size:17px;margin-bottom:4px">${s.id}</div>
             <div style="font-size:13px;color:var(--text-2);font-weight:600">${preview}${s.words.length > 4 ? '...' : ''}</div>
           </div>
           <div style="font-weight:800;color:var(--primary);background:#eef2ff;padding:8px 14px;border-radius:12px;font-size:15px">${s.words.length}词 ›</div>
@@ -509,11 +535,11 @@ function parseChunks(rawWord) {
   return chunks;
 }
 
-function startLearn(date) {
+function startLearn(id) {
   const tx = db.transaction('wordSets', 'readonly');
-  tx.objectStore('wordSets').get(date).onsuccess = (e) => {
+  tx.objectStore('wordSets').get(id).onsuccess = (e) => {
     const data = e.target.result; if (!data) return;
-    currentSetDate = date;
+    currentSetDate = id;
     learnList = data.words;
     learnIndex = 0;
     renderLearnUI();
@@ -1017,41 +1043,44 @@ function finishPractice() {
 /* ==================== WORD MANAGER ==================== */
 function renderWordManager() {
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
-  const today = new Date().toISOString().slice(0, 10);
   const tx = db.transaction('wordSets', 'readonly');
   getAll(tx.objectStore('wordSets')).then(sets => {
-    sets.sort((a, b) => b.date.localeCompare(a.date));
+    sets.sort((a, b) => a.id.localeCompare(b.id));
     const listHtml = sets.length ? sets.map(s => `
-      <div class="manage-item" onclick="editSet('${s.date}')">
-        <div><div style="font-weight:800;color:#333">📅 ${s.date}</div><div style="font-size:12px;color:#999;margin-top:2px">${s.words.length} 个单词</div></div>
+      <div class="manage-item" onclick="editSet('${s.id.replace(/'/g, "\\'")}')">
+        <div><div style="font-weight:800;color:#333">${s.id}</div><div style="font-size:12px;color:#999;margin-top:2px">${s.words.length} 个单词</div></div>
         <div style="color:var(--primary);font-size:14px;font-weight:700">编辑 ›</div>
       </div>`).join('') : '<div style="padding:20px;color:#999;text-align:center;font-weight:600">暂无记录</div>';
 
     document.getElementById('app').innerHTML = `
       <div class="card" id="managerCard">
-        <h3 style="margin-top:0" id="mgrTitle">录入 / 编辑单词</h3>
-        <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">日期 (唯一ID)</div>
-        <input type="date" id="newDate" value="${today}">
+        <h3 style="margin-top:0" id="mgrTitle">新建词组</h3>
+        <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">词组名称（唯一 ID，如 2025-06-01 或 Year2-Unit3）</div>
+        <input type="text" id="newSetId" placeholder="例如：2025-06-01 或 Year 2 first part"
+          style="width:100%;padding:13px 14px;border:2px solid #e0e0e0;border-radius:12px;margin:4px 0 14px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:600;box-sizing:border-box;user-select:auto"
+          autocomplete="off" autocorrect="off" autocapitalize="off">
         <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">单词列表（每行一个，可用 / 标注音节，如 <b>hap/py</b>）</div>
         <textarea id="newWords" rows="7" placeholder="例如：&#10;apple&#10;ba/na/na&#10;hap/py&#10;beau/ti/ful"></textarea>
         <div style="margin-top:18px;display:flex;gap:10px">
           <button class="btn btn-primary" style="flex:2" onclick="saveSet()">💾 保存 / 更新</button>
-          <button class="btn btn-red" id="delBtn" style="flex:1;display:none" onclick="deleteSetByDate()">🗑️ 删除</button>
+          <button class="btn btn-red" id="delBtn" style="flex:1;display:none" onclick="deleteSet()">🗑️ 删除</button>
         </div>
         <button id="cancelBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="renderWordManager()">取消编辑</button>
       </div>
-      <h4 style="margin-left:6px;color:var(--text-2)">历史词组</h4>
+      <h4 style="margin-left:6px;color:var(--text-2)">所有词组</h4>
       <div class="card" style="padding:0">${listHtml}</div>`;
   });
 }
 
-function editSet(date) {
+function editSet(id) {
   const tx = db.transaction('wordSets', 'readonly');
-  tx.objectStore('wordSets').get(date).onsuccess = (e) => {
+  tx.objectStore('wordSets').get(id).onsuccess = (e) => {
     const data = e.target.result; if (!data) return;
-    document.getElementById('mgrTitle').innerText = "正在编辑: " + date;
-    document.getElementById('newDate').value = data.date;
-    document.getElementById('newDate').disabled = true;
+    document.getElementById('mgrTitle').innerText = "编辑：" + id;
+    const idInput = document.getElementById('newSetId');
+    idInput.value = data.id;
+    idInput.disabled = true;
+    idInput.style.background = '#f8faff';
     document.getElementById('newWords').value = data.words.join('\n');
     document.getElementById('delBtn').style.display = 'block';
     document.getElementById('cancelBtn').style.display = 'block';
@@ -1060,20 +1089,21 @@ function editSet(date) {
 }
 
 function saveSet() {
-  const date = document.getElementById('newDate').value;
+  const id = document.getElementById('newSetId').value.trim();
   const text = document.getElementById('newWords').value;
+  if (!id) return alert("请填写词组名称");
   if (!text.trim()) return alert("请输入单词");
   const words = text.split(/\n+/).map(w => w.trim()).filter(w => w);
   const tx = db.transaction('wordSets', 'readwrite');
-  tx.objectStore('wordSets').put({ date, words });
+  tx.objectStore('wordSets').put({ id, words });
   tx.oncomplete = () => { alert("保存成功！"); renderWordManager(); syncToCloud(true); };
 }
 
-function deleteSetByDate() {
-  const date = document.getElementById('newDate').value;
-  if (!confirm(`确认删除 ${date}？`)) return;
+function deleteSet() {
+  const id = document.getElementById('newSetId').value.trim();
+  if (!confirm(`确认删除「${id}」？`)) return;
   const tx = db.transaction('wordSets', 'readwrite');
-  tx.objectStore('wordSets').delete(date);
+  tx.objectStore('wordSets').delete(id);
   tx.oncomplete = () => { alert("已删除"); renderWordManager(); syncToCloud(true); };
 }
 
