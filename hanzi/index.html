@@ -6,437 +6,268 @@
 <title>汉字小课堂</title>
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.24.2/dist/index.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Nunito:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════
-   TOKENS
-═══════════════════════════════════════════════ */
 :root {
-  --ink:     #1C1917;
-  --ink2:    #44403C;
-  --muted:   #A8A29E;
-  --border:  #E7E5E4;
-  --bg:      #FAFAF8;
-  --paper:   #FFFFFF;
-  --red:     #EF4444;
-  --orange:  #F97316;
-  --yellow:  #EAB308;
-  --green:   #22C55E;
-  --teal:    #14B8A6;
-  --blue:    #3B82F6;
-  --violet:  #8B5CF6;
-  --accent:  #F59E0B;
-  --stamp:   #DC2626;
-
-  /* stroke rainbow */
-  --s1:#EF4444; --s2:#F97316; --s3:#EAB308;
-  --s4:#22C55E; --s5:#14B8A6; --s6:#3B82F6; --s7:#8B5CF6;
-
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-  --shadow-md: 0 4px 6px rgba(0,0,0,.07), 0 2px 4px rgba(0,0,0,.06);
-  --shadow-lg: 0 10px 15px rgba(0,0,0,.06), 0 4px 6px rgba(0,0,0,.05);
-  --radius: 16px;
+  --ink:#1C1917; --ink2:#44403C; --muted:#A8A29E; --border:#E7E5E4;
+  --bg:#FAFAF8; --paper:#FFFFFF;
+  --red:#EF4444; --orange:#F97316; --yellow:#EAB308;
+  --green:#22C55E; --teal:#14B8A6; --blue:#3B82F6; --violet:#8B5CF6;
+  --accent:#F59E0B; --stamp:#DC2626;
+  --s1:#EF4444;--s2:#F97316;--s3:#EAB308;--s4:#22C55E;--s5:#14B8A6;--s6:#3B82F6;--s7:#8B5CF6;
 }
-
-/* ═══════════════════════════════════════════════
-   RESET & BASE
-═══════════════════════════════════════════════ */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);
-     display:flex;flex-direction:column}
+body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
 
-/* ═══════════════════════════════════════════════
-   PAGE SYSTEM (SPA)
-═══════════════════════════════════════════════ */
-.page{display:none;flex-direction:column;height:100%;overflow:hidden;
-      animation:fadeUp .3s ease both}
+/* ── SPA pages ── */
+.page{display:none;flex-direction:column;height:100%;overflow:hidden;animation:fadeUp .28s ease both}
 .page.active{display:flex}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
-/* ═══════════════════════════════════════════════
-   SHARED COMPONENTS
-═══════════════════════════════════════════════ */
-.topbar{
-  flex-shrink:0;height:56px;
-  display:flex;align-items:center;padding:0 20px;gap:12px;
-  background:var(--paper);border-bottom:1.5px solid var(--border);
-  position:relative;
-}
-.topbar-title{font-family:'ZCOOL XiaoWei',cursive;font-size:1.1rem;font-weight:600;
-              flex:1;text-align:center;letter-spacing:3px}
-.back-btn{
-  width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);
-  background:var(--paper);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-size:1rem;transition:all .15s;
-}
+/* ── Shared UI ── */
+.topbar{flex-shrink:0;height:54px;display:flex;align-items:center;padding:0 16px;gap:10px;
+        background:var(--paper);border-bottom:1.5px solid var(--border);position:relative;z-index:10}
+.topbar-title{font-family:'ZCOOL XiaoWei',cursive;font-size:1.05rem;font-weight:600;flex:1;text-align:center;letter-spacing:3px}
+.back-btn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border);
+          background:var(--paper);display:flex;align-items:center;justify-content:center;
+          cursor:pointer;font-size:.95rem;transition:all .15s;flex-shrink:0}
 .back-btn:hover{background:var(--bg);border-color:var(--ink2)}
 
-.scroll-area{flex:1;overflow-y:auto;padding:20px}
-.scroll-area::-webkit-scrollbar{width:4px}
-.scroll-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
-
-/* buttons */
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;
-     border-radius:10px;border:1.5px solid transparent;font-family:inherit;
-     font-size:.875rem;font-weight:700;cursor:pointer;transition:all .15s;
-     letter-spacing:.5px;white-space:nowrap}
-.btn:active{transform:scale(.97)}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 15px;
+     border-radius:9px;border:1.5px solid transparent;font-family:inherit;
+     font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;
+     letter-spacing:.3px;white-space:nowrap;line-height:1}
+.btn:active{transform:scale(.96)}
 .btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
 .btn-primary:hover{background:var(--ink2)}
 .btn-accent{background:var(--accent);color:var(--ink);border-color:var(--accent)}
-.btn-accent:hover{filter:brightness(1.05)}
 .btn-ghost{background:transparent;color:var(--ink2);border-color:var(--border)}
 .btn-ghost:hover{background:var(--bg);border-color:var(--ink2)}
 .btn-danger{background:#FEF2F2;color:var(--red);border-color:#FECACA}
 .btn-danger:hover{background:#FEE2E2}
-.btn-sm{padding:6px 12px;font-size:.8rem;border-radius:8px}
-.btn-icon{padding:8px;border-radius:9px}
+.btn-blue{background:#EFF6FF;color:#1D4ED8;border-color:#BFDBFE}
+.btn-blue:hover{background:#DBEAFE}
+.btn-green{background:#F0FDF4;color:#166534;border-color:#BBF7D0}
+.btn-green:hover{background:#DCFCE7}
+.btn-violet{background:#F5F3FF;color:#5B21B6;border-color:#DDD6FE}
+.btn-violet:hover{background:#EDE9FE}
+.btn-orange{background:#FFF7ED;color:#9A3412;border-color:#FED7AA}
+.btn-orange:hover{background:#FFEDD5}
+.btn-sm{padding:5px 11px;font-size:.77rem;border-radius:7px}
+.btn-icon{padding:7px;border-radius:8px}
+.btn.active-mode{background:var(--ink)!important;color:#fff!important;border-color:var(--ink)!important}
 
-/* ═══════════════════════════════════════════════
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* ════════════════════════════════════════
    HOME PAGE
-═══════════════════════════════════════════════ */
+════════════════════════════════════════ */
 #page-home{background:var(--bg)}
-.home-hero{
-  flex-shrink:0;
-  background:var(--ink);
-  color:#fff;
-  padding:36px 24px 40px;
-  position:relative;overflow:hidden;
-}
-.home-hero::before{
-  content:'';position:absolute;right:-40px;top:-40px;
-  width:220px;height:220px;border-radius:50%;
-  background:rgba(255,255,255,.04);
-}
-.home-hero::after{
-  content:'';position:absolute;right:20px;bottom:-20px;
-  width:120px;height:120px;border-radius:50%;
-  background:rgba(255,255,255,.03);
-}
-.hero-eyebrow{
-  font-size:.7rem;letter-spacing:4px;text-transform:uppercase;
-  color:rgba(255,255,255,.5);margin-bottom:10px;
-}
-.hero-title{
-  font-family:'Ma Shan Zheng',cursive;
-  font-size:3rem;line-height:1;letter-spacing:8px;
-  margin-bottom:8px;
-}
+.home-hero{flex-shrink:0;background:var(--ink);color:#fff;padding:32px 24px 36px;position:relative;overflow:hidden}
+.home-hero::before{content:'';position:absolute;right:-40px;top:-40px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.04)}
+.hero-eyebrow{font-size:.68rem;letter-spacing:4px;color:rgba(255,255,255,.45);margin-bottom:8px}
+.hero-title{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;line-height:1;letter-spacing:8px;margin-bottom:6px}
 .hero-title span{color:var(--accent)}
-.hero-sub{font-size:.85rem;color:rgba(255,255,255,.6);letter-spacing:1px}
-
-.home-body{flex:1;overflow-y:auto;padding:20px 20px 32px}
-.home-body::-webkit-scrollbar{width:4px}
-
-.section-label{font-size:.7rem;letter-spacing:3px;text-transform:uppercase;
-               color:var(--muted);margin-bottom:12px;font-weight:700}
-
-/* nav grid */
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
-.nav-card{
-  background:var(--paper);border:1.5px solid var(--border);border-radius:var(--radius);
-  padding:20px 16px;cursor:pointer;transition:all .2s;
-  display:flex;flex-direction:column;gap:10px;
-  box-shadow:var(--shadow-sm);
-  position:relative;overflow:hidden;
-}
-.nav-card::after{
-  content:'';position:absolute;inset:0;
-  background:var(--ink);opacity:0;transition:opacity .15s;
-  pointer-events:none;
-}
-.nav-card:hover::after{opacity:.025}
-.nav-card:active{transform:scale(.98)}
-.nav-icon{font-size:1.8rem;line-height:1}
-.nav-name{font-weight:900;font-size:.95rem;color:var(--ink);letter-spacing:.5px}
-.nav-desc{font-size:.75rem;color:var(--muted);line-height:1.4}
+.hero-sub{font-size:.82rem;color:rgba(255,255,255,.55);letter-spacing:1px}
+.home-body{flex:1;overflow-y:auto;padding:18px 18px 28px}
+.section-label{font-size:.68rem;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-weight:700;text-transform:uppercase}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.nav-card{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;
+          padding:18px 14px;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;gap:8px;
+          box-shadow:0 1px 3px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.nav-card::after{content:'';position:absolute;inset:0;background:var(--ink);opacity:0;transition:opacity .15s;pointer-events:none}
+.nav-card:hover::after{opacity:.03}
+.nav-card:active{transform:scale(.97)}
+.nav-icon{font-size:1.7rem;line-height:1}
+.nav-name{font-weight:900;font-size:.9rem;letter-spacing:.5px}
+.nav-desc{font-size:.72rem;color:var(--muted);line-height:1.4}
 .nav-card.highlight{background:var(--ink);border-color:var(--ink)}
 .nav-card.highlight .nav-name{color:#fff}
-.nav-card.highlight .nav-desc{color:rgba(255,255,255,.55)}
-.nav-badge{
-  position:absolute;top:12px;right:12px;
-  background:var(--accent);color:var(--ink);
-  font-size:.65rem;font-weight:900;padding:2px 7px;
-  border-radius:99px;letter-spacing:.5px;
-}
-
-/* recent groups */
+.nav-card.highlight .nav-desc{color:rgba(255,255,255,.5)}
+.nav-badge{position:absolute;top:10px;right:10px;background:var(--accent);color:var(--ink);
+           font-size:.6rem;font-weight:900;padding:2px 6px;border-radius:99px}
 .group-chips{display:flex;flex-wrap:wrap;gap:8px}
-.group-chip{
-  display:flex;align-items:center;gap:6px;
-  padding:8px 14px;background:var(--paper);
-  border:1.5px solid var(--border);border-radius:10px;
-  cursor:pointer;transition:all .15s;font-size:.82rem;font-weight:700;
-}
+.group-chip{display:flex;align-items:center;gap:6px;padding:7px 12px;background:var(--paper);
+            border:1.5px solid var(--border);border-radius:9px;cursor:pointer;transition:all .15s;
+            font-size:.8rem;font-weight:700}
 .group-chip:hover{border-color:var(--ink);background:var(--bg)}
 .group-chip-dot{width:8px;height:8px;border-radius:50%}
-.group-chip-count{font-size:.7rem;color:var(--muted);font-weight:400}
+.group-chip-count{font-size:.68rem;color:var(--muted);font-weight:400}
 
-/* ═══════════════════════════════════════════════
-   STUDY PAGE
-═══════════════════════════════════════════════ */
+/* ════════════════════════════════════════
+   STUDY PAGE  — full redesign
+════════════════════════════════════════ */
 #page-study{background:var(--bg)}
-.study-layout{
-  flex:1;overflow:hidden;
-  display:grid;grid-template-columns:200px 1fr;
-  gap:0;
-}
+.study-layout{flex:1;display:grid;grid-template-columns:210px 1fr;overflow:hidden}
 
-/* left panel – word list */
-.study-list{
-  border-right:1.5px solid var(--border);
-  background:var(--paper);
-  overflow-y:auto;
-  padding:12px 8px;
-}
-.study-list::-webkit-scrollbar{width:3px}
-.study-group-label{
-  font-size:.65rem;letter-spacing:2px;color:var(--muted);
-  text-transform:uppercase;font-weight:700;
-  padding:6px 8px 4px;
-}
-.study-char-btn{
-  width:100%;display:flex;align-items:center;gap:10px;
-  padding:10px 10px;border-radius:10px;border:none;background:transparent;
-  cursor:pointer;transition:all .15s;text-align:left;font-family:inherit;
-  margin-bottom:2px;
-}
-.study-char-btn:hover{background:var(--bg)}
-.study-char-btn.active{background:var(--ink);color:#fff}
-.study-char-btn.active .sc-py{color:rgba(255,255,255,.6)}
-.sc-hanzi{font-family:'Ma Shan Zheng',cursive;font-size:1.5rem;line-height:1;flex-shrink:0}
-.sc-info{display:flex;flex-direction:column;gap:1px;min-width:0}
-.sc-py{font-size:.7rem;color:var(--muted);letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sc-mode{font-size:.6rem;padding:1px 5px;border-radius:4px;display:inline-block;
-         font-weight:700;letter-spacing:.5px;align-self:flex-start;margin-top:2px}
-.sc-mode.simple{background:#DCFCE7;color:#166534}
-.sc-mode.complex{background:#EDE9FE;color:#5B21B6}
+/* LEFT PANEL */
+.study-list{border-right:1.5px solid var(--border);background:var(--paper);display:flex;flex-direction:column;overflow:hidden}
+.study-list-head{padding:12px 12px 8px;border-bottom:1px solid var(--border);flex-shrink:0}
+.study-list-head select{width:100%;padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;
+                         font-family:inherit;font-size:.8rem;font-weight:700;background:var(--bg);cursor:pointer;outline:none}
+.study-list-body{flex:1;overflow-y:auto;padding:6px}
 
-/* right panel – canvas area */
-.study-canvas-area{
-  display:flex;flex-direction:column;align-items:center;
-  justify-content:flex-start;
-  padding:28px 24px;overflow-y:auto;gap:20px;
-}
-.study-canvas-area::-webkit-scrollbar{width:4px}
+/* Entry = could be single char or a word (multiple chars) */
+.entry-btn{width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;
+           border-radius:10px;border:none;background:transparent;cursor:pointer;
+           transition:all .15s;text-align:left;font-family:inherit;margin-bottom:2px}
+.entry-btn:hover{background:var(--bg)}
+.entry-btn.active{background:var(--ink);color:#fff}
+.entry-btn.active .eb-py,.entry-btn.active .eb-tag{color:rgba(255,255,255,.6)}
+.eb-chars{font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;line-height:1;flex-shrink:0;min-width:28px}
+.eb-info{display:flex;flex-direction:column;gap:1px;min-width:0;flex:1}
+.eb-py{font-size:.68rem;color:var(--muted);letter-spacing:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.eb-tag{font-size:.58rem;padding:1px 5px;border-radius:4px;font-weight:700;align-self:flex-start;margin-top:1px}
+.eb-tag.simple{background:#DCFCE7;color:#166534}
+.eb-tag.complex{background:#EDE9FE;color:#5B21B6}
+.eb-tag.word{background:#FEF9C3;color:#854D0E}
 
-.study-char-display{
-  font-family:'Ma Shan Zheng',cursive;
-  font-size:5rem;line-height:1;
-  color:var(--ink);letter-spacing:4px;
-}
-.study-pinyin{
-  font-size:1.5rem;color:var(--stamp);font-weight:900;
-  letter-spacing:6px;min-height:2rem;
-}
+/* RIGHT PANEL */
+.study-right{display:flex;flex-direction:column;overflow:hidden}
 
-/* tian zi ge */
-.tzg-wrap{
-  position:relative;width:300px;height:300px;
-  border:2.5px solid var(--ink);border-radius:16px;
-  background:#fff;overflow:hidden;flex-shrink:0;
-  box-shadow:var(--shadow-md);
-}
-.tzg-wrap::before{
-  content:'';position:absolute;inset:0;z-index:0;
-  /* cross lines */
+/* top strip: pinyin large + home button */
+.study-header{flex-shrink:0;display:flex;align-items:center;padding:12px 20px 8px;gap:12px;
+              border-bottom:1px solid var(--border);background:var(--paper)}
+.study-pinyin-big{font-size:1.6rem;color:var(--stamp);font-weight:900;letter-spacing:8px;flex:1;text-align:center}
+.study-home-btn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border);
+                background:var(--paper);display:flex;align-items:center;justify-content:center;
+                cursor:pointer;font-size:.85rem;transition:all .15s;flex-shrink:0}
+.study-home-btn:hover{background:var(--bg);border-color:var(--ink2)}
+
+/* char stage — shows 1–4 tian zi ge boxes in a row */
+.study-stage{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;
+             padding:16px 16px 20px;gap:14px}
+
+/* Tian zi ge grid: 1 char = big, 2 chars = medium, 3-4 = smaller */
+.tzg-row{display:flex;gap:12px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+.tzg-unit{display:flex;flex-direction:column;align-items:center;gap:6px}
+.tzg-unit .tzg-controls{display:flex;flex-direction:column;gap:5px;align-items:center}
+.tzg-unit .tzg-ctrl-row{display:flex;gap:4px}
+
+/* The tian zi ge box itself */
+.tzg-box{position:relative;background:#fff;border:2px solid #2a2520;border-radius:6px;overflow:hidden;flex-shrink:0}
+/* Standard 田字格 — 2×2 grid with cross lines */
+.tzg-box::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  /* outer already from border; we draw cross lines + corner subdivision */
   background-image:
-    linear-gradient(#E5E7EB 1px,transparent 1px),
-    linear-gradient(90deg,#E5E7EB 1px,transparent 1px),
-    linear-gradient(#D1D5DB 1px,transparent 1px),
-    linear-gradient(90deg,#D1D5DB 1px,transparent 1px);
-  background-size:75px 75px,75px 75px,150px 150px,150px 150px;
-  pointer-events:none;
+    /* center cross — dashed */
+    linear-gradient(to right, transparent calc(50% - .6px), #b8b0a0 calc(50% - .6px), #b8b0a0 calc(50% + .6px), transparent calc(50% + .6px)),
+    linear-gradient(to bottom, transparent calc(50% - .6px), #b8b0a0 calc(50% - .6px), #b8b0a0 calc(50% + .6px), transparent calc(50% + .6px));
 }
-#study-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-#study-quiz-div{position:absolute;inset:0;z-index:2;display:none}
+/* diagonal guides via SVG overlay inside each box */
+.tzg-diag{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.tzg-char-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1}
+.tzg-quiz-div{position:absolute;inset:0;z-index:2;display:none}
+/* cover overlay */
+.tzg-cover{position:absolute;inset:0;z-index:3;background:#fff;
+           display:flex;align-items:center;justify-content:center;display:none}
+.tzg-cover.show{display:flex}
 
-/* controls row */
-.study-controls{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+/* size variants */
+.tzg-box.sz-1{width:260px;height:260px}
+.tzg-box.sz-2{width:200px;height:200px}
+.tzg-box.sz-34{width:160px;height:160px}
 
-/* stroke legend */
-.stroke-legend{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:360px}
-.sl-item{display:flex;align-items:center;gap:5px;
-         background:var(--paper);border:1.5px solid var(--border);
-         border-radius:7px;padding:3px 9px;font-size:.75rem;font-weight:700}
-.sl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-
-/* mode config panel */
-.mode-config{
-  width:100%;max-width:360px;
-  background:var(--paper);border:1.5px solid var(--border);
-  border-radius:var(--radius);padding:16px;
-  box-shadow:var(--shadow-sm);
-}
-.mode-config-title{font-size:.78rem;font-weight:700;color:var(--ink2);margin-bottom:10px;letter-spacing:.5px}
-.mode-tabs{display:flex;gap:6px;margin-bottom:12px}
-.mode-tab{flex:1;padding:7px 8px;border-radius:8px;border:1.5px solid var(--border);
-          background:var(--bg);font-family:inherit;font-size:.78rem;font-weight:700;
-          cursor:pointer;transition:all .15s;letter-spacing:.5px;text-align:center}
-.mode-tab.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-.complex-hint{font-size:.75rem;color:var(--muted);line-height:1.6;margin-bottom:10px}
-.complex-input-row{display:flex;gap:8px;align-items:center}
-.complex-input-row label{font-size:.75rem;font-weight:700;color:var(--blue);white-space:nowrap}
-.complex-input-row input{
-  flex:1;border:1.5px solid var(--border);border-radius:8px;
-  padding:7px 10px;font-size:.83rem;font-family:inherit;outline:none;
-  transition:border-color .2s;
-}
-.complex-input-row input:focus{border-color:var(--blue)}
-
-/* status bar */
-.study-status{
-  font-size:.83rem;color:var(--muted);letter-spacing:.5px;
-  min-height:1.4em;text-align:center;
-}
+/* status line */
+.study-status{font-size:.8rem;color:var(--muted);text-align:center;min-height:1.2em;letter-spacing:.3px}
 .study-status.ok{color:var(--green)}
 .study-status.err{color:var(--red)}
 
-/* ═══════════════════════════════════════════════
-   WORD MANAGEMENT PAGE
-═══════════════════════════════════════════════ */
+/* bottom toolbar — global controls */
+.study-toolbar{flex-shrink:0;padding:10px 16px;border-top:1.5px solid var(--border);
+               background:var(--paper);display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+
+/* stroke legend chips */
+.stroke-legend{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;padding:0 16px}
+.sl-item{display:flex;align-items:center;gap:4px;background:var(--paper);
+         border:1.5px solid var(--border);border-radius:6px;padding:2px 8px;font-size:.72rem;font-weight:700}
+.sl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ════════════════════════════════════════
+   MANAGE PAGE
+════════════════════════════════════════ */
 #page-manage{background:var(--bg)}
-.manage-body{flex:1;overflow-y:auto;padding:16px 16px 32px}
-.manage-body::-webkit-scrollbar{width:4px}
-
-/* group card */
-.wm-group{
-  background:var(--paper);border:1.5px solid var(--border);
-  border-radius:var(--radius);margin-bottom:14px;overflow:hidden;
-  box-shadow:var(--shadow-sm);
-}
-.wm-group-header{
-  display:flex;align-items:center;gap:10px;
-  padding:12px 16px;border-bottom:1.5px solid var(--border);
-  background:var(--bg);
-}
-.wm-group-color{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.wm-group-name{flex:1;font-weight:900;font-size:.95rem}
-.wm-group-count{font-size:.75rem;color:var(--muted)}
-.wm-group-actions{display:flex;gap:6px}
-
-.wm-chars{padding:12px 16px;display:flex;flex-wrap:wrap;gap:8px}
-.wm-char-item{
-  display:flex;align-items:center;gap:6px;
-  background:var(--bg);border:1.5px solid var(--border);
-  border-radius:9px;padding:6px 10px;cursor:pointer;
-  transition:all .15s;
-}
-.wm-char-item:hover{border-color:var(--ink);background:var(--paper)}
-.wm-char-hanzi{font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;line-height:1}
-.wm-char-py{font-size:.68rem;color:var(--muted)}
-.wm-char-mode{font-size:.6rem;padding:1px 4px;border-radius:4px;font-weight:700}
-.wm-char-mode.simple{background:#DCFCE7;color:#166534}
-.wm-char-mode.complex{background:#EDE9FE;color:#5B21B6}
-.wm-add-char{
-  display:flex;align-items:center;justify-content:center;
-  width:52px;height:52px;
-  border:1.5px dashed var(--border);border-radius:9px;
-  cursor:pointer;font-size:1.2rem;color:var(--muted);
-  transition:all .15s;background:transparent;
-}
-.wm-add-char:hover{border-color:var(--ink);color:var(--ink);background:var(--bg)}
-
-/* floating add group */
-.fab{
-  position:fixed;bottom:24px;right:24px;
-  width:52px;height:52px;border-radius:50%;
-  background:var(--ink);color:#fff;border:none;
-  font-size:1.4rem;cursor:pointer;
-  box-shadow:0 4px 16px rgba(0,0,0,.2);
-  display:flex;align-items:center;justify-content:center;
-  transition:all .2s;z-index:10;
-}
+.manage-body{flex:1;overflow-y:auto;padding:14px 14px 32px}
+.wm-group{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;margin-bottom:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.wm-group-header{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:1.5px solid var(--border);background:var(--bg)}
+.wm-group-color{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.wm-group-name{flex:1;font-weight:900;font-size:.9rem}
+.wm-group-count{font-size:.72rem;color:var(--muted)}
+.wm-group-actions{display:flex;gap:5px}
+.wm-entries{padding:10px 14px;display:flex;flex-wrap:wrap;gap:7px}
+.wm-entry{display:flex;align-items:center;gap:6px;background:var(--bg);border:1.5px solid var(--border);
+          border-radius:8px;padding:5px 9px;cursor:pointer;transition:all .15s}
+.wm-entry:hover{border-color:var(--ink);background:var(--paper)}
+.wm-entry-hanzi{font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;line-height:1}
+.wm-entry-py{font-size:.65rem;color:var(--muted)}
+.wm-entry-tag{font-size:.58rem;padding:1px 4px;border-radius:3px;font-weight:700}
+.wm-entry-tag.simple{background:#DCFCE7;color:#166534}
+.wm-entry-tag.complex{background:#EDE9FE;color:#5B21B6}
+.wm-entry-tag.word{background:#FEF9C3;color:#854D0E}
+.wm-add-entry{display:flex;align-items:center;justify-content:center;
+              width:46px;height:46px;border:1.5px dashed var(--border);border-radius:8px;
+              cursor:pointer;font-size:1.1rem;color:var(--muted);transition:all .15s;background:transparent}
+.wm-add-entry:hover{border-color:var(--ink);color:var(--ink);background:var(--bg)}
+.fab{position:fixed;bottom:22px;right:22px;width:50px;height:50px;border-radius:50%;
+     background:var(--ink);color:#fff;border:none;font-size:1.3rem;cursor:pointer;
+     box-shadow:0 4px 16px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;
+     transition:all .18s;z-index:10}
 .fab:hover{transform:scale(1.08);background:var(--ink2)}
 
-/* ═══════════════════════════════════════════════
+/* ════════════════════════════════════════
+   PLACEHOLDER PAGES
+════════════════════════════════════════ */
+.placeholder-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+                  gap:14px;color:var(--muted);padding:40px;text-align:center}
+.ph-icon{font-size:3.5rem;line-height:1;opacity:.4}
+.ph-text{font-size:.95rem;font-weight:700;color:var(--ink2)}
+.ph-sub{font-size:.8rem;line-height:1.7}
+
+/* ════════════════════════════════════════
    MODAL
-═══════════════════════════════════════════════ */
-.modal-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.45);
-  z-index:100;display:none;align-items:center;justify-content:center;
-  padding:20px;animation:fadeIn .2s ease;
-}
+════════════════════════════════════════ */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:100;
+               display:none;align-items:center;justify-content:center;padding:16px;animation:fadeIn .18s ease}
 .modal-overlay.open{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{
-  background:var(--paper);border-radius:20px;
-  width:100%;max-width:440px;max-height:85vh;overflow-y:auto;
-  box-shadow:0 20px 60px rgba(0,0,0,.2);
-  animation:slideUp .25s ease;
-}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:18px 20px 0;
-}
-.modal-title{font-weight:900;font-size:1rem;letter-spacing:.5px}
-.modal-close{
-  width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);
-  background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:1rem;transition:all .15s;
-}
+.modal{background:var(--paper);border-radius:18px;width:100%;max-width:420px;max-height:88vh;
+       overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .22s ease}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0}
+.modal-title{font-weight:900;font-size:.95rem;letter-spacing:.3px}
+.modal-close{width:30px;height:30px;border-radius:7px;border:1.5px solid var(--border);
+             background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem}
 .modal-close:hover{background:var(--border)}
-.modal-body{padding:16px 20px 20px;display:flex;flex-direction:column;gap:14px}
-.form-row{display:flex;flex-direction:column;gap:5px}
-.form-label{font-size:.78rem;font-weight:700;color:var(--ink2);letter-spacing:.5px}
-.form-input{
-  border:1.5px solid var(--border);border-radius:10px;
-  padding:10px 13px;font-size:.95rem;font-family:inherit;
-  background:var(--bg);outline:none;transition:border-color .2s;width:100%;
-}
+.modal-body{padding:14px 18px 16px;display:flex;flex-direction:column;gap:12px}
+.form-row{display:flex;flex-direction:column;gap:4px}
+.form-label{font-size:.75rem;font-weight:700;color:var(--ink2)}
+.form-input{border:1.5px solid var(--border);border-radius:9px;padding:9px 12px;
+            font-size:.9rem;font-family:inherit;background:var(--bg);outline:none;
+            transition:border-color .18s;width:100%}
 .form-input:focus{border-color:var(--blue);background:var(--paper)}
-.form-hint{font-size:.73rem;color:var(--muted);line-height:1.5}
-.form-mode-row{display:flex;gap:8px}
-.form-mode-btn{
-  flex:1;padding:9px 10px;border-radius:9px;
-  border:1.5px solid var(--border);background:var(--bg);
-  font-family:inherit;font-size:.8rem;font-weight:700;
-  cursor:pointer;transition:all .15s;text-align:center;
-}
-.form-mode-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
-#modal-complex-field{display:none}
-.modal-footer{padding:0 20px 20px;display:flex;gap:8px;justify-content:flex-end}
+.form-hint{font-size:.7rem;color:var(--muted);line-height:1.5}
+.form-type-row{display:flex;gap:7px}
+.form-type-btn{flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);
+               background:var(--bg);font-family:inherit;font-size:.77rem;font-weight:700;
+               cursor:pointer;transition:all .15s;text-align:center}
+.form-type-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.modal-footer{padding:0 18px 16px;display:flex;gap:7px;justify-content:flex-end}
 
-/* ═══════════════════════════════════════════════
-   PLACEHOLDER PAGES
-═══════════════════════════════════════════════ */
-.placeholder-body{
-  flex:1;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;gap:16px;
-  color:var(--muted);padding:40px;text-align:center;
-}
-.ph-icon{font-size:4rem;line-height:1;filter:grayscale(1);opacity:.4}
-.ph-text{font-size:1rem;font-weight:700;letter-spacing:.5px;color:var(--ink2)}
-.ph-sub{font-size:.83rem;line-height:1.6}
-
-/* ═══════════════════════════════════════════════
-   COLOR PALETTE FOR GROUPS
-═══════════════════════════════════════════════ */
-.color-picker{display:flex;gap:8px;flex-wrap:wrap}
-.cp-dot{
-  width:24px;height:24px;border-radius:50%;cursor:pointer;
-  border:2.5px solid transparent;transition:all .15s;
-}
+/* group color picker */
+.color-picker{display:flex;gap:7px;flex-wrap:wrap}
+.cp-dot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .15s}
 .cp-dot.selected{border-color:var(--ink);transform:scale(1.2)}
 
-/* ═══════════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════════ */
-@media(max-width:600px){
-  .study-layout{grid-template-columns:1fr}
-  .study-list{display:none}
-  .tzg-wrap{width:260px;height:260px}
-  .nav-grid{grid-template-columns:1fr 1fr}
-}
+/* quiz msg tooltip */
+.quiz-msg{font-size:.85rem;font-weight:700;text-align:center;min-height:1.2em;color:var(--ink)}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════════════════
-     HOME PAGE
-══════════════════════════════════════════ -->
+<!-- ══════════════════ HOME ══════════════════ -->
 <div id="page-home" class="page active">
   <div class="home-hero">
     <div class="hero-eyebrow">小学汉字学习</div>
@@ -447,126 +278,91 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);
     <div class="section-label">主菜单</div>
     <div class="nav-grid">
       <div class="nav-card highlight" onclick="goStudy()">
-        <div class="nav-icon">📖</div>
-        <div class="nav-name">学 习</div>
-        <div class="nav-desc">笔顺动画，彩色笔划，逐步演示</div>
-        <div class="nav-badge">NEW</div>
+        <div class="nav-icon">📖</div><div class="nav-name">学 习</div>
+        <div class="nav-desc">笔顺动画，彩色笔划</div><div class="nav-badge">NEW</div>
       </div>
       <div class="nav-card" onclick="goPage('practice')">
-        <div class="nav-icon">✏️</div>
-        <div class="nav-name">练 习</div>
+        <div class="nav-icon">✏️</div><div class="nav-name">练 习</div>
         <div class="nav-desc">跟着描字，检验笔顺</div>
       </div>
       <div class="nav-card" onclick="goPage('achieve')">
-        <div class="nav-icon">🏆</div>
-        <div class="nav-name">成 就</div>
+        <div class="nav-icon">🏆</div><div class="nav-name">成 就</div>
         <div class="nav-desc">学习记录，解锁徽章</div>
       </div>
       <div class="nav-card" onclick="goPage('manage')">
-        <div class="nav-icon">📚</div>
-        <div class="nav-name">字词管理</div>
-        <div class="nav-desc">添加分组，管理生字</div>
+        <div class="nav-icon">📚</div><div class="nav-name">字词管理</div>
+        <div class="nav-desc">添加分组，管理字词</div>
       </div>
     </div>
-
     <div class="section-label">分组快速开始</div>
     <div class="group-chips" id="home-group-chips"></div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     STUDY PAGE
-══════════════════════════════════════════ -->
+<!-- ══════════════════ STUDY PAGE ══════════════════ -->
 <div id="page-study" class="page">
-  <div class="topbar">
-    <button class="back-btn" onclick="goHome()" title="返回首页">←</button>
-    <div class="topbar-title" id="study-group-title">学 习</div>
-    <button class="btn btn-ghost btn-sm" onclick="speakCurrent()">🔊</button>
-  </div>
+  <!-- Left panel -->
   <div class="study-layout">
-    <!-- LEFT: char list -->
-    <div class="study-list" id="study-char-list"></div>
-    <!-- RIGHT: canvas -->
-    <div class="study-canvas-area">
-      <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
-        <div class="study-char-display" id="study-big-char">山</div>
-        <div class="study-pinyin" id="study-pinyin-label">shān</div>
+    <div class="study-list">
+      <div class="study-list-head">
+        <select id="study-group-sel" onchange="onGroupChange()"></select>
+      </div>
+      <div class="study-list-body" id="study-list-body"></div>
+    </div>
+
+    <!-- Right panel -->
+    <div class="study-right">
+      <!-- Header: pinyin + home btn -->
+      <div class="study-header">
+        <button class="study-home-btn" onclick="goHome()" title="返回首页">🏠</button>
+        <div class="study-pinyin-big" id="study-pinyin-display">—</div>
+        <button class="btn btn-ghost btn-sm btn-icon" onclick="speakCurrent()" title="朗读">🔊</button>
       </div>
 
-      <!-- 田字格 -->
-      <div class="tzg-wrap">
-        <svg id="study-svg" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"></svg>
-        <div id="study-quiz-div"></div>
-      </div>
-
-      <div class="study-status" id="study-status">请选择左侧汉字</div>
-
-      <!-- controls -->
-      <div class="study-controls">
-        <button class="btn btn-primary btn-sm" onclick="studyAnimate()">▶ 演示</button>
-        <button class="btn btn-ghost btn-sm" onclick="studyStepPrev()">◀ 上一笔</button>
-        <button class="btn btn-ghost btn-sm" onclick="studyStepNext()">下一笔 ▶</button>
-        <button class="btn btn-ghost btn-sm" onclick="studyReset()">↺ 重置</button>
-      </div>
-
-      <!-- mode config -->
-      <div class="mode-config">
-        <div class="mode-config-title">颜色模式（当前字）</div>
-        <div class="mode-tabs">
-          <div class="mode-tab active" id="tab-simple" onclick="setStudyMode('simple')">🎨 简单</div>
-          <div class="mode-tab" id="tab-complex" onclick="setStudyMode('complex')">🧩 复杂</div>
-        </div>
-        <!-- complex: just red strokes range -->
-        <div id="study-complex-panel" style="display:none">
-          <div class="complex-hint">红色部件的笔画范围（如 <b>1-3</b>），其余笔画为蓝色</div>
-          <div class="complex-input-row">
-            <label style="color:var(--red)">🔴 红色笔画</label>
-            <input type="text" id="complex-red-range" placeholder="如 1-4 或 1,2,3" oninput="rebuildColors()">
-          </div>
+      <!-- Stage: tian zi ge row -->
+      <div class="study-stage" id="study-stage">
+        <div style="color:var(--muted);font-size:.85rem;padding:40px 20px;text-align:center">
+          从左侧选择分组，点击字词开始学习
         </div>
       </div>
 
-      <!-- legend -->
-      <div class="stroke-legend" id="study-legend"></div>
+      <!-- Bottom toolbar -->
+      <div class="study-toolbar" id="study-toolbar" style="display:none">
+        <button class="btn btn-ghost btn-sm" id="btn-prev"   onclick="globalPrev()">◀ 上一笔</button>
+        <button class="btn btn-primary btn-sm" id="btn-next" onclick="globalNext()">下一笔 ▶</button>
+        <button class="btn btn-violet btn-sm" id="btn-follow" onclick="toggleFollow()">🖊 跟写</button>
+        <button class="btn btn-orange btn-sm" id="btn-cover" onclick="toggleCover()">👁 遮盖</button>
+        <button class="btn btn-ghost btn-sm" id="btn-reset"  onclick="globalReset()">↺ 重置</button>
+      </div>
+
+      <div class="study-status" id="study-status" style="padding:4px 0 6px"></div>
+      <div class="quiz-msg" id="study-quiz-msg" style="padding:2px 0 6px"></div>
+      <div class="stroke-legend" id="study-legend" style="padding-bottom:8px"></div>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     PRACTICE PAGE (placeholder)
-══════════════════════════════════════════ -->
+<!-- ══════════════════ PRACTICE STUB ══════════════════ -->
 <div id="page-practice" class="page">
-  <div class="topbar">
-    <button class="back-btn" onclick="goHome()">←</button>
-    <div class="topbar-title">练 习</div>
-  </div>
+  <div class="topbar"><button class="back-btn" onclick="goHome()">←</button><div class="topbar-title">练 习</div></div>
   <div class="placeholder-body">
-    <div class="ph-icon">✏️</div>
-    <div class="ph-text">练习模块即将上线</div>
-    <div class="ph-sub">这里将支持笔顺练习、跟写检测<br>敬请期待</div>
+    <div class="ph-icon">✏️</div><div class="ph-text">练习模块即将上线</div>
+    <div class="ph-sub">笔顺练习、跟写检测<br>敬请期待</div>
     <button class="btn btn-ghost" onclick="goHome()">← 返回首页</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     ACHIEVE PAGE (placeholder)
-══════════════════════════════════════════ -->
+<!-- ══════════════════ ACHIEVE STUB ══════════════════ -->
 <div id="page-achieve" class="page">
-  <div class="topbar">
-    <button class="back-btn" onclick="goHome()">←</button>
-    <div class="topbar-title">成 就</div>
-  </div>
+  <div class="topbar"><button class="back-btn" onclick="goHome()">←</button><div class="topbar-title">成 就</div></div>
   <div class="placeholder-body">
-    <div class="ph-icon">🏆</div>
-    <div class="ph-text">成就系统即将上线</div>
+    <div class="ph-icon">🏆</div><div class="ph-text">成就系统即将上线</div>
     <div class="ph-sub">完成学习任务，解锁专属徽章<br>记录你的每一步成长</div>
     <button class="btn btn-ghost" onclick="goHome()">← 返回首页</button>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MANAGE PAGE
-══════════════════════════════════════════ -->
+<!-- ══════════════════ MANAGE PAGE ══════════════════ -->
 <div id="page-manage" class="page">
   <div class="topbar">
     <button class="back-btn" onclick="goHome()">←</button>
@@ -576,47 +372,54 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);
   <div class="manage-body" id="manage-body"></div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MODAL: add/edit character
-══════════════════════════════════════════ -->
-<div class="modal-overlay" id="modal-char">
+<!-- ══════════════════ MODAL: entry (char or word) ══════════════════ -->
+<div class="modal-overlay" id="modal-entry">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="modal-char-title">添加汉字</div>
-      <button class="modal-close" onclick="closeModal('modal-char')">✕</button>
+      <div class="modal-title" id="modal-entry-title">添加字/词</div>
+      <button class="modal-close" onclick="closeModal('modal-entry')">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-label">汉字（单个）</div>
-        <input class="form-input" id="modal-hanzi" maxlength="1" placeholder="如：爱">
+        <div class="form-label">类型</div>
+        <div class="form-type-row">
+          <button class="form-type-btn active" id="etype-char" onclick="setEntryType('char')">单字</button>
+          <button class="form-type-btn" id="etype-word" onclick="setEntryType('word')">词语</button>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-label" id="entry-hanzi-label">汉字（单个）</div>
+        <input class="form-input" id="modal-hanzi" placeholder="如：爱">
       </div>
       <div class="form-row">
         <div class="form-label">拼音（留空自动生成）</div>
         <input class="form-input" id="modal-pinyin" placeholder="如：ài">
       </div>
-      <div class="form-row">
-        <div class="form-label">颜色模式</div>
-        <div class="form-mode-row">
-          <button class="form-mode-btn active" id="fmbtn-simple" onclick="setFormMode('simple')">🎨 简单</button>
-          <button class="form-mode-btn" id="fmbtn-complex" onclick="setFormMode('complex')">🧩 复杂</button>
+      <!-- Only for single char -->
+      <div id="char-only-fields">
+        <div class="form-row" style="margin-top:4px">
+          <div class="form-label">颜色模式</div>
+          <div class="form-type-row">
+            <button class="form-type-btn active" id="fmbtn-simple" onclick="setFormMode('simple')">🎨 简单（七彩循环）</button>
+            <button class="form-type-btn" id="fmbtn-complex" onclick="setFormMode('complex')">🧩 复杂（红蓝结构）</button>
+          </div>
         </div>
-      </div>
-      <div class="form-row" id="modal-complex-field">
-        <div class="form-label">🔴 红色笔画范围</div>
-        <input class="form-input" id="modal-red-range" placeholder="如 1-4 或 1,2,3">
-        <div class="form-hint">红色部件的笔画编号范围，其余笔画显示蓝色</div>
+        <div class="form-row" id="modal-complex-field" style="display:none">
+          <div class="form-label">🔴 红色笔画范围</div>
+          <input class="form-input" id="modal-red-range" placeholder="如 1-4 或 1,2,3">
+          <div class="form-hint">这些笔画显示红色，其余笔画显示蓝色</div>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modal-char')">取消</button>
-      <button class="btn btn-primary" onclick="saveChar()">保存</button>
+      <button class="btn btn-ghost btn-sm" id="modal-entry-del" onclick="deleteCurrentEntry()" style="margin-right:auto;display:none">🗑 删除</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-entry')">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="saveEntry()">保存</button>
     </div>
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════
-     MODAL: add/edit group
-══════════════════════════════════════════ -->
+<!-- ══════════════════ MODAL: group ══════════════════ -->
 <div class="modal-overlay" id="modal-group">
   <div class="modal">
     <div class="modal-header">
@@ -626,608 +429,747 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--ink);
     <div class="modal-body">
       <div class="form-row">
         <div class="form-label">分组名称</div>
-        <input class="form-input" id="modal-group-name" placeholder="如：一年级上册">
+        <input class="form-input" id="modal-group-name" placeholder="如：一年级上册第一单元">
       </div>
       <div class="form-row">
-        <div class="form-label">分组颜色</div>
+        <div class="form-label">颜色</div>
         <div class="color-picker" id="modal-color-picker"></div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal('modal-group')">取消</button>
-      <button class="btn btn-primary" onclick="saveGroup()">保存</button>
+      <button class="btn btn-danger btn-sm" id="modal-group-del" onclick="deleteCurrentGroup()" style="margin-right:auto;display:none">🗑 删除分组</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-group')">取消</button>
+      <button class="btn btn-primary btn-sm" onclick="saveGroup()">保存</button>
     </div>
   </div>
 </div>
 
 <script>
-// ════════════════════════════════════════════
-// DATA STORE
-// ════════════════════════════════════════════
-const GROUP_COLORS = [
-  '#EF4444','#F97316','#EAB308','#22C55E',
-  '#14B8A6','#3B82F6','#8B5CF6','#EC4899'
-];
+// ════════════════════════════════════════
+// DATA
+// ════════════════════════════════════════
+const GROUP_COLORS = ['#EF4444','#F97316','#EAB308','#22C55E','#14B8A6','#3B82F6','#8B5CF6','#EC4899'];
+const STROKE_PALETTE = ['#EF4444','#F97316','#EAB308','#22C55E','#14B8A6','#3B82F6','#8B5CF6'];
+const HW_TRANSFORM = 'scale(1,-1) translate(0,-900)';
+const OUTLINE_COLOR = '#DDD8D0';
 
-// Default sample data
 let store = {
   groups: [
-    {
-      id: 'g1', name: '一年级上册', color: '#3B82F6',
-      chars: [
-        {hanzi:'山', pinyin:'shān', mode:'simple', redRange:''},
-        {hanzi:'水', pinyin:'shuǐ', mode:'simple', redRange:''},
-        {hanzi:'火', pinyin:'huǒ', mode:'simple', redRange:''},
-        {hanzi:'木', pinyin:'mù',  mode:'simple', redRange:''},
-        {hanzi:'人', pinyin:'rén', mode:'simple', redRange:''},
-        {hanzi:'大', pinyin:'dà',  mode:'simple', redRange:''},
-      ]
-    },
-    {
-      id: 'g2', name: '认识结构', color: '#8B5CF6',
-      chars: [
-        {hanzi:'明', pinyin:'míng', mode:'complex', redRange:'1-4'},
-        {hanzi:'好', pinyin:'hǎo',  mode:'complex', redRange:'1-3'},
-        {hanzi:'林', pinyin:'lín',  mode:'complex', redRange:'1-4'},
-      ]
-    }
+    { id:'g1', name:'一年级·基础字', color:'#3B82F6', entries:[
+      {type:'char', hanzi:'山', pinyin:'shān', mode:'simple', redRange:''},
+      {type:'char', hanzi:'水', pinyin:'shuǐ', mode:'simple', redRange:''},
+      {type:'char', hanzi:'火', pinyin:'huǒ', mode:'simple', redRange:''},
+      {type:'char', hanzi:'木', pinyin:'mù',  mode:'simple', redRange:''},
+      {type:'word', hanzi:'大山', pinyin:'dà shān', mode:'simple', redRange:''},
+      {type:'word', hanzi:'山水', pinyin:'shān shuǐ', mode:'simple', redRange:''},
+    ]},
+    { id:'g2', name:'认识结构', color:'#8B5CF6', entries:[
+      {type:'char', hanzi:'明', pinyin:'míng', mode:'complex', redRange:'1-4'},
+      {type:'char', hanzi:'好', pinyin:'hǎo',  mode:'complex', redRange:'1-3'},
+      {type:'char', hanzi:'林', pinyin:'lín',  mode:'complex', redRange:'1-4'},
+      {type:'word', hanzi:'明天', pinyin:'míng tiān', mode:'simple', redRange:''},
+    ]}
   ]
 };
-
-function saveStore() {
-  try { localStorage.setItem('hanzi_store', JSON.stringify(store)); } catch(e){}
-}
-function loadStore() {
-  try {
-    const d = localStorage.getItem('hanzi_store');
-    if (d) store = JSON.parse(d);
-  } catch(e){}
+function saveStore(){ try{ localStorage.setItem('hanzi_store_v2',JSON.stringify(store)); }catch(e){} }
+function loadStore(){
+  try{ const d=localStorage.getItem('hanzi_store_v2'); if(d) store=JSON.parse(d); }catch(e){}
 }
 loadStore();
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 // NAVIGATION
-// ════════════════════════════════════════════
-function showPage(id) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.getElementById('page-' + id).classList.add('active');
+// ════════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
 }
-function goHome() { showPage('home'); renderHome(); }
-function goPage(id) {
-  if (id === 'manage') { showPage('manage'); renderManage(); }
-  else showPage(id);
+function goHome(){ showPage('home'); renderHome(); }
+function goPage(id){
+  showPage(id);
+  if(id==='manage') renderManage();
 }
-
-function goStudy(groupId) {
+function goStudy(groupId){
   showPage('study');
-  renderStudyList(groupId);
+  initStudyPage(groupId);
 }
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 // HOME
-// ════════════════════════════════════════════
-function renderHome() {
-  const el = document.getElementById('home-group-chips');
-  el.innerHTML = '';
-  store.groups.forEach(g => {
-    const chip = document.createElement('div');
-    chip.className = 'group-chip';
-    chip.onclick = () => goStudy(g.id);
-    chip.innerHTML = `
-      <span class="group-chip-dot" style="background:${g.color}"></span>
-      ${g.name}
-      <span class="group-chip-count">${g.chars.length}字</span>`;
+// ════════════════════════════════════════
+function renderHome(){
+  const el=document.getElementById('home-group-chips');
+  el.innerHTML='';
+  store.groups.forEach(g=>{
+    const chip=document.createElement('div');
+    chip.className='group-chip';
+    chip.onclick=()=>goStudy(g.id);
+    chip.innerHTML=`<span class="group-chip-dot" style="background:${g.color}"></span>${g.name}<span class="group-chip-count">${g.entries.length}条</span>`;
     el.appendChild(chip);
   });
 }
 
-// ════════════════════════════════════════════
-// STUDY
-// ════════════════════════════════════════════
-const STROKE_COLORS_SIMPLE = [
-  '#EF4444','#F97316','#EAB308',
-  '#22C55E','#14B8A6','#3B82F6','#8B5CF6'
-];
-const HW_TRANSFORM = 'scale(1,-1) translate(0,-900)';
-const OUTLINE_COLOR = '#E5E7EB';
-
-let studyState = {
+// ════════════════════════════════════════
+// STUDY STATE
+// ════════════════════════════════════════
+let S = {
   groupId: null,
-  charIdx: 0,
-  charData: null,
-  stepIdx: 0,
-  strokeColors: [],
-  mode: 'simple',
-  redRange: '',
-  animating: false,
+  entryIdx: null,
+  entry: null,         // current entry object
+  // per char within entry (array indexed by char position in word)
+  chars: [],           // [{ch, charData, strokeColors, stepIdx, mode, redRange}]
+  followMode: false,
+  coverMode: false,
+  followCharIdx: 0,    // which char in word is being quiz'd
+  quizWriter: null,
 };
 
-function renderStudyList(groupId) {
-  const group = groupId
-    ? store.groups.find(g => g.id === groupId)
-    : store.groups[0];
+function initStudyPage(groupId){
+  // Build group selector
+  const sel=document.getElementById('study-group-sel');
+  sel.innerHTML='<option value="">— 选择分组 —</option>';
+  store.groups.forEach(g=>{
+    const o=document.createElement('option');
+    o.value=g.id; o.textContent=g.name;
+    if(g.id===(groupId||S.groupId)) o.selected=true;
+    sel.appendChild(o);
+  });
+  if(groupId){ S.groupId=groupId; }
+  if(S.groupId) renderStudyList(S.groupId);
+}
 
-  if (!group) {
-    document.getElementById('study-char-list').innerHTML =
-      '<div style="padding:16px;color:var(--muted);font-size:.8rem">暂无字词，请先在「字词管理」添加</div>';
+function onGroupChange(){
+  const gid=document.getElementById('study-group-sel').value;
+  S.groupId=gid||null;
+  S.entryIdx=null;
+  if(S.groupId) renderStudyList(S.groupId);
+  else document.getElementById('study-list-body').innerHTML='';
+  clearStage();
+}
+
+function renderStudyList(gid){
+  const g=store.groups.find(x=>x.id===gid);
+  const body=document.getElementById('study-list-body');
+  body.innerHTML='';
+  if(!g||!g.entries.length){
+    body.innerHTML='<div style="padding:14px 10px;color:var(--muted);font-size:.78rem">暂无内容，请先在字词管理添加</div>';
     return;
   }
-
-  studyState.groupId = group.id;
-  document.getElementById('study-group-title').textContent = group.name;
-
-  const list = document.getElementById('study-char-list');
-  list.innerHTML = `<div class="study-group-label">${group.name}</div>`;
-
-  group.chars.forEach((c, i) => {
-    const btn = document.createElement('button');
-    btn.className = 'study-char-btn' + (i === 0 ? ' active' : '');
-    btn.dataset.idx = i;
-    btn.innerHTML = `
-      <span class="sc-hanzi">${c.hanzi}</span>
-      <span class="sc-info">
-        <span class="sc-py">${c.pinyin || ''}</span>
-        <span class="sc-mode ${c.mode}">${c.mode === 'simple' ? '简单' : '复杂'}</span>
-      </span>`;
-    btn.onclick = () => selectStudyChar(group.id, i);
-    list.appendChild(btn);
-  });
-
-  if (group.chars.length > 0) {
-    selectStudyChar(group.id, 0);
-  }
-}
-
-function selectStudyChar(groupId, idx) {
-  const group = store.groups.find(g => g.id === groupId);
-  if (!group || !group.chars[idx]) return;
-
-  // update active state
-  document.querySelectorAll('.study-char-btn').forEach((b,i) => {
-    b.classList.toggle('active', i === idx);
-  });
-
-  studyState.charIdx = idx;
-  studyState.animating = false;
-  studyState.charData = null;
-  studyState.stepIdx = 0;
-
-  const c = group.chars[idx];
-
-  // big char & pinyin
-  document.getElementById('study-big-char').textContent = c.hanzi;
-  let py = c.pinyin;
-  if (!py && window.pinyinPro) {
-    try { py = pinyinPro.pinyin(c.hanzi, {toneType:'symbol',type:'string'}); } catch(e){}
-  }
-  document.getElementById('study-pinyin-label').textContent = py || c.hanzi;
-
-  // mode
-  studyState.mode = c.mode || 'simple';
-  studyState.redRange = c.redRange || '';
-  updateModeUI();
-
-  // load
-  clearStudySvg();
-  exitStudyQuiz();
-  setStudyStatus('加载中…', '');
-  document.getElementById('study-legend').innerHTML = '';
-
-  loadHanziData(c.hanzi, data => {
-    studyState.charData = data;
-    const n = data.strokes.length;
-    studyState.strokeColors = buildStudyColors(n);
-    studyState.stepIdx = n;
-    renderStudySvg(n);
-    setStudyStatus(`共 ${n} 笔`, 'ok');
-    renderStudyLegend();
-  }, () => {
-    setStudyStatus('⚠️ 暂无该字笔画数据', 'err');
+  g.entries.forEach((e,i)=>{
+    const btn=document.createElement('button');
+    btn.className='entry-btn'+(i===S.entryIdx?' active':'');
+    btn.dataset.idx=i;
+    const py=e.pinyin||autoPinyin(e.hanzi);
+    const tag=e.type==='word'?'word':e.mode;
+    const tagLabel=e.type==='word'?'词语':e.mode==='simple'?'简单':'复杂';
+    btn.innerHTML=`<span class="eb-chars">${e.hanzi}</span><span class="eb-info"><span class="eb-py">${py}</span><span class="eb-tag ${tag}">${tagLabel}</span></span>`;
+    btn.onclick=()=>selectEntry(gid,i);
+    body.appendChild(btn);
   });
 }
 
-function loadHanziData(ch, onSuccess, onError) {
+function selectEntry(gid,idx){
+  const g=store.groups.find(x=>x.id===gid);
+  if(!g||!g.entries[idx]) return;
+  S.groupId=gid; S.entryIdx=idx;
+  S.entry=g.entries[idx];
+  S.followMode=false; S.coverMode=false;
+  updateFollowBtn(); updateCoverBtn();
+  exitAllQuiz();
+
+  // highlight list
+  document.querySelectorAll('.entry-btn').forEach((b,i)=>b.classList.toggle('active',i===idx));
+
+  // pinyin display
+  const py=S.entry.pinyin||autoPinyin(S.entry.hanzi);
+  document.getElementById('study-pinyin-display').textContent=py||S.entry.hanzi;
+
+  buildStage();
+}
+
+// ════════════════════════════════════════
+// STAGE: build tian zi ge boxes
+// ════════════════════════════════════════
+function clearStage(){
+  document.getElementById('study-stage').innerHTML='<div style="color:var(--muted);font-size:.85rem;padding:40px 20px;text-align:center">从左侧选择分组，点击字词开始学习</div>';
+  document.getElementById('study-toolbar').style.display='none';
+  document.getElementById('study-status').textContent='';
+  document.getElementById('study-quiz-msg').textContent='';
+  document.getElementById('study-legend').innerHTML='';
+  document.getElementById('study-pinyin-display').textContent='—';
+  S.chars=[];
+}
+
+function buildStage(){
+  const entry=S.entry;
+  const chars=[...entry.hanzi]; // array of individual characters
+  const n=chars.length;
+  S.chars=[];
+
+  const stage=document.getElementById('study-stage');
+  stage.innerHTML='';
+
+  // Size class
+  const sz = n===1?'sz-1':n===2?'sz-2':'sz-34';
+  const boxPx = n===1?260:n===2?200:160;
+
+  const row=document.createElement('div');
+  row.className='tzg-row';
+  stage.appendChild(row);
+
+  chars.forEach((ch,ci)=>{
+    // Per-char mode and redRange
+    let mode = entry.mode||'simple';
+    let redRange = entry.redRange||'';
+    // For word entries each char uses simple by default
+    if(entry.type==='word') mode='simple';
+
+    S.chars.push({ ch, charData:null, strokeColors:[], stepIdx:0, mode, redRange });
+
+    const unit=document.createElement('div');
+    unit.className='tzg-unit';
+
+    // The box
+    const box=document.createElement('div');
+    box.className=`tzg-box ${sz}`;
+    box.id=`tzg-box-${ci}`;
+
+    // Diagonal SVG guide
+    const diagSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    diagSvg.setAttribute('viewBox',`0 0 ${boxPx} ${boxPx}`);
+    diagSvg.setAttribute('width','100%');
+    diagSvg.setAttribute('height','100%');
+    diagSvg.classList.add('tzg-diag');
+    const mkLine=(x1,y1,x2,y2)=>{
+      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+      l.setAttribute('stroke','#d0c8b8');l.setAttribute('stroke-width','0.8');
+      l.setAttribute('stroke-dasharray','4,4');
+      return l;
+    };
+    diagSvg.appendChild(mkLine(0,0,boxPx,boxPx));
+    diagSvg.appendChild(mkLine(boxPx,0,0,boxPx));
+    box.appendChild(diagSvg);
+
+    // Char SVG
+    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.setAttribute('viewBox','0 0 1024 1024');
+    svg.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    svg.classList.add('tzg-char-svg');
+    svg.id=`tzg-svg-${ci}`;
+    box.appendChild(svg);
+
+    // Quiz div
+    const quizDiv=document.createElement('div');
+    quizDiv.classList.add('tzg-quiz-div');
+    quizDiv.id=`tzg-quiz-${ci}`;
+    box.appendChild(quizDiv);
+
+    // Cover overlay
+    const cover=document.createElement('div');
+    cover.classList.add('tzg-cover');
+    cover.id=`tzg-cover-${ci}`;
+    cover.innerHTML=`<span style="font-size:2rem;color:#ccc">?</span>`;
+    box.appendChild(cover);
+
+    unit.appendChild(box);
+
+    // Per-char mini controls
+    const ctrlDiv=document.createElement('div');
+    ctrlDiv.className='tzg-controls';
+
+    const row1=document.createElement('div');
+    row1.className='tzg-ctrl-row';
+    row1.innerHTML=`
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="charPrev(${ci})" title="上一笔">◀</button>
+      <button class="btn btn-primary btn-sm btn-icon" onclick="charNext(${ci})" title="下一笔">▶</button>
+      <button class="btn btn-ghost btn-sm btn-icon" onclick="charReset(${ci})" title="重置">↺</button>
+    `;
+    ctrlDiv.appendChild(row1);
+
+    const statusEl=document.createElement('div');
+    statusEl.className='study-status';
+    statusEl.id=`tzg-status-${ci}`;
+    statusEl.textContent='加载中…';
+    ctrlDiv.appendChild(statusEl);
+
+    unit.appendChild(ctrlDiv);
+    row.appendChild(unit);
+
+    // Load data
+    loadCharData(ch, ci, mode, redRange);
+  });
+
+  // legend
+  buildLegend(entry,chars.length);
+
+  // show toolbar
+  document.getElementById('study-toolbar').style.display='flex';
+  document.getElementById('study-status').textContent='';
+  document.getElementById('study-quiz-msg').textContent='';
+}
+
+function loadCharData(ch, ci, mode, redRange){
   fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch)}.json`)
-    .then(r => { if (!r.ok) throw new Error(); return r.json(); })
-    .then(onSuccess)
-    .catch(onError);
+    .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+    .then(data=>{
+      S.chars[ci].charData=data;
+      const n=data.strokes.length;
+      S.chars[ci].strokeColors=buildColors(n, mode, redRange);
+      S.chars[ci].stepIdx=n;
+      renderCharSvg(ci, n);
+      document.getElementById(`tzg-status-${ci}`).textContent=`${n} 笔`;
+    })
+    .catch(()=>{
+      if(document.getElementById(`tzg-status-${ci}`))
+        document.getElementById(`tzg-status-${ci}`).textContent='⚠️ 无数据';
+    });
 }
 
-function buildStudyColors(n) {
-  if (studyState.mode === 'simple') {
-    return Array.from({length:n}, (_,i) => STROKE_COLORS_SIMPLE[i % STROKE_COLORS_SIMPLE.length]);
+function buildColors(n, mode, redRange){
+  if(mode==='simple'){
+    return Array.from({length:n},(_,i)=>STROKE_PALETTE[i%STROKE_PALETTE.length]);
   }
-  // complex: red range = red (#EF4444), rest = blue (#3B82F6)
-  const redSet = parseRange(studyState.redRange, n);
-  return Array.from({length:n}, (_,i) => redSet.has(i+1) ? '#EF4444' : '#3B82F6');
+  const redSet=parseRange(redRange,n);
+  return Array.from({length:n},(_,i)=>redSet.has(i+1)?'#EF4444':'#3B82F6');
 }
 
-function parseRange(str, n) {
-  const set = new Set();
-  if (!str) return set;
-  str.split(',').forEach(part => {
-    part = part.trim();
-    if (part.includes('-')) {
-      const [a,b] = part.split('-').map(Number);
-      for (let i=a; i<=b && i<=n; i++) set.add(i);
+function parseRange(str, n){
+  const set=new Set();
+  if(!str) return set;
+  str.split(',').forEach(part=>{
+    part=part.trim();
+    if(part.includes('-')){
+      const[a,b]=part.split('-').map(Number);
+      for(let i=a;i<=b&&i<=n;i++) set.add(i);
     } else {
-      const v = parseInt(part);
-      if (!isNaN(v) && v>=1 && v<=n) set.add(v);
+      const v=parseInt(part);
+      if(!isNaN(v)&&v>=1&&v<=n) set.add(v);
     }
   });
   return set;
 }
 
-function rebuildColors() {
-  studyState.redRange = document.getElementById('complex-red-range').value;
-  if (!studyState.charData) return;
-  studyState.strokeColors = buildStudyColors(studyState.charData.strokes.length);
-  renderStudySvg(studyState.stepIdx);
-  renderStudyLegend();
-}
-
-function updateModeUI() {
-  document.getElementById('tab-simple').classList.toggle('active', studyState.mode==='simple');
-  document.getElementById('tab-complex').classList.toggle('active', studyState.mode==='complex');
-  document.getElementById('study-complex-panel').style.display = studyState.mode==='complex' ? 'block' : 'none';
-  document.getElementById('complex-red-range').value = studyState.redRange;
-}
-
-function setStudyMode(m) {
-  studyState.mode = m;
-  updateModeUI();
-  if (studyState.charData) {
-    studyState.strokeColors = buildStudyColors(studyState.charData.strokes.length);
-    renderStudySvg(studyState.stepIdx);
-    renderStudyLegend();
-  }
-  // also save back to char entry
-  const group = store.groups.find(g => g.id === studyState.groupId);
-  if (group && group.chars[studyState.charIdx]) {
-    group.chars[studyState.charIdx].mode = m;
-    saveStore();
-  }
-}
-
-// SVG render
-function clearStudySvg() { document.getElementById('study-svg').innerHTML = ''; }
-
-function renderStudySvg(upTo, animIdx) {
-  if (!studyState.charData) return;
-  const svg = document.getElementById('study-svg');
-  svg.innerHTML = '';
-  const strokes = studyState.charData.strokes;
-
-  // outlines
-  strokes.forEach(d => {
-    const p = mkPath(d, OUTLINE_COLOR);
-    svg.appendChild(p);
-  });
-
-  // colored fills
-  for (let i = 0; i < upTo; i++) {
-    const p = mkPath(strokes[i], studyState.strokeColors[i]);
-    if (i === animIdx) {
-      p.style.opacity = '0';
-      p.style.transition = 'opacity 0.4s ease';
+function renderCharSvg(ci, upTo, animIdx){
+  const c=S.chars[ci];
+  if(!c||!c.charData) return;
+  const svg=document.getElementById(`tzg-svg-${ci}`);
+  if(!svg) return;
+  svg.innerHTML='';
+  const strokes=c.charData.strokes;
+  strokes.forEach(d=>svg.appendChild(mkPath(d,OUTLINE_COLOR)));
+  for(let i=0;i<upTo;i++){
+    const p=mkPath(strokes[i],c.strokeColors[i]);
+    if(i===animIdx){
+      p.style.opacity='0'; p.style.transition='opacity 0.38s ease';
       svg.appendChild(p);
-      requestAnimationFrame(() => requestAnimationFrame(() => { p.style.opacity='1'; }));
-    } else {
-      svg.appendChild(p);
-    }
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ p.style.opacity='1'; }));
+    } else svg.appendChild(p);
   }
 }
 
-function mkPath(d, color) {
-  const p = document.createElementNS('http://www.w3.org/2000/svg','path');
-  p.setAttribute('d', d);
-  p.setAttribute('fill', color);
-  p.setAttribute('transform', HW_TRANSFORM);
+function mkPath(d,color){
+  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+  p.setAttribute('d',d); p.setAttribute('fill',color); p.setAttribute('transform',HW_TRANSFORM);
   return p;
 }
 
-// controls
-function studyStepNext() {
-  if (!studyState.charData || studyState.animating) return;
-  const n = studyState.charData.strokes.length;
-  if (studyState.stepIdx >= n) return;
-  const prev = studyState.stepIdx;
-  studyState.stepIdx++;
-  renderStudySvg(studyState.stepIdx, prev);
-  updateStudyStrokeStatus();
-}
-function studyStepPrev() {
-  if (!studyState.charData || studyState.animating) return;
-  if (studyState.stepIdx <= 0) return;
-  studyState.stepIdx--;
-  renderStudySvg(studyState.stepIdx);
-  updateStudyStrokeStatus();
-}
-function studyReset() {
-  if (!studyState.charData) return;
-  exitStudyQuiz();
-  studyState.animating = false;
-  studyState.stepIdx = studyState.charData.strokes.length;
-  renderStudySvg(studyState.stepIdx);
-  setStudyStatus(`共 ${studyState.charData.strokes.length} 笔`, 'ok');
-}
-function updateStudyStrokeStatus() {
-  const n = studyState.charData.strokes.length;
-  const s = studyState.stepIdx;
-  if (s === 0) setStudyStatus(`共 ${n} 笔（未显示）`, '');
-  else if (s === n) setStudyStatus(`共 ${n} 笔`, 'ok');
-  else setStudyStatus(`第 ${s} / ${n} 笔`, '');
-}
-function setStudyStatus(msg, type) {
-  const el = document.getElementById('study-status');
-  el.textContent = msg;
-  el.className = 'study-status' + (type ? ' ' + type : '');
-}
-
-function studyAnimate() {
-  if (!studyState.charData || studyState.animating) return;
-  exitStudyQuiz();
-  studyState.animating = true;
-  studyState.stepIdx = 0;
-  renderStudySvg(0);
-  const n = studyState.charData.strokes.length;
-  const DURATION = 450, DELAY = 130;
-  function next(i) {
-    if (i >= n) { studyState.animating = false; setStudyStatus(`共 ${n} 笔 ✅`, 'ok'); return; }
-    setStudyStatus(`第 ${i+1} / ${n} 笔`, '');
-    studyState.stepIdx = i + 1;
-    renderStudySvg(studyState.stepIdx, i);
-    setTimeout(() => next(i+1), DURATION + DELAY);
+// ── per-char controls ──
+function charNext(ci){
+  if(S.followMode) return;
+  const c=S.chars[ci];
+  if(!c||!c.charData) return;
+  const n=c.charData.strokes.length;
+  if(c.stepIdx>=n){
+    // cycle back to 0 then show first stroke
+    c.stepIdx=0; renderCharSvg(ci,0);
+    setTimeout(()=>{ c.stepIdx=1; renderCharSvg(ci,1,0); updateCharStatus(ci); },80);
+    return;
   }
-  next(0);
+  const prev=c.stepIdx; c.stepIdx++;
+  renderCharSvg(ci,c.stepIdx,prev);
+  updateCharStatus(ci);
+}
+function charPrev(ci){
+  if(S.followMode) return;
+  const c=S.chars[ci];
+  if(!c||!c.charData) return;
+  if(c.stepIdx<=0) return;
+  c.stepIdx--; renderCharSvg(ci,c.stepIdx);
+  updateCharStatus(ci);
+}
+function charReset(ci){
+  if(S.followMode) return;
+  exitCharQuiz(ci);
+  const c=S.chars[ci];
+  if(!c||!c.charData) return;
+  c.stepIdx=c.charData.strokes.length;
+  renderCharSvg(ci,c.stepIdx);
+  updateCharStatus(ci);
+}
+function updateCharStatus(ci){
+  const c=S.chars[ci];
+  if(!c||!c.charData) return;
+  const n=c.charData.strokes.length, s=c.stepIdx;
+  const el=document.getElementById(`tzg-status-${ci}`);
+  if(!el) return;
+  if(s===0) el.textContent=`${n} 笔（隐藏）`;
+  else if(s===n) el.textContent=`${n} 笔`;
+  else el.textContent=`第 ${s}/${n} 笔`;
 }
 
-function speakCurrent() {
-  const ch = document.getElementById('study-big-char').textContent;
-  if (!ch || !window.speechSynthesis) return;
+// ── global toolbar controls ──
+function globalNext(){
+  if(S.followMode) return;
+  S.chars.forEach((_,ci)=>charNext(ci));
+}
+function globalPrev(){
+  if(S.followMode) return;
+  S.chars.forEach((_,ci)=>charPrev(ci));
+}
+function globalReset(){
+  exitAllQuiz();
+  S.followMode=false; updateFollowBtn();
+  S.coverMode=false; updateCoverBtn();
+  S.chars.forEach((_,ci)=>charReset(ci));
+}
+
+// ── follow/trace mode ──
+function toggleFollow(){
+  S.followMode=!S.followMode;
+  if(S.followMode){
+    startFollowMode();
+  } else {
+    exitAllQuiz();
+    updateFollowBtn();
+  }
+}
+function updateFollowBtn(){
+  const btn=document.getElementById('btn-follow');
+  btn.classList.toggle('active-mode',S.followMode);
+  btn.textContent=S.followMode?'✋ 退出跟写':'🖊 跟写';
+}
+function startFollowMode(){
+  updateFollowBtn();
+  // Hide SVGs, start follow for first char
+  S.chars.forEach((_,ci)=>{
+    exitCharQuiz(ci);
+    const c=S.chars[ci];
+    if(c&&c.charData){ c.stepIdx=0; renderCharSvg(ci,0); }
+  });
+  S.followCharIdx=0;
+  advanceFollow();
+}
+
+function advanceFollow(){
+  if(!S.followMode) return;
+  const ci=S.followCharIdx;
+  if(ci>=S.chars.length){ finishFollow(); return; }
+  const c=S.chars[ci];
+  if(!c||!c.charData){ S.followCharIdx++; advanceFollow(); return; }
+
+  // For follow mode: show one stroke at a time via HanziWriter quiz
+  const ch=c.ch;
+  const box=document.getElementById(`tzg-box-${ci}`);
+  if(!box) return;
+
+  // hide our SVG
+  const mySvg=document.getElementById(`tzg-svg-${ci}`);
+  if(mySvg) mySvg.style.display='none';
+
+  const quizDiv=document.getElementById(`tzg-quiz-${ci}`);
+  quizDiv.style.display='block';
+  quizDiv.innerHTML='';
+
+  const boxSize=box.clientWidth||260;
+
+  document.getElementById('study-quiz-msg').textContent=`✏️ 请描写「${ch}」`;
+
+  S.quizWriter=HanziWriter.create(`tzg-quiz-${ci}`,ch,{
+    width:boxSize, height:boxSize, padding:Math.round(boxSize*0.05),
+    showCharacter:false, showOutline:true,
+    strokeColor:'#444', outlineColor:'#DDD',
+    drawingColor:'#3B82F6', drawingWidth:Math.max(5,Math.round(boxSize*0.025)),
+    showHintAfterMisses:3, highlightColor:'#EAB308',
+    charDataLoader:(ch2,onLoad,onErr)=>{
+      fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch2)}.json`)
+        .then(r=>{ if(!r.ok) throw new Error(); return r.json(); })
+        .then(onLoad).catch(onErr);
+    },
+    onLoadCharDataSuccess:()=>{
+      S.quizWriter.quiz({
+        onMistake:d=>{ document.getElementById('study-quiz-msg').textContent=`第 ${d.strokeNum+1} 笔再试一次！😅`; },
+        onCorrectStroke:d=>{ document.getElementById('study-quiz-msg').textContent=`第 ${d.strokeNum+1} 笔棒棒！👍`; },
+        onComplete:sum=>{
+          document.getElementById('study-quiz-msg').textContent=`「${ch}」完成！错 ${sum.totalMistakes} 次 🎉`;
+          // show our colored version
+          exitCharQuiz(ci);
+          const svgEl=document.getElementById(`tzg-svg-${ci}`);
+          if(svgEl){ svgEl.style.display=''; }
+          c.stepIdx=c.charData.strokes.length;
+          renderCharSvg(ci,c.stepIdx);
+          // move to next char
+          S.followCharIdx++;
+          setTimeout(()=>advanceFollow(),800);
+        }
+      });
+    }
+  });
+}
+
+function finishFollow(){
+  S.followMode=false; updateFollowBtn();
+  document.getElementById('study-quiz-msg').textContent='🎉 全部完成！';
+}
+
+function exitCharQuiz(ci){
+  const qd=document.getElementById(`tzg-quiz-${ci}`);
+  if(qd){ qd.style.display='none'; qd.innerHTML=''; }
+  const sv=document.getElementById(`tzg-svg-${ci}`);
+  if(sv) sv.style.display='';
+  S.quizWriter=null;
+}
+function exitAllQuiz(){
+  S.quizWriter=null;
+  S.chars.forEach((_,ci)=>exitCharQuiz(ci));
+  document.getElementById('study-quiz-msg').textContent='';
+}
+
+// ── cover mode ──
+function toggleCover(){
+  S.coverMode=!S.coverMode;
+  S.chars.forEach((_,ci)=>{
+    const el=document.getElementById(`tzg-cover-${ci}`);
+    if(el) el.classList.toggle('show',S.coverMode);
+  });
+  updateCoverBtn();
+}
+function updateCoverBtn(){
+  const btn=document.getElementById('btn-cover');
+  btn.classList.toggle('active-mode',S.coverMode);
+  btn.textContent=S.coverMode?'👁 显示':'👁 遮盖';
+}
+
+// ── speak ──
+function speakCurrent(){
+  const text=S.entry?S.entry.hanzi:document.getElementById('study-pinyin-display').textContent;
+  if(!text||text==='—'||!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(ch);
+  const u=new SpeechSynthesisUtterance(text);
   u.lang='zh-CN'; u.rate=0.8; u.pitch=1.1;
   window.speechSynthesis.speak(u);
 }
 
-function exitStudyQuiz() {
-  const d = document.getElementById('study-quiz-div');
-  d.style.display='none'; d.innerHTML='';
-}
-
-function renderStudyLegend() {
-  const el = document.getElementById('study-legend');
-  el.innerHTML = '';
-  if (!studyState.charData) return;
-  const n = studyState.charData.strokes.length;
-
-  if (studyState.mode === 'simple') {
-    studyState.strokeColors.forEach((c,i) => {
-      const d = document.createElement('div');
-      d.className = 'sl-item';
-      d.innerHTML = `<span class="sl-dot" style="background:${c}"></span>第${i+1}笔`;
+// ── legend ──
+function buildLegend(entry, charCount){
+  const el=document.getElementById('study-legend');
+  el.innerHTML='';
+  if(entry.type==='word'||entry.mode==='simple'){
+    STROKE_PALETTE.forEach((c,i)=>{
+      const d=document.createElement('div'); d.className='sl-item';
+      d.innerHTML=`<span class="sl-dot" style="background:${c}"></span>第${i+1}笔`;
       el.appendChild(d);
     });
+    const extra=document.createElement('div'); extra.className='sl-item';
+    extra.innerHTML=`<span style="color:var(--muted);font-size:.7rem">依此循环</span>`;
+    el.appendChild(extra);
   } else {
-    const redSet = parseRange(studyState.redRange, n);
-    const blueNums = Array.from({length:n},(_,i)=>i+1).filter(i=>!redSet.has(i));
-    const redNums  = Array.from({length:n},(_,i)=>i+1).filter(i=>redSet.has(i));
-    if (redNums.length) {
-      const d = document.createElement('div'); d.className='sl-item';
-      d.innerHTML=`<span class="sl-dot" style="background:#EF4444"></span>红色（第${redNums.join('、')}笔）`;
+    [{c:'#EF4444',l:'红色部件'},{c:'#3B82F6',l:'蓝色部件'}].forEach(({c,l})=>{
+      const d=document.createElement('div'); d.className='sl-item';
+      d.innerHTML=`<span class="sl-dot" style="background:${c}"></span>${l}`;
       el.appendChild(d);
-    }
-    if (blueNums.length) {
-      const d = document.createElement('div'); d.className='sl-item';
-      d.innerHTML=`<span class="sl-dot" style="background:#3B82F6"></span>蓝色（第${blueNums.join('、')}笔）`;
-      el.appendChild(d);
-    }
+    });
   }
 }
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 // MANAGE
-// ════════════════════════════════════════════
-function renderManage() {
-  const body = document.getElementById('manage-body');
-  body.innerHTML = '';
-
-  if (store.groups.length === 0) {
-    body.innerHTML = `<div style="text-align:center;padding:48px;color:var(--muted)">
+// ════════════════════════════════════════
+function renderManage(){
+  const body=document.getElementById('manage-body');
+  body.innerHTML='';
+  if(!store.groups.length){
+    body.innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)">
       <div style="font-size:3rem">📚</div>
-      <div style="margin-top:12px;font-weight:700">暂无分组</div>
-      <div style="font-size:.83rem;margin-top:6px">点击右上角「＋ 分组」新建</div>
-    </div>`;
+      <div style="margin-top:10px;font-weight:700">暂无分组</div>
+      <div style="font-size:.8rem;margin-top:6px">点击右上角「＋ 分组」新建</div></div>`;
     return;
   }
-
-  store.groups.forEach(g => {
-    const card = document.createElement('div');
-    card.className = 'wm-group';
-    card.innerHTML = `
+  store.groups.forEach(g=>{
+    const card=document.createElement('div');
+    card.className='wm-group';
+    card.innerHTML=`
       <div class="wm-group-header">
         <span class="wm-group-color" style="background:${g.color}"></span>
         <span class="wm-group-name">${g.name}</span>
-        <span class="wm-group-count">${g.chars.length} 字</span>
+        <span class="wm-group-count">${g.entries.length} 条</span>
         <div class="wm-group-actions">
           <button class="btn btn-ghost btn-sm btn-icon" title="学习此组" onclick="goStudy('${g.id}')">📖</button>
           <button class="btn btn-ghost btn-sm btn-icon" title="编辑分组" onclick="openEditGroup('${g.id}')">✏️</button>
-          <button class="btn btn-danger btn-sm btn-icon" title="删除分组" onclick="deleteGroup('${g.id}')">🗑</button>
         </div>
       </div>
-      <div class="wm-chars" id="wm-chars-${g.id}"></div>`;
+      <div class="wm-entries" id="wm-entries-${g.id}"></div>`;
     body.appendChild(card);
 
-    const charsEl = card.querySelector(`#wm-chars-${g.id}`);
-    g.chars.forEach((c, ci) => {
-      const item = document.createElement('div');
-      item.className = 'wm-char-item';
-      item.title = '点击编辑';
-      item.onclick = () => openEditChar(g.id, ci);
-      item.innerHTML = `
+    const entEl=card.querySelector(`#wm-entries-${g.id}`);
+    g.entries.forEach((e,ei)=>{
+      const item=document.createElement('div');
+      item.className='wm-entry';
+      item.onclick=()=>openEditEntry(g.id,ei);
+      const tag=e.type==='word'?'word':e.mode;
+      const tagLabel=e.type==='word'?'词语':e.mode==='simple'?'简':'复';
+      item.innerHTML=`
         <div>
-          <div class="wm-char-hanzi">${c.hanzi}</div>
-          <div class="wm-char-py">${c.pinyin || ''}</div>
+          <div class="wm-entry-hanzi">${e.hanzi}</div>
+          <div class="wm-entry-py">${e.pinyin||autoPinyin(e.hanzi)}</div>
         </div>
-        <span class="wm-char-mode ${c.mode}">${c.mode==='simple'?'简':'复'}</span>`;
-      charsEl.appendChild(item);
+        <span class="wm-entry-tag ${tag}">${tagLabel}</span>`;
+      entEl.appendChild(item);
     });
-
-    // add button
-    const addBtn = document.createElement('button');
-    addBtn.className = 'wm-add-char';
-    addBtn.title = '添加汉字';
-    addBtn.textContent = '＋';
-    addBtn.onclick = () => openAddChar(g.id);
-    charsEl.appendChild(addBtn);
+    const addBtn=document.createElement('button');
+    addBtn.className='wm-add-entry'; addBtn.title='添加字/词';
+    addBtn.textContent='＋'; addBtn.onclick=()=>openAddEntry(g.id);
+    entEl.appendChild(addBtn);
   });
 }
 
-// ════════════════════════════════════════════
-// MODAL LOGIC
-// ════════════════════════════════════════════
-let modalState = {
-  groupId: null,
-  charIdx: null, // null = add, number = edit
-  editGroupId: null,
-  formMode: 'simple',
-  selectedColor: GROUP_COLORS[0],
-};
+// ════════════════════════════════════════
+// MODAL: entry
+// ════════════════════════════════════════
+let mState={ groupId:null, entryIdx:null, formMode:'simple', entryType:'char', selColor:GROUP_COLORS[0], editGroupId:null };
 
-function openModal(id) { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-// ── char modal ──
-function openAddChar(groupId) {
-  modalState.groupId = groupId;
-  modalState.charIdx = null;
-  modalState.formMode = 'simple';
-  document.getElementById('modal-char-title').textContent = '添加汉字';
-  document.getElementById('modal-hanzi').value = '';
-  document.getElementById('modal-pinyin').value = '';
-  document.getElementById('modal-red-range').value = '';
-  setFormMode('simple');
-  openModal('modal-char');
-  setTimeout(() => document.getElementById('modal-hanzi').focus(), 100);
+function openAddEntry(gid){
+  mState.groupId=gid; mState.entryIdx=null;
+  mState.formMode='simple'; mState.entryType='char';
+  document.getElementById('modal-entry-title').textContent='添加字/词';
+  document.getElementById('modal-hanzi').value='';
+  document.getElementById('modal-pinyin').value='';
+  document.getElementById('modal-red-range').value='';
+  document.getElementById('modal-entry-del').style.display='none';
+  setEntryType('char'); setFormMode('simple');
+  openModal('modal-entry');
 }
-function openEditChar(groupId, charIdx) {
-  const group = store.groups.find(g => g.id === groupId);
-  if (!group) return;
-  const c = group.chars[charIdx];
-  modalState.groupId = groupId;
-  modalState.charIdx = charIdx;
-  modalState.formMode = c.mode;
-  document.getElementById('modal-char-title').textContent = '编辑汉字';
-  document.getElementById('modal-hanzi').value = c.hanzi;
-  document.getElementById('modal-pinyin').value = c.pinyin || '';
-  document.getElementById('modal-red-range').value = c.redRange || '';
-  setFormMode(c.mode);
-  openModal('modal-char');
+function openEditEntry(gid,ei){
+  const g=store.groups.find(x=>x.id===gid); if(!g) return;
+  const e=g.entries[ei];
+  mState.groupId=gid; mState.entryIdx=ei;
+  mState.formMode=e.mode||'simple'; mState.entryType=e.type||'char';
+  document.getElementById('modal-entry-title').textContent='编辑字/词';
+  document.getElementById('modal-hanzi').value=e.hanzi;
+  document.getElementById('modal-pinyin').value=e.pinyin||'';
+  document.getElementById('modal-red-range').value=e.redRange||'';
+  document.getElementById('modal-entry-del').style.display='inline-flex';
+  setEntryType(e.type||'char'); setFormMode(e.mode||'simple');
+  openModal('modal-entry');
 }
-function setFormMode(m) {
-  modalState.formMode = m;
-  document.getElementById('fmbtn-simple').classList.toggle('active', m==='simple');
-  document.getElementById('fmbtn-complex').classList.toggle('active', m==='complex');
-  document.getElementById('modal-complex-field').style.display = m==='complex' ? 'flex' : 'none';
-  document.getElementById('modal-complex-field').style.flexDirection = 'column';
-  document.getElementById('modal-complex-field').style.gap = '6px';
+function setEntryType(t){
+  mState.entryType=t;
+  document.getElementById('etype-char').classList.toggle('active',t==='char');
+  document.getElementById('etype-word').classList.toggle('active',t==='word');
+  document.getElementById('char-only-fields').style.display=t==='char'?'':'none';
+  document.getElementById('entry-hanzi-label').textContent=t==='char'?'汉字（单个）':'词语（多个字）';
+  const inp=document.getElementById('modal-hanzi');
+  inp.maxLength=t==='char'?1:10;
+  inp.placeholder=t==='char'?'如：爱':'如：大山';
 }
-function saveChar() {
-  const hanzi = document.getElementById('modal-hanzi').value.trim();
-  if (!hanzi) { alert('请输入汉字'); return; }
-  let pinyin = document.getElementById('modal-pinyin').value.trim();
-  if (!pinyin && window.pinyinPro) {
-    try { pinyin = pinyinPro.pinyin(hanzi, {toneType:'symbol',type:'string'}); } catch(e){}
-  }
-  const redRange = document.getElementById('modal-red-range').value.trim();
-  const obj = { hanzi, pinyin, mode: modalState.formMode, redRange };
-
-  const group = store.groups.find(g => g.id === modalState.groupId);
-  if (!group) return;
-  if (modalState.charIdx === null) {
-    group.chars.push(obj);
-  } else {
-    group.chars[modalState.charIdx] = obj;
-  }
-  saveStore();
-  closeModal('modal-char');
-  renderManage();
-  renderHome();
+function setFormMode(m){
+  mState.formMode=m;
+  document.getElementById('fmbtn-simple').classList.toggle('active',m==='simple');
+  document.getElementById('fmbtn-complex').classList.toggle('active',m==='complex');
+  document.getElementById('modal-complex-field').style.display=m==='complex'?'flex':'none';
+  document.getElementById('modal-complex-field').style.flexDirection='column';
+  document.getElementById('modal-complex-field').style.gap='4px';
 }
-function deleteChar(groupId, charIdx) {
-  if (!confirm('确定删除这个汉字吗？')) return;
-  const group = store.groups.find(g => g.id === groupId);
-  if (group) { group.chars.splice(charIdx, 1); saveStore(); renderManage(); renderHome(); }
+function saveEntry(){
+  const hanzi=document.getElementById('modal-hanzi').value.trim();
+  if(!hanzi){ alert('请输入汉字或词语'); return; }
+  let pinyin=document.getElementById('modal-pinyin').value.trim();
+  if(!pinyin) pinyin=autoPinyin(hanzi);
+  const redRange=document.getElementById('modal-red-range').value.trim();
+  const obj={type:mState.entryType, hanzi, pinyin, mode:mState.formMode, redRange};
+  const g=store.groups.find(x=>x.id===mState.groupId); if(!g) return;
+  if(mState.entryIdx===null) g.entries.push(obj);
+  else g.entries[mState.entryIdx]=obj;
+  saveStore(); closeModal('modal-entry'); renderManage(); renderHome();
+}
+function deleteCurrentEntry(){
+  if(!confirm('确定删除这条记录吗？')) return;
+  const g=store.groups.find(x=>x.id===mState.groupId); if(!g) return;
+  g.entries.splice(mState.entryIdx,1);
+  saveStore(); closeModal('modal-entry'); renderManage(); renderHome();
 }
 
-// ── group modal ──
-function initColorPicker() {
-  const el = document.getElementById('modal-color-picker');
-  el.innerHTML = '';
-  GROUP_COLORS.forEach(c => {
-    const dot = document.createElement('div');
-    dot.className = 'cp-dot' + (c === modalState.selectedColor ? ' selected' : '');
-    dot.style.background = c;
-    dot.onclick = () => {
-      modalState.selectedColor = c;
-      el.querySelectorAll('.cp-dot').forEach(d => d.classList.remove('selected'));
-      dot.classList.add('selected');
-    };
+// ════════════════════════════════════════
+// MODAL: group
+// ════════════════════════════════════════
+function initColorPicker(){
+  const el=document.getElementById('modal-color-picker'); el.innerHTML='';
+  GROUP_COLORS.forEach(c=>{
+    const dot=document.createElement('div');
+    dot.className='cp-dot'+(c===mState.selColor?' selected':'');
+    dot.style.background=c;
+    dot.onclick=()=>{ mState.selColor=c; el.querySelectorAll('.cp-dot').forEach(d=>d.classList.remove('selected')); dot.classList.add('selected'); };
     el.appendChild(dot);
   });
 }
-function openAddGroup() {
-  modalState.editGroupId = null;
-  modalState.selectedColor = GROUP_COLORS[store.groups.length % GROUP_COLORS.length];
-  document.getElementById('modal-group-title').textContent = '新建分组';
-  document.getElementById('modal-group-name').value = '';
-  initColorPicker();
-  openModal('modal-group');
-  setTimeout(() => document.getElementById('modal-group-name').focus(), 100);
+function openAddGroup(){
+  mState.editGroupId=null; mState.selColor=GROUP_COLORS[store.groups.length%GROUP_COLORS.length];
+  document.getElementById('modal-group-title').textContent='新建分组';
+  document.getElementById('modal-group-name').value='';
+  document.getElementById('modal-group-del').style.display='none';
+  initColorPicker(); openModal('modal-group');
 }
-function openEditGroup(groupId) {
-  const group = store.groups.find(g => g.id === groupId);
-  if (!group) return;
-  modalState.editGroupId = groupId;
-  modalState.selectedColor = group.color;
-  document.getElementById('modal-group-title').textContent = '编辑分组';
-  document.getElementById('modal-group-name').value = group.name;
-  initColorPicker();
-  openModal('modal-group');
+function openEditGroup(gid){
+  const g=store.groups.find(x=>x.id===gid); if(!g) return;
+  mState.editGroupId=gid; mState.selColor=g.color;
+  document.getElementById('modal-group-title').textContent='编辑分组';
+  document.getElementById('modal-group-name').value=g.name;
+  document.getElementById('modal-group-del').style.display='inline-flex';
+  initColorPicker(); openModal('modal-group');
 }
-function saveGroup() {
-  const name = document.getElementById('modal-group-name').value.trim();
-  if (!name) { alert('请输入分组名称'); return; }
-  if (modalState.editGroupId) {
-    const g = store.groups.find(g => g.id === modalState.editGroupId);
-    if (g) { g.name = name; g.color = modalState.selectedColor; }
+function saveGroup(){
+  const name=document.getElementById('modal-group-name').value.trim();
+  if(!name){ alert('请输入分组名称'); return; }
+  if(mState.editGroupId){
+    const g=store.groups.find(x=>x.id===mState.editGroupId);
+    if(g){ g.name=name; g.color=mState.selColor; }
   } else {
-    store.groups.push({ id:'g'+Date.now(), name, color: modalState.selectedColor, chars:[] });
+    store.groups.push({id:'g'+Date.now(), name, color:mState.selColor, entries:[]});
   }
-  saveStore();
-  closeModal('modal-group');
-  renderManage();
-  renderHome();
+  saveStore(); closeModal('modal-group'); renderManage(); renderHome();
 }
-function deleteGroup(groupId) {
-  if (!confirm('确定删除整个分组吗？其中所有汉字也会删除。')) return;
-  store.groups = store.groups.filter(g => g.id !== groupId);
-  saveStore();
-  renderManage();
-  renderHome();
+function deleteCurrentGroup(){
+  if(!confirm('确定删除整个分组吗？')) return;
+  store.groups=store.groups.filter(x=>x.id!==mState.editGroupId);
+  saveStore(); closeModal('modal-group'); renderManage(); renderHome();
 }
 
-// close modal on backdrop click
-document.querySelectorAll('.modal-overlay').forEach(el => {
-  el.addEventListener('click', e => {
-    if (e.target === el) el.classList.remove('open');
-  });
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+function openModal(id){ document.getElementById(id).classList.add('open'); }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(el=>{
+  el.addEventListener('click',e=>{ if(e.target===el) el.classList.remove('open'); });
+});
+function autoPinyin(s){
+  if(window.pinyinPro){ try{ return pinyinPro.pinyin(s,{toneType:'symbol',type:'string'}); }catch(e){} }
+  return '';
+}
+
+// ════════════════════════════════════════
+// KEYBOARD shortcuts (← → for global prev/next)
+// ════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('page-study').classList.contains('active')) return;
+  if(document.querySelector('.modal-overlay.open')) return;
+  if(e.key==='ArrowRight') globalNext();
+  if(e.key==='ArrowLeft')  globalPrev();
 });
 
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 // INIT
-// ════════════════════════════════════════════
+// ════════════════════════════════════════
 renderHome();
 </script>
 </body>
