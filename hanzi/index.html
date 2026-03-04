@@ -9,33 +9,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* 活泼主色 */
-  --ink:#1a1a2e;--ink2:#16213e;--muted:#94a3b8;--border:#e2e8f0;
-  --bg:#f0f4ff;--paper:#ffffff;
-  --red:#f43f5e;--orange:#fb923c;--yellow:#fbbf24;
-  --green:#34d399;--teal:#2dd4bf;--blue:#60a5fa;--violet:#a78bfa;
-  --pink:#f472b6;--accent:#fbbf24;--stamp:#f43f5e;
-  /* fun gradients */
-  --grad-hero:linear-gradient(135deg,#667eea 0%,#764ba2 100%);
-  --grad-study:linear-gradient(135deg,#f093fb 0%,#f5576c 100%);
-  --grad-manage:linear-gradient(135deg,#4facfe 0%,#00f2fe 100%);
-  --grad-achieve:linear-gradient(135deg,#43e97b 0%,#38f9d7 100%);
-  --grad-practice:linear-gradient(135deg,#fa709a 0%,#fee140 100%);
+  --ink:#3d1c02;--ink2:#7c3a0e;--muted:#b07040;--border:#fdd9b5;
+  --bg:#fff8f0;--paper:#ffffff;
+  --o1:#ff6b00;--o2:#ff8c38;--o3:#ffb366;--o4:#ffd199;
+  --red:#ef4444;--blue:#3b82f6;--green:#22c55e;
+  --accent:#ff6b00;--stamp:#ff6b00;
+  --grad-hero:linear-gradient(135deg,#ff6b00 0%,#ff9a3c 100%);
+  --grad-btn:linear-gradient(135deg,#ff6b00,#ff9a3c);
+  --grad-btn2:linear-gradient(135deg,#ffb366,#ff6b00);
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
 body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
-
-/* ── SPA ── */
-.page{display:none;flex-direction:column;height:100%;overflow:hidden;animation:fadeUp .25s ease both}
+.page{display:none;flex-direction:column;height:100%;overflow:hidden;animation:fadeUp .22s ease both}
 .page.active{display:flex}
-@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-/* ── shared topbar ── */
+/* ── topbar ── */
 .topbar{
   flex-shrink:0;height:54px;display:flex;align-items:center;padding:0 14px;gap:10px;
   background:var(--paper);border-bottom:2px solid var(--border);z-index:10;
-  box-shadow:0 2px 8px rgba(102,126,234,.08);
+  box-shadow:0 2px 8px rgba(255,107,0,.08);
 }
 .topbar-title{
   font-family:'ZCOOL XiaoWei',cursive;font-size:1.1rem;font-weight:600;
@@ -47,209 +42,204 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   background:var(--paper);display:flex;align-items:center;justify-content:center;
   cursor:pointer;font-size:.95rem;transition:all .15s;flex-shrink:0;
 }
-.icon-btn:hover{background:var(--bg);border-color:#a78bfa;transform:scale(1.05)}
+.icon-btn:hover{background:var(--bg);border-color:var(--o2);transform:scale(1.06)}
 
-/* ── buttons — all content centered ── */
+/* ── buttons ── */
 .btn{
   display:inline-flex;align-items:center;justify-content:center;gap:5px;
   padding:9px 18px;border-radius:12px;border:2px solid transparent;
   font-family:inherit;font-size:.85rem;font-weight:700;cursor:pointer;
-  transition:all .15s;white-space:nowrap;line-height:1;text-align:center;
+  transition:all .15s;white-space:nowrap;line-height:1;
 }
 .btn:active{transform:scale(.95)}
-.btn-primary{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(102,126,234,.4)}
-.btn-primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-primary{background:var(--grad-btn);color:#fff;box-shadow:0 3px 10px rgba(255,107,0,.35)}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}
 .btn-ghost{background:var(--paper);color:var(--ink2);border-color:var(--border)}
-.btn-ghost:hover{background:var(--bg);border-color:#a78bfa;color:#764ba2}
-.btn-danger{background:#fff1f2;color:#f43f5e;border-color:#fecdd3}
-.btn-danger:hover{background:#ffe4e6}
+.btn-ghost:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
+.btn-danger{background:#fff1f2;color:#ef4444;border-color:#fecaca}
+.btn-danger:hover{background:#fee2e2}
 .btn-sm{padding:7px 14px;font-size:.78rem;border-radius:9px}
 .btn-icon{padding:8px;border-radius:9px;min-width:34px;min-height:34px}
-.btn.toggled{background:linear-gradient(135deg,#f43f5e,#fb923c)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 3px 10px rgba(244,63,94,.35)!important}
+.btn.toggled{background:var(--grad-btn)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 3px 10px rgba(255,107,0,.4)!important}
 
 ::-webkit-scrollbar{width:5px}
-::-webkit-scrollbar-thumb{background:linear-gradient(#a78bfa,#60a5fa);border-radius:4px}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--o2),var(--o3));border-radius:4px}
 
-/* ════════════════════════
-   HOME
-════════════════════════ */
+/* ════ HOME ════ */
 #page-home{background:var(--bg)}
 .home-hero{
   flex-shrink:0;background:var(--grad-hero);color:#fff;
   padding:32px 22px 38px;position:relative;overflow:hidden;
 }
-.home-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.08)}
-.home-hero::after{content:'';position:absolute;left:-30px;bottom:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.05)}
-.hero-eyebrow{font-size:.68rem;letter-spacing:4px;color:rgba(255,255,255,.65);margin-bottom:8px}
+.home-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.09)}
+.home-hero::after{content:'';position:absolute;left:-30px;bottom:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.06)}
+.hero-eyebrow{font-size:.68rem;letter-spacing:4px;color:rgba(255,255,255,.7);margin-bottom:8px}
 .hero-title{font-family:'Ma Shan Zheng',cursive;font-size:2.8rem;line-height:1;letter-spacing:8px;margin-bottom:6px}
-.hero-title span{color:#fbbf24}
-.hero-sub{font-size:.82rem;color:rgba(255,255,255,.7);letter-spacing:1px}
+.hero-title span{color:#ffd199}
+.hero-sub{font-size:.82rem;color:rgba(255,255,255,.75);letter-spacing:1px}
 .home-body{flex:1;overflow-y:auto;padding:18px 16px 28px}
-.sec-label{
-  font-size:.67rem;letter-spacing:3px;color:var(--muted);margin-bottom:10px;
-  font-weight:700;text-transform:uppercase;
-}
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.sec-label{font-size:.67rem;letter-spacing:3px;color:var(--muted);margin-bottom:10px;font-weight:700;text-transform:uppercase}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:22px}
 .nav-card{
   background:var(--paper);border:2px solid var(--border);border-radius:16px;
   padding:18px 14px;cursor:pointer;transition:all .2s;
   display:flex;flex-direction:column;gap:8px;
-  box-shadow:0 2px 8px rgba(0,0,0,.06);position:relative;overflow:hidden;
+  box-shadow:0 2px 8px rgba(255,107,0,.06);position:relative;overflow:hidden;
 }
-.nav-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
-.nav-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.nav-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:var(--grad-hero)}
+.nav-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.12)}
 .nav-card:active{transform:scale(.97)}
+.nav-card.hl{background:var(--grad-hero);border-color:transparent}
+.nav-card.hl::before{display:none}
+.nav-card.hl .nav-name,.nav-card.hl .nav-icon{color:#fff}
+.nav-card.hl .nav-desc{color:rgba(255,255,255,.7)}
 .nav-icon{font-size:1.8rem;line-height:1}
 .nav-name{font-weight:900;font-size:.92rem;color:var(--ink)}
 .nav-desc{font-size:.72rem;color:var(--muted);line-height:1.4}
-/* colorful top bars per card */
-.nav-card.hl{background:linear-gradient(135deg,#667eea,#764ba2);border-color:transparent}
-.nav-card.hl::before{display:none}
-.nav-card.hl .nav-name{color:#fff}
-.nav-card.hl .nav-desc{color:rgba(255,255,255,.65)}
-.nav-card:nth-child(2)::before{background:var(--grad-practice)}
-.nav-card:nth-child(3)::before{background:var(--grad-achieve)}
-.nav-card:nth-child(4)::before{background:var(--grad-manage)}
-.nav-badge{
-  position:absolute;top:10px;right:10px;
-  background:#fbbf24;color:#1a1a2e;
-  font-size:.58rem;font-weight:900;padding:2px 7px;border-radius:99px;
-}
+.nav-badge{position:absolute;top:10px;right:10px;background:#ffd199;color:var(--ink);font-size:.58rem;font-weight:900;padding:2px 7px;border-radius:99px}
 .group-chips{display:flex;flex-wrap:wrap;gap:8px}
 .g-chip{
   display:flex;align-items:center;gap:6px;padding:7px 13px;
   background:var(--paper);border:2px solid var(--border);border-radius:10px;
   cursor:pointer;transition:all .15s;font-size:.8rem;font-weight:700;
 }
-.g-chip:hover{border-color:#a78bfa;background:#faf5ff;color:#7c3aed}
-.g-chip-dot{width:8px;height:8px;border-radius:50%}
+.g-chip:hover{border-color:var(--o2);background:#fff5ec;color:var(--o1)}
 .g-chip-n{font-size:.67rem;color:var(--muted);font-weight:400}
 
-/* ════════════════════════
-   GROUP PICKER — full page
-════════════════════════ */
+/* ════ GROUP PICKER ════ */
 #page-gpick{background:var(--bg)}
 .gpick-body{flex:1;overflow-y:auto;padding:20px 16px 32px}
-.gpick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+.gpick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 .gpick-card{
   background:var(--paper);border:2px solid var(--border);border-radius:18px;
-  padding:20px 18px 16px;cursor:pointer;transition:all .2s;
-  display:flex;flex-direction:column;gap:12px;
-  box-shadow:0 2px 8px rgba(0,0,0,.05);position:relative;overflow:hidden;
+  padding:22px 18px 18px;cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;gap:10px;
+  box-shadow:0 2px 8px rgba(255,107,0,.06);position:relative;overflow:hidden;
 }
-.gpick-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:4px;
-}
-.gpick-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(102,126,234,.15)}
+.gpick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--grad-hero);border-radius:18px 18px 0 0}
+.gpick-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(255,107,0,.14)}
 .gpick-card:active{transform:scale(.97)}
 .gpick-card-top{display:flex;align-items:center;gap:10px}
-.gpick-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;box-shadow:0 2px 6px rgba(0,0,0,.2)}
-.gpick-name{font-weight:900;font-size:1rem;flex:1;color:var(--ink)}
-.gpick-arrow{font-size:1.1rem;color:var(--muted)}
-.gpick-meta{display:flex;gap:7px;flex-wrap:wrap}
-.gpick-tag{
-  font-size:.72rem;padding:3px 10px;border-radius:99px;
-  background:var(--bg);border:1.5px solid var(--border);
-  color:var(--muted);font-weight:600;
-}
-.gpick-empty{text-align:center;padding:48px 20px;color:var(--muted)}
-.gpick-empty-icon{font-size:3rem;opacity:.3;margin-bottom:10px}
-.gpick-empty-text{font-size:.88rem;font-weight:700;color:var(--ink2);margin-bottom:6px}
+.gpick-name{font-weight:900;font-size:1.05rem;flex:1;color:var(--ink)}
+.gpick-arrow{font-size:1.2rem;color:var(--muted)}
+.gpick-meta{font-size:.78rem;color:var(--muted);font-weight:600}
+.gpick-empty{text-align:center;padding:48px 20px;color:var(--muted);grid-column:1/-1}
+.gpick-empty-icon{font-size:3rem;opacity:.35;margin-bottom:10px}
+.gpick-empty-text{font-size:.9rem;font-weight:700;color:var(--ink2);margin-bottom:6px}
 .gpick-empty-sub{font-size:.78rem;line-height:1.6}
 
-/* ════════════════════════
-   STUDY PAGE
-════════════════════════ */
+/* ════ STUDY PAGE ════ */
 #page-study{background:var(--bg)}
-
 .study-body{
   flex:1;overflow:hidden;display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   padding:16px 60px;gap:14px;position:relative;
 }
-
-/* Nav arrows */
 .entry-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:5}
-.entry-nav.left{left:6px}
-.entry-nav.right{right:6px}
+.entry-nav.left{left:6px}.entry-nav.right{right:6px}
 .nav-arrow{
   width:38px;height:58px;border-radius:14px;border:2px solid var(--border);
   background:var(--paper);display:flex;align-items:center;justify-content:center;
   cursor:pointer;font-size:1.3rem;font-weight:900;transition:all .18s;color:var(--muted);
-  box-shadow:0 2px 8px rgba(0,0,0,.06);
+  box-shadow:0 2px 8px rgba(255,107,0,.08);
 }
-.nav-arrow:hover{background:var(--grad-hero);background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(102,126,234,.4);transform:scale(1.06)}
+.nav-arrow:hover{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(255,107,0,.35);transform:scale(1.06)}
 .nav-arrow:disabled{opacity:.2;pointer-events:none;box-shadow:none}
-
 .study-center{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:760px;width:100%}
-
-/* row of boxes */
 .tzg-row{display:flex;gap:20px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
 .tzg-unit{display:flex;flex-direction:column;align-items:center;gap:8px}
-
 .tzg-pinyin{
   font-size:1.6rem;font-weight:900;letter-spacing:5px;
-  font-family:'Noto Sans SC',sans-serif;min-height:1.8em;
-  text-align:center;line-height:1.2;
-  background:linear-gradient(135deg,#f43f5e,#fb923c);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-family:'Noto Sans SC',sans-serif;min-height:1.8em;text-align:center;line-height:1.2;
+  background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-
-/* uniform 240×240 box */
 .tzg-box{
-  position:relative;background:#fff;
-  border:2.5px solid #c4b5fd;border-radius:8px;
-  overflow:hidden;flex-shrink:0;
-  width:240px;height:240px;
-  box-shadow:0 4px 16px rgba(167,139,250,.2);
+  position:relative;background:#fff;border:2.5px solid var(--o3);border-radius:8px;
+  overflow:hidden;flex-shrink:0;width:240px;height:240px;
+  box-shadow:0 4px 16px rgba(255,107,0,.12);
 }
-.tzg-char-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1}
-.tzg-quiz-div{position:absolute;inset:0;z-index:2;display:none}
 .tzg-cover{position:absolute;inset:0;z-index:3;display:none}
 .tzg-cover.show{display:block}
-
-/* mini controls per char */
 .tzg-mini-ctrl{display:flex;gap:6px;justify-content:center}
 .tzg-status{font-size:.72rem;color:var(--muted);text-align:center;min-height:1em;font-weight:600}
-.tzg-status.ok{color:#34d399}
-.tzg-status.err{color:#f43f5e}
-
-/* entry counter */
-.entry-label{
-  font-size:.78rem;color:var(--muted);font-weight:700;letter-spacing:1px;text-align:center;
-}
-
-/* quiz message */
-.study-quiz-msg{
-  font-size:.92rem;font-weight:800;text-align:center;min-height:1.2em;
-  letter-spacing:.3px;color:var(--ink);
-}
-
-/* action bar */
+.tzg-status.ok{color:var(--green)}.tzg-status.err{color:var(--red)}
+.entry-label{font-size:.78rem;color:var(--muted);font-weight:700;letter-spacing:1px;text-align:center}
+.study-quiz-msg{font-size:.92rem;font-weight:800;text-align:center;min-height:1.2em;letter-spacing:.3px;color:var(--ink)}
 .study-actions{
   flex-shrink:0;display:flex;gap:9px;flex-wrap:wrap;justify-content:center;
-  padding:11px 16px 13px;
-  border-top:2px solid var(--border);
-  background:var(--paper);
-  box-shadow:0 -2px 10px rgba(102,126,234,.06);
+  padding:11px 16px 13px;border-top:2px solid var(--border);
+  background:var(--paper);box-shadow:0 -2px 10px rgba(255,107,0,.06);
 }
 
-/* ════════════════════════
-   MANAGE PAGE
-════════════════════════ */
+/* ════ PRACTICE PAGE ════ */
+#page-practice{background:var(--bg)}
+.prac-body{flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:18px}
+.prac-mode-sel{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.prac-mode-card{
+  background:var(--paper);border:2px solid var(--border);border-radius:16px;
+  padding:22px 26px;cursor:pointer;transition:all .2s;text-align:center;
+  min-width:150px;box-shadow:0 2px 8px rgba(255,107,0,.06);
+}
+.prac-mode-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.14);border-color:var(--o2)}
+.prac-mode-card.active{background:var(--grad-btn);border-color:transparent;box-shadow:0 4px 16px rgba(255,107,0,.4)}
+.prac-mode-card .pm-icon{font-size:2.2rem;margin-bottom:8px}
+.prac-mode-card .pm-name{font-weight:900;font-size:.95rem;color:var(--ink)}
+.prac-mode-card .pm-desc{font-size:.72rem;color:var(--muted);line-height:1.4;margin-top:4px}
+.prac-mode-card.active .pm-name,.prac-mode-card.active .pm-desc{color:#fff}
+.prac-gpick-hint{font-size:.82rem;color:var(--muted);font-weight:600}
+.prac-start-btn{font-size:1rem;padding:12px 32px;border-radius:14px}
+
+/* Practice quiz layout */
+.prac-quiz-body{
+  flex:1;overflow:hidden;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:12px 60px;gap:12px;position:relative;
+}
+.prac-char-area{display:flex;flex-direction:column;align-items:center;gap:10px}
+.prac-pinyin-hint{
+  font-size:2rem;font-weight:900;letter-spacing:6px;
+  background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  min-height:2.2em;text-align:center;
+}
+.prac-hint-label{
+  font-size:.8rem;color:var(--muted);font-weight:700;text-align:center;
+  background:var(--bg);border:1.5px solid var(--border);padding:4px 12px;border-radius:99px;margin-bottom:2px;
+}
+.prac-progress{
+  display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center;
+}
+.prac-prog-dot{
+  width:10px;height:10px;border-radius:50%;background:var(--border);transition:background .3s;
+}
+.prac-prog-dot.done{background:var(--green)}
+.prac-prog-dot.current{background:var(--o1);transform:scale(1.3)}
+.prac-msg{
+  font-size:.95rem;font-weight:800;text-align:center;min-height:1.3em;
+  letter-spacing:.3px;padding:8px 20px;border-radius:99px;
+  background:var(--bg);border:1.5px solid var(--border);color:var(--ink);
+}
+.prac-nav-arrows{
+  position:absolute;top:50%;transform:translateY(-50%);
+  display:flex;width:100%;justify-content:space-between;
+  padding:0 6px;pointer-events:none;z-index:5;
+}
+.prac-nav-arrows .nav-arrow{pointer-events:all}
+.prac-actions{
+  flex-shrink:0;display:flex;gap:9px;flex-wrap:wrap;justify-content:center;
+  padding:10px 16px 12px;border-top:2px solid var(--border);
+  background:var(--paper);box-shadow:0 -2px 8px rgba(255,107,0,.05);
+}
+
+/* ════ MANAGE PAGE ════ */
 #page-manage{background:var(--bg)}
 .manage-body{flex:1;overflow-y:auto;padding:12px 14px 28px}
 .wm-group{
   background:var(--paper);border:2px solid var(--border);border-radius:16px;
-  margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04);
+  margin-bottom:12px;overflow:hidden;box-shadow:0 2px 8px rgba(255,107,0,.05);
 }
-.wm-gh{
-  display:flex;align-items:center;gap:8px;padding:11px 14px;
-  border-bottom:2px solid var(--border);background:var(--bg);
-}
-.wm-gdot{width:11px;height:11px;border-radius:50%;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,.2)}
-.wm-gname{flex:1;font-weight:900;font-size:.9rem}
-.wm-gcnt{font-size:.7rem;color:var(--muted);background:var(--border);padding:2px 7px;border-radius:99px}
+.wm-gh{display:flex;align-items:center;gap:8px;padding:11px 14px;border-bottom:2px solid var(--border);background:var(--bg)}
+.wm-gname{flex:1;font-weight:900;font-size:.9rem;color:var(--ink)}
+.wm-gcnt{font-size:.7rem;color:var(--muted);background:var(--border);padding:2px 8px;border-radius:99px}
 .wm-ga{display:flex;gap:5px}
 .wm-entries{padding:10px 13px;display:flex;flex-wrap:wrap;gap:7px}
 .wm-entry{
@@ -257,50 +247,35 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   background:var(--bg);border:2px solid var(--border);
   border-radius:9px;padding:5px 9px;cursor:pointer;transition:all .15s;
 }
-.wm-entry:hover{border-color:#a78bfa;background:#faf5ff;transform:translateY(-1px)}
+.wm-entry:hover{border-color:var(--o2);background:#fff5ec;transform:translateY(-1px)}
 .wm-ehanzi{font-family:'Ma Shan Zheng',cursive;font-size:1.3rem;line-height:1}
 .wm-epy{font-size:.63rem;color:var(--muted)}
-.wm-etag{font-size:.58rem;padding:2px 5px;border-radius:4px;font-weight:800}
-.wm-etag.simple{background:#d1fae5;color:#065f46}
-.wm-etag.complex{background:#ede9fe;color:#5b21b6}
-.wm-etag.word{background:#fef3c7;color:#92400e}
 .wm-add{
   display:flex;align-items:center;justify-content:center;width:46px;height:46px;
   border:2px dashed var(--border);border-radius:9px;cursor:pointer;
   font-size:1.2rem;color:var(--muted);transition:all .15s;background:transparent;
 }
-.wm-add:hover{border-color:#a78bfa;color:#7c3aed;background:#faf5ff}
+.wm-add:hover{border-color:var(--o2);color:var(--o1);background:#fff5ec}
 
-/* ════════════════════════
-   PLACEHOLDER
-════════════════════════ */
-.placeholder-body{
-  flex:1;display:flex;flex-direction:column;align-items:center;
-  justify-content:center;gap:14px;color:var(--muted);padding:40px;text-align:center;
-}
+/* ════ PLACEHOLDER ════ */
+.placeholder-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px;text-align:center}
 .ph-icon{font-size:4rem;opacity:.4}
 .ph-text{font-size:.95rem;font-weight:900;color:var(--ink2)}
 .ph-sub{font-size:.8rem;line-height:1.8;color:var(--muted)}
 
-/* ════════════════════════
-   MODAL (entry / group)
-════════════════════════ */
+/* ════ MODAL ════ */
 .modal-overlay{
-  position:fixed;inset:0;background:rgba(26,26,46,.5);backdrop-filter:blur(3px);
+  position:fixed;inset:0;background:rgba(61,28,2,.45);backdrop-filter:blur(3px);
   z-index:100;display:none;align-items:center;justify-content:center;padding:16px;
 }
 .modal-overlay.open{display:flex}
-@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
 .modal{
   background:var(--paper);border-radius:20px;width:100%;max-width:430px;
   max-height:90vh;overflow-y:auto;
-  box-shadow:0 24px 64px rgba(26,26,46,.2);
+  box-shadow:0 24px 64px rgba(61,28,2,.2);
   animation:slideUp .22s ease;border:2px solid var(--border);
 }
-.mhdr{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 18px 0;
-}
+.mhdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 0}
 .mtitle{
   font-weight:900;font-size:.95rem;
   background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
@@ -310,7 +285,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   background:var(--bg);cursor:pointer;display:flex;align-items:center;justify-content:center;
   font-size:.85rem;transition:all .12s;
 }
-.mclose:hover{background:#fecdd3;border-color:#f43f5e;color:#f43f5e}
+.mclose:hover{background:#ffe4e6;border-color:#ef4444;color:#ef4444}
 .mbody{padding:14px 18px 16px;display:flex;flex-direction:column;gap:12px}
 .frow{display:flex;flex-direction:column;gap:5px}
 .flabel{font-size:.74rem;font-weight:800;color:var(--ink2);letter-spacing:.5px}
@@ -319,7 +294,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   font-size:.88rem;font-family:inherit;background:var(--bg);outline:none;
   transition:border-color .18s;width:100%;
 }
-.finput:focus{border-color:#a78bfa;background:var(--paper);box-shadow:0 0 0 3px rgba(167,139,250,.15)}
+.finput:focus{border-color:var(--o2);background:var(--paper);box-shadow:0 0 0 3px rgba(255,107,0,.1)}
 .fhint{font-size:.68rem;color:var(--muted);line-height:1.5}
 .ftabs{display:flex;gap:6px}
 .ftab{
@@ -327,43 +302,24 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   background:var(--bg);font-family:inherit;font-size:.76rem;font-weight:700;
   cursor:pointer;transition:all .15s;text-align:center;
 }
-.ftab.active{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(102,126,234,.3)}
+.ftab.active{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(255,107,0,.3)}
 .mfooter{padding:0 18px 16px;display:flex;gap:8px;justify-content:flex-end}
 
 /* word char config */
 .word-char-cfg{display:flex;flex-direction:column;gap:7px;margin-top:4px}
-.wcc-row{
-  display:flex;align-items:center;gap:8px;padding:8px 11px;
-  background:var(--bg);border:2px solid var(--border);border-radius:10px;
-}
+.wcc-row{display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--bg);border:2px solid var(--border);border-radius:10px}
 .wcc-ch{font-family:'Ma Shan Zheng',cursive;font-size:1.4rem;width:30px;text-align:center;flex-shrink:0}
 .wcc-tabs{display:flex;gap:4px;flex:1}
-.wcc-tab{
-  flex:1;padding:5px 4px;border-radius:7px;border:2px solid var(--border);
-  background:var(--paper);font-family:inherit;font-size:.72rem;font-weight:700;
-  cursor:pointer;transition:all .12s;text-align:center;
-}
-.wcc-tab.active{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border-color:transparent}
-.wcc-range{
-  flex:1;border:2px solid var(--border);border-radius:7px;padding:5px 8px;
-  font-size:.72rem;font-family:inherit;outline:none;background:#fff;display:none;
-}
+.wcc-tab{flex:1;padding:5px 4px;border-radius:7px;border:2px solid var(--border);background:var(--paper);font-family:inherit;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .12s;text-align:center}
+.wcc-tab.active{background:var(--grad-btn);color:#fff;border-color:transparent}
+.wcc-range{flex:1;border:2px solid var(--border);border-radius:7px;padding:5px 8px;font-size:.72rem;font-family:inherit;outline:none;background:#fff;display:none}
 .wcc-range.show{display:block}
-.wcc-range:focus{border-color:#a78bfa}
-
-/* color picker */
-.color-picker{display:flex;gap:8px;flex-wrap:wrap}
-.cp-dot{
-  width:24px;height:24px;border-radius:50%;cursor:pointer;
-  border:2.5px solid transparent;transition:all .15s;
-  box-shadow:0 2px 6px rgba(0,0,0,.2);
-}
-.cp-dot.selected{border-color:var(--ink);transform:scale(1.25);box-shadow:0 3px 10px rgba(0,0,0,.3)}
+.wcc-range:focus{border-color:var(--o2)}
 </style>
 </head>
 <body>
 
-<!-- ═══════ HOME ═══════ -->
+<!-- ═══ HOME ═══ -->
 <div id="page-home" class="page active">
   <div class="home-hero">
     <div class="hero-eyebrow">小学汉字学习</div>
@@ -377,8 +333,8 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
         <div class="nav-icon">📖</div><div class="nav-name">学 习</div>
         <div class="nav-desc">笔顺动画，彩色笔划</div><div class="nav-badge">NEW</div>
       </div>
-      <div class="nav-card" onclick="showPage('practice')">
-        <div class="nav-icon">✏️</div><div class="nav-name">练 习</div><div class="nav-desc">跟着描字，检验笔顺</div>
+      <div class="nav-card" onclick="openPractice()">
+        <div class="nav-icon">✏️</div><div class="nav-name">练 习</div><div class="nav-desc">默写检测，两种模式</div>
       </div>
       <div class="nav-card" onclick="showPage('achieve')">
         <div class="nav-icon">🏆</div><div class="nav-name">成 就</div><div class="nav-desc">学习记录，解锁徽章</div>
@@ -392,68 +348,107 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   </div>
 </div>
 
-<!-- ═══════ GROUP PICKER PAGE ═══════ -->
+<!-- ═══ GROUP PICKER (学习) ═══ -->
 <div id="page-gpick" class="page">
   <div class="topbar">
-    <button class="icon-btn" onclick="showPage('home');renderHome()" title="返回首页">🏠</button>
+    <button class="icon-btn" onclick="showPage('home');renderHome()">🏠</button>
     <div class="topbar-title">选择学习分组</div>
-    <div style="width:34px"></div>
+    <div style="width:36px"></div>
   </div>
   <div class="gpick-body">
     <div class="gpick-grid" id="gpick-grid"></div>
   </div>
 </div>
 
-<!-- ═══════ STUDY PAGE ═══════ -->
+<!-- ═══ STUDY ═══ -->
 <div id="page-study" class="page">
-  <!-- topbar: just home + title + speak -->
   <div class="topbar">
-    <button class="icon-btn" onclick="showPage('home');renderHome()" title="返回首页">🏠</button>
+    <button class="icon-btn" onclick="showPage('home');renderHome()">🏠</button>
     <div class="topbar-title" id="study-group-name">学 习</div>
     <button class="icon-btn" onclick="speakCurrent()" title="朗读">🔊</button>
   </div>
-
-  <!-- centered body -->
   <div class="study-body">
-    <!-- Left nav arrow -->
     <div class="entry-nav left">
       <button class="nav-arrow" id="btn-prev-entry" onclick="goPrevEntry()">‹</button>
     </div>
-
-    <!-- Center content -->
     <div class="study-center">
       <div class="entry-label" id="entry-label">1 / 1</div>
       <div class="tzg-row" id="tzg-row"></div>
       <div class="study-quiz-msg" id="study-quiz-msg"></div>
     </div>
-
-    <!-- Right nav arrow -->
     <div class="entry-nav right">
       <button class="nav-arrow" id="btn-next-entry" onclick="goNextEntry()">›</button>
     </div>
   </div>
-
-  <!-- action bar -->
   <div class="study-actions">
-    <button class="btn btn-ghost btn-sm" id="btn-follow" onclick="toggleFollow()" style="gap:6px">🖊 跟写</button>
-    <button class="btn btn-ghost btn-sm" id="btn-cover" onclick="toggleCover()" style="gap:6px">👁 遮盖</button>
-    <button class="btn btn-ghost btn-sm" onclick="resetAll()" style="gap:6px">↺ 重置</button>
+    <button class="btn btn-ghost btn-sm" id="btn-follow" onclick="toggleFollow()">🖊 跟写</button>
+    <button class="btn btn-ghost btn-sm" id="btn-cover" onclick="toggleCover()">👁 遮盖</button>
+    <button class="btn btn-ghost btn-sm" onclick="resetAll()">↺ 重置</button>
   </div>
 </div>
 
-<!-- ═══════ PRACTICE STUB ═══════ -->
+<!-- ═══ PRACTICE ═══ -->
 <div id="page-practice" class="page">
-  <div class="topbar"><button class="icon-btn" onclick="showPage('home');renderHome()">🏠</button><div class="topbar-title">练 习</div></div>
-  <div class="placeholder-body"><div class="ph-icon">✏️</div><div class="ph-text">练习模块即将上线</div><div class="ph-sub">笔顺练习、跟写检测<br>敬请期待</div></div>
+  <!-- sub-page: mode select -->
+  <div id="prac-sel" style="display:flex;flex-direction:column;height:100%">
+    <div class="topbar">
+      <button class="icon-btn" onclick="showPage('home');renderHome()">🏠</button>
+      <div class="topbar-title">练 习</div>
+      <div style="width:36px"></div>
+    </div>
+    <div class="prac-body">
+      <div class="gpick-grid" id="prac-gpick-grid" style="width:100%;max-width:600px"></div>
+      <div class="prac-mode-sel" id="prac-mode-sel">
+        <div class="prac-mode-card active" id="pmc-simple" onclick="selectPracMode('simple')">
+          <div class="pm-icon">🌟</div>
+          <div class="pm-name">简单模式</div>
+          <div class="pm-desc">简单字全空白<br>结构字给结构提示</div>
+        </div>
+        <div class="prac-mode-card" id="pmc-standard" onclick="selectPracMode('standard')">
+          <div class="pm-icon">🎯</div>
+          <div class="pm-name">标准模式</div>
+          <div class="pm-desc">显示拼音，手写检测<br>写错播放笔顺动画</div>
+        </div>
+      </div>
+      <button class="btn btn-primary prac-start-btn" onclick="startPractice()">开始练习 →</button>
+    </div>
+  </div>
+
+  <!-- sub-page: quiz -->
+  <div id="prac-quiz" style="display:none;flex-direction:column;height:100%">
+    <div class="topbar">
+      <button class="icon-btn" onclick="exitPractice()">← 返回</button>
+      <div class="topbar-title" id="prac-title">练 习</div>
+      <button class="icon-btn" onclick="speakPrac()" title="朗读">🔊</button>
+    </div>
+    <div class="prac-quiz-body">
+      <div class="prac-nav-arrows">
+        <button class="nav-arrow" id="prac-prev" onclick="pracGoPrev()">‹</button>
+        <button class="nav-arrow" id="prac-next" onclick="pracGoNext()">›</button>
+      </div>
+      <div class="prac-char-area">
+        <div class="prac-progress" id="prac-progress"></div>
+        <div class="prac-hint-label" id="prac-hint-label" style="display:none"></div>
+        <div class="prac-pinyin-hint" id="prac-pinyin-hint"></div>
+        <div class="tzg-row" id="prac-tzg-row"></div>
+        <div class="prac-msg" id="prac-msg"></div>
+      </div>
+    </div>
+    <div class="prac-actions">
+      <button class="btn btn-ghost btn-sm" id="prac-skip" onclick="pracSkip()">跳过 →</button>
+      <button class="btn btn-ghost btn-sm" id="prac-hint-btn" onclick="pracShowHint()">💡 提示</button>
+      <button class="btn btn-ghost btn-sm" onclick="pracRestart()">↺ 重来</button>
+    </div>
+  </div>
 </div>
 
-<!-- ═══════ ACHIEVE STUB ═══════ -->
+<!-- ═══ ACHIEVE ═══ -->
 <div id="page-achieve" class="page">
   <div class="topbar"><button class="icon-btn" onclick="showPage('home');renderHome()">🏠</button><div class="topbar-title">成 就</div></div>
-  <div class="placeholder-body"><div class="ph-icon">🏆</div><div class="ph-text">成就系统即将上线</div><div class="ph-sub">完成学习任务，解锁专属徽章<br>记录你的每一步成长</div></div>
+  <div class="placeholder-body"><div class="ph-icon">🏆</div><div class="ph-text">成就系统即将上线</div><div class="ph-sub">完成练习，解锁专属徽章<br>记录每一步成长</div></div>
 </div>
 
-<!-- ═══════ MANAGE PAGE ═══════ -->
+<!-- ═══ MANAGE ═══ -->
 <div id="page-manage" class="page">
   <div class="topbar">
     <button class="icon-btn" onclick="showPage('home');renderHome()">🏠</button>
@@ -463,7 +458,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   <div class="manage-body" id="manage-body"></div>
 </div>
 
-<!-- ═══════ MODAL: add/edit entry ═══════ -->
+<!-- ═══ MODAL: entry ═══ -->
 <div class="modal-overlay" id="modal-entry">
   <div class="modal">
     <div class="mhdr">
@@ -486,24 +481,20 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
         <div class="flabel">拼音（留空自动生成）</div>
         <input class="finput" id="m-pinyin" placeholder="如：ài">
       </div>
-
-      <!-- SINGLE CHAR: simple/complex + red range -->
       <div id="char-cfg">
         <div class="frow">
           <div class="flabel">颜色模式</div>
           <div class="ftabs">
-            <button class="ftab active" id="fmbtn-s" onclick="setFormMode('simple')">🎨 简单（七彩循环）</button>
-            <button class="ftab" id="fmbtn-c" onclick="setFormMode('complex')">🧩 复杂（红蓝结构）</button>
+            <button class="ftab active" id="fmbtn-s" onclick="setFormMode('simple')">🎨 七彩（简单字）</button>
+            <button class="ftab" id="fmbtn-c" onclick="setFormMode('complex')">🧩 红蓝（结构字）</button>
           </div>
         </div>
         <div class="frow" id="red-range-row" style="display:none">
           <div class="flabel">🔴 红色笔画范围</div>
           <input class="finput" id="m-red" placeholder="如 1-4 或 1,2,3">
-          <div class="fhint">这些笔画显示红色，其余蓝色</div>
+          <div class="fhint">红色=一个部件，蓝色=另一个部件</div>
         </div>
       </div>
-
-      <!-- WORD: per-char config table -->
       <div id="word-cfg" style="display:none">
         <div class="frow">
           <div class="flabel">每个字的颜色设置</div>
@@ -519,7 +510,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   </div>
 </div>
 
-<!-- ═══════ MODAL: group ═══════ -->
+<!-- ═══ MODAL: group (no color picker) ═══ -->
 <div class="modal-overlay" id="modal-group">
   <div class="modal">
     <div class="mhdr">
@@ -528,7 +519,6 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
     </div>
     <div class="mbody">
       <div class="frow"><div class="flabel">分组名称</div><input class="finput" id="mg-name" placeholder="如：一年级上册第一单元"></div>
-      <div class="frow"><div class="flabel">颜色</div><div class="color-picker" id="mg-color"></div></div>
     </div>
     <div class="mfooter">
       <button class="btn btn-danger btn-sm" id="mg-del" onclick="deleteGroup()" style="display:none;margin-right:auto">🗑 删除分组</button>
@@ -539,300 +529,177 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 </div>
 
 <script>
-// ══════════════════════════════════════
-// DATA
-// ══════════════════════════════════════
-const GRP_COLORS=['#EF4444','#F97316','#EAB308','#22C55E','#14B8A6','#3B82F6','#8B5CF6','#EC4899'];
-const STROKE_PAL=['#EF4444','#F97316','#EAB308','#22C55E','#14B8A6','#3B82F6','#8B5CF6'];
+// ══ CONSTANTS ══
+const STROKE_PAL=['#f43f5e','#fb923c','#fbbf24','#22c55e','#14b8a6','#3b82f6','#8b5cf6'];
 const HW_TF='scale(1,-1) translate(0,-900)';
-const OUTLINE='#D4CFC6';
+const OUTLINE='#e5d4c0';
+const GRP_COLORS=['#ff6b00','#f43f5e','#8b5cf6','#22c55e','#3b82f6','#fbbf24','#14b8a6','#ec4899'];
 
+// ══ STORE ══
 let store={
   groups:[
-    {id:'g1',name:'一年级·基础字',color:'#3B82F6',entries:[
+    {id:'g1',name:'一年级·基础字',entries:[
       {type:'char',hanzi:'山',pinyin:'shān',mode:'simple',redRange:''},
       {type:'char',hanzi:'水',pinyin:'shuǐ',mode:'simple',redRange:''},
       {type:'char',hanzi:'火',pinyin:'huǒ',mode:'simple',redRange:''},
-      {type:'word',hanzi:'大山',pinyin:'dà shān',
-       charCfg:[{mode:'simple',redRange:''},{mode:'simple',redRange:''}]},
-      {type:'word',hanzi:'山水',pinyin:'shān shuǐ',
-       charCfg:[{mode:'simple',redRange:''},{mode:'simple',redRange:''}]},
+      {type:'word',hanzi:'大山',pinyin:'dà shān',charCfg:[{mode:'simple',redRange:''},{mode:'simple',redRange:''}]},
+      {type:'word',hanzi:'山水',pinyin:'shān shuǐ',charCfg:[{mode:'simple',redRange:''},{mode:'simple',redRange:''}]},
     ]},
-    {id:'g2',name:'认识结构',color:'#8B5CF6',entries:[
+    {id:'g2',name:'认识结构',entries:[
       {type:'char',hanzi:'明',pinyin:'míng',mode:'complex',redRange:'1-4'},
-      {type:'char',hanzi:'好',pinyin:'hǎo', mode:'complex',redRange:'1-3'},
-      {type:'word',hanzi:'明天',pinyin:'míng tiān',
-       charCfg:[{mode:'complex',redRange:'1-4'},{mode:'simple',redRange:''}]},
+      {type:'char',hanzi:'好',pinyin:'hǎo',mode:'complex',redRange:'1-3'},
+      {type:'word',hanzi:'明天',pinyin:'míng tiān',charCfg:[{mode:'complex',redRange:'1-4'},{mode:'simple',redRange:''}]},
     ]}
   ]
 };
-function saveStore(){try{localStorage.setItem('hxkt_v3',JSON.stringify(store));}catch(e){}}
-function loadStore(){try{const d=localStorage.getItem('hxkt_v3');if(d)store=JSON.parse(d);}catch(e){}}
+// Assign stable colors by index
+function grpColor(g){const i=store.groups.indexOf(g);return GRP_COLORS[i%GRP_COLORS.length];}
+
+function saveStore(){try{localStorage.setItem('hxkt_v4',JSON.stringify(store));}catch(e){}}
+function loadStore(){try{const d=localStorage.getItem('hxkt_v4');if(d)store=JSON.parse(d);}catch(e){}}
 loadStore();
 
-// ══════════════════════════════════════
-// NAV
-// ══════════════════════════════════════
+// ══ SPA NAV ══
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+id).classList.add('active');
 }
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-document.querySelectorAll('.modal-overlay').forEach(el=>{
-  el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');});
-});
+document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
 
-// ══════════════════════════════════════
-// HOME
-// ══════════════════════════════════════
+// ══ HOME ══
 function renderHome(){
-  const el=document.getElementById('home-chips');
-  el.innerHTML='';
+  const el=document.getElementById('home-chips');el.innerHTML='';
   store.groups.forEach(g=>{
     const c=document.createElement('div');c.className='g-chip';c.onclick=()=>startStudy(g.id);
-    c.innerHTML=`<span class="g-chip-dot" style="background:${g.color}"></span>${g.name}<span class="g-chip-n">${g.entries.length}条</span>`;
+    c.innerHTML=`${g.name}<span class="g-chip-n">${g.entries.length}条</span>`;
     el.appendChild(c);
   });
 }
 
-// ══════════════════════════════════════
-// GROUP PICKER (full page)
-// ══════════════════════════════════════
+// ══ GROUP PICKER (学习) ══
 function renderGpick(){
-  const grid=document.getElementById('gpick-grid');
-  grid.innerHTML='';
+  const grid=document.getElementById('gpick-grid');grid.innerHTML='';
   if(!store.groups.length){
-    grid.innerHTML=`<div class="gpick-empty" style="grid-column:1/-1">
-      <div class="gpick-empty-icon">📚</div>
-      <div class="gpick-empty-text">暂无分组</div>
-      <div class="gpick-empty-sub">请先在「字词管理」新建分组和字词</div>
-    </div>`;
+    grid.innerHTML=`<div class="gpick-empty"><div class="gpick-empty-icon">📚</div><div class="gpick-empty-text">暂无分组</div><div class="gpick-empty-sub">在「字词管理」新建分组</div></div>`;
     return;
   }
   store.groups.forEach(g=>{
     const card=document.createElement('div');card.className='gpick-card';
     card.onclick=()=>startStudy(g.id);
-    // accent left bar color
-    card.style.borderLeftColor=g.color;
-    card.style.borderLeftWidth='4px';
-    const charCount=g.entries.filter(e=>e.type==='char').length;
-    const wordCount=g.entries.filter(e=>e.type==='word').length;
-    card.innerHTML=`
-      <div class="gpick-card-top">
-        <span class="gpick-dot" style="background:${g.color}"></span>
-        <span class="gpick-name">${g.name}</span>
-        <span class="gpick-arrow">›</span>
-      </div>
-      <div class="gpick-meta">
-        ${charCount?`<span class="gpick-tag">${charCount} 个字</span>`:''}
-        ${wordCount?`<span class="gpick-tag">${wordCount} 个词</span>`:''}
-        ${!g.entries.length?'<span class="gpick-tag">暂无内容</span>':''}
-      </div>`;
+    const n=g.entries.length;
+    const chars=g.entries.filter(e=>e.type==='char').length;
+    const words=g.entries.filter(e=>e.type==='word').length;
+    card.innerHTML=`<div class="gpick-card-top"><span class="gpick-name">${g.name}</span><span class="gpick-arrow">›</span></div>
+      <div class="gpick-meta">${chars?chars+'个字 ':''} ${words?words+'个词':''} ${!n?'暂无内容':''}</div>`;
     grid.appendChild(card);
   });
 }
 function startStudy(gid){
-  const g=store.groups.find(x=>x.id===gid);
-  if(!g) return;
-  S.groupId=gid;
-  S.entryIdx=0;
+  const g=store.groups.find(x=>x.id===gid);if(!g)return;
+  S.groupId=gid;S.entryIdx=0;
   document.getElementById('study-group-name').textContent=g.name;
-  showPage('study');
-  loadEntry();
+  showPage('study');loadEntry();
 }
 
-// ══════════════════════════════════════
-// STUDY STATE
-// ══════════════════════════════════════
-let S={
-  groupId:null,
-  entryIdx:0,
-  chars:[],       // [{ch,charData,strokeColors,stepIdx,mode,redRange}]
-  followMode:false,
-  coverMode:false,
-  followCharIdx:0,
-  quizWriter:null,
-};
-
+// ══ STUDY STATE ══
+let S={groupId:null,entryIdx:0,chars:[],followMode:false,coverMode:false,followCharIdx:0,quizWriter:null};
 function currentGroup(){return store.groups.find(x=>x.id===S.groupId);}
 function currentEntry(){const g=currentGroup();return g?g.entries[S.entryIdx]:null;}
-
-function goPrevEntry(){
-  if(S.entryIdx<=0) return;
-  S.entryIdx--;
-  loadEntry();
-}
-function goNextEntry(){
-  const g=currentGroup();
-  if(!g||S.entryIdx>=g.entries.length-1) return;
-  S.entryIdx++;
-  loadEntry();
-}
+function goPrevEntry(){if(S.entryIdx<=0)return;S.entryIdx--;loadEntry();}
+function goNextEntry(){const g=currentGroup();if(!g||S.entryIdx>=g.entries.length-1)return;S.entryIdx++;loadEntry();}
 function updateNavBtns(){
-  const g=currentGroup();
-  const n=g?g.entries.length:0;
+  const g=currentGroup(),n=g?g.entries.length:0;
   document.getElementById('btn-prev-entry').disabled=S.entryIdx<=0;
   document.getElementById('btn-next-entry').disabled=S.entryIdx>=n-1;
   document.getElementById('entry-label').textContent=`${S.entryIdx+1} / ${n}`;
 }
 
-// ══════════════════════════════════════
-// LOAD ENTRY — builds the stage
-// ══════════════════════════════════════
+// ══ LOAD ENTRY ══
+function makeTzgSvg(extraStyle){
+  const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  s.setAttribute('viewBox','0 0 100 100');s.setAttribute('preserveAspectRatio','none');
+  s.style.cssText=extraStyle||'';
+  const mkL=(x1,y1,x2,y2,sw,color,dash)=>{
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+    l.setAttribute('stroke',color||'#e0cbb0');l.setAttribute('stroke-width',sw||'1');
+    if(dash)l.setAttribute('stroke-dasharray',dash);return l;
+  };
+  s.appendChild(mkL(50,0,50,100,'1','#e0cbb0','6,4'));
+  s.appendChild(mkL(0,50,100,50,'1','#e0cbb0','6,4'));
+  s.appendChild(mkL(0,0,100,100,'0.8','#ead8c0','5,5'));
+  s.appendChild(mkL(100,0,0,100,'0.8','#ead8c0','5,5'));
+  return s;
+}
+
 function loadEntry(){
-  exitAllQuiz();
-  S.followMode=false; S.coverMode=false;
+  exitAllQuiz();S.followMode=false;S.coverMode=false;
   document.getElementById('btn-follow').classList.remove('toggled');
   document.getElementById('btn-follow').textContent='🖊 跟写';
   document.getElementById('btn-cover').classList.remove('toggled');
   document.getElementById('btn-cover').textContent='👁 遮盖';
   document.getElementById('study-quiz-msg').textContent='';
   updateNavBtns();
-
   const entry=currentEntry();
-  if(!entry){ document.getElementById('tzg-row').innerHTML='<div style="color:var(--muted);padding:20px">暂无内容</div>'; return; }
-
-  const chars=[...entry.hanzi];
-  const n=chars.length;
-  S.chars=[];
-
-  // Build charCfg: for single char use entry.mode/redRange; for word use entry.charCfg[]
-  const charCfgs = entry.type==='word'
-    ? (entry.charCfg||chars.map(()=>({mode:'simple',redRange:''})))
-    : [{mode:entry.mode||'simple',redRange:entry.redRange||''}];
-
-  const row=document.getElementById('tzg-row');
-  row.innerHTML='';
-
-  const sz=''; // all same size now
-  const boxPx=240;
-
-  // Helper: build a tian zi ge SVG (cross + diagonals).
-  // Uses viewBox="0 0 100 100" with preserveAspectRatio so it scales to any container size.
-  function makeTzgSvg(extraStyle){
-    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
-    s.setAttribute('viewBox','0 0 100 100');
-    s.setAttribute('preserveAspectRatio','none');
-    s.setAttribute('xmlns','http://www.w3.org/2000/svg');
-    s.style.cssText=extraStyle||'';
-    const mkL=(x1,y1,x2,y2,sw,color,dash)=>{
-      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-      l.setAttribute('x1',x1);l.setAttribute('y1',y1);
-      l.setAttribute('x2',x2);l.setAttribute('y2',y2);
-      l.setAttribute('stroke',color||'#c0b8a8');
-      l.setAttribute('stroke-width',sw||'1');
-      if(dash)l.setAttribute('stroke-dasharray',dash);
-      return l;
-    };
-    // center vertical & horizontal dashed lines
-    s.appendChild(mkL(50,0,50,100,'1','#c0b8a8','6,4'));
-    s.appendChild(mkL(0,50,100,50,'1','#c0b8a8','6,4'));
-    // diagonals dashed lighter
-    s.appendChild(mkL(0,0,100,100,'0.8','#d0c8b8','5,5'));
-    s.appendChild(mkL(100,0,0,100,'0.8','#d0c8b8','5,5'));
-    return s;
-  }
-
+  if(!entry){document.getElementById('tzg-row').innerHTML='<div style="color:var(--muted);padding:20px">暂无内容</div>';return;}
+  const chars=[...entry.hanzi],n=chars.length;S.chars=[];
+  const charCfgs=entry.type==='word'?(entry.charCfg||chars.map(()=>({mode:'simple',redRange:''}))):[{mode:entry.mode||'simple',redRange:entry.redRange||''}];
+  const row=document.getElementById('tzg-row');row.innerHTML='';
   chars.forEach((ch,ci)=>{
     const cfg=charCfgs[ci]||{mode:'simple',redRange:''};
     S.chars.push({ch,charData:null,strokeColors:[],stepIdx:0,mode:cfg.mode,redRange:cfg.redRange||''});
-
-    const unit=document.createElement('div');
-    unit.className='tzg-unit'+(n===1?' single':'');
-
-    // ── PINYIN ABOVE the box ──
-    const pyEl=document.createElement('div');
-    pyEl.className='tzg-pinyin';
-    const pinyinParts=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');
-    pyEl.textContent=pinyinParts[ci]||autoPinyin(ch);
-    unit.appendChild(pyEl);   // <-- added BEFORE box
-
-    // ── Box ──
-    const box=document.createElement('div');
-    box.className='tzg-box';
-    box.id=`box-${ci}`;
-
-    // background grid SVG (z-index 0)
+    const unit=document.createElement('div');unit.className='tzg-unit';
+    // pinyin above
+    const py=document.createElement('div');py.className='tzg-pinyin';
+    const parts=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');
+    py.textContent=parts[ci]||autoPinyin(ch);unit.appendChild(py);
+    // box
+    const box=document.createElement('div');box.className='tzg-box';box.id=`box-${ci}`;
     box.appendChild(makeTzgSvg('position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0'));
-
-    // char SVG (z-index 1)
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('viewBox','0 0 1024 1024');
     svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:1';
-    svg.id=`svg-${ci}`;
-    box.appendChild(svg);
-
-    // quiz div (z-index 2)
-    const qd=document.createElement('div');
-    qd.style.cssText='position:absolute;inset:0;z-index:2;display:none';
-    qd.id=`qd-${ci}`;
-    box.appendChild(qd);
-
-    // cover: white rect + grid lines (z-index 3) — hides strokes but shows grid
-    const cv=document.createElement('div');
-    cv.className='tzg-cover';
-    cv.id=`cv-${ci}`;
-    // SVG: white background rect + grid lines on top
+    svg.id=`svg-${ci}`;box.appendChild(svg);
+    const qd=document.createElement('div');qd.style.cssText='position:absolute;inset:0;z-index:2;display:none';qd.id=`qd-${ci}`;box.appendChild(qd);
+    // cover with grid
+    const cv=document.createElement('div');cv.className='tzg-cover';cv.id=`cv-${ci}`;
     const cvSvg=makeTzgSvg('position:absolute;inset:0;width:100%;height:100%');
-    const whiteRect=document.createElementNS('http://www.w3.org/2000/svg','rect');
-    whiteRect.setAttribute('width','100');whiteRect.setAttribute('height','100');whiteRect.setAttribute('fill','#fff');
-    cvSvg.insertBefore(whiteRect,cvSvg.firstChild);
-    cv.appendChild(cvSvg);
-    box.appendChild(cv);
-
+    const wr=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    wr.setAttribute('width','100');wr.setAttribute('height','100');wr.setAttribute('fill','#fff');
+    cvSvg.insertBefore(wr,cvSvg.firstChild);cv.appendChild(cvSvg);box.appendChild(cv);
     unit.appendChild(box);
-
     // mini controls
-    const mc=document.createElement('div');
-    mc.className='tzg-mini-ctrl';
-    mc.innerHTML=`
-      <button class="btn btn-ghost btn-sm btn-icon" onclick="charPrev(${ci})" title="上一笔">◀</button>
-      <button class="btn btn-primary btn-sm btn-icon" onclick="charNext(${ci})" title="下一笔">▶</button>
-      <button class="btn btn-ghost btn-sm btn-icon" onclick="charReset(${ci})" title="重置">↺</button>`;
+    const mc=document.createElement('div');mc.className='tzg-mini-ctrl';
+    mc.innerHTML=`<button class="btn btn-ghost btn-sm btn-icon" onclick="charPrev(${ci})">◀</button><button class="btn btn-primary btn-sm btn-icon" onclick="charNext(${ci})">▶</button><button class="btn btn-ghost btn-sm btn-icon" onclick="charReset(${ci})">↺</button>`;
     unit.appendChild(mc);
-
-    // status
-    const st=document.createElement('div');
-    st.className='tzg-status';st.id=`st-${ci}`;st.textContent='加载…';
-    unit.appendChild(st);
-
-    row.appendChild(unit);
-    fetchCharData(ch,ci);
+    const st=document.createElement('div');st.className='tzg-status';st.id=`st-${ci}`;st.textContent='加载…';unit.appendChild(st);
+    row.appendChild(unit);fetchCharData(ch,ci);
   });
 }
 
 function fetchCharData(ch,ci){
   fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch)}.json`)
-    .then(r=>{if(!r.ok)throw new Error();return r.json();})
+    .then(r=>{if(!r.ok)throw 0;return r.json();})
     .then(data=>{
-      const c=S.chars[ci];
-      c.charData=data;
-      const n=data.strokes.length;
-      c.strokeColors=buildColors(n,c.mode,c.redRange);
-      c.stepIdx=n;
-      renderSvg(ci,n);
-      setSt(ci,`${n} 笔`,'ok');
-    })
-    .catch(()=>setSt(ci,'⚠️ 无数据','err'));
+      const c=S.chars[ci];c.charData=data;
+      c.strokeColors=buildColors(data.strokes.length,c.mode,c.redRange);
+      c.stepIdx=data.strokes.length;renderSvg(ci,c.stepIdx);setSt(ci,`${data.strokes.length}笔`,'ok');
+    }).catch(()=>setSt(ci,'⚠️ 无数据','err'));
 }
-
 function buildColors(n,mode,redRange){
-  if(mode==='simple') return Array.from({length:n},(_,i)=>STROKE_PAL[i%STROKE_PAL.length]);
+  if(mode==='simple')return Array.from({length:n},(_,i)=>STROKE_PAL[i%STROKE_PAL.length]);
   const rs=parseRange(redRange,n);
-  return Array.from({length:n},(_,i)=>rs.has(i+1)?'#EF4444':'#3B82F6');
+  return Array.from({length:n},(_,i)=>rs.has(i+1)?'#ef4444':'#3b82f6');
 }
 function parseRange(str,n){
-  const s=new Set();
-  if(!str) return s;
-  str.split(',').forEach(p=>{
-    p=p.trim();
+  const s=new Set();if(!str)return s;
+  str.split(',').forEach(p=>{p=p.trim();
     if(p.includes('-')){const[a,b]=p.split('-').map(Number);for(let i=a;i<=b&&i<=n;i++)s.add(i);}
     else{const v=parseInt(p);if(!isNaN(v)&&v>=1&&v<=n)s.add(v);}
-  });
-  return s;
+  });return s;
 }
-
 function renderSvg(ci,upTo,animIdx){
   const c=S.chars[ci];if(!c||!c.charData)return;
   const svg=document.getElementById(`svg-${ci}`);if(!svg)return;
@@ -840,164 +707,349 @@ function renderSvg(ci,upTo,animIdx){
   c.charData.strokes.forEach(d=>svg.appendChild(mkP(d,OUTLINE)));
   for(let i=0;i<upTo;i++){
     const p=mkP(c.charData.strokes[i],c.strokeColors[i]);
-    if(i===animIdx){
-      p.style.opacity='0';p.style.transition='opacity .35s ease';
-      svg.appendChild(p);
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{p.style.opacity='1';}));
-    } else svg.appendChild(p);
+    if(i===animIdx){p.style.opacity='0';p.style.transition='opacity .35s ease';svg.appendChild(p);requestAnimationFrame(()=>requestAnimationFrame(()=>p.style.opacity='1'));}
+    else svg.appendChild(p);
   }
 }
-function mkP(d,color){
-  const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-  p.setAttribute('d',d);p.setAttribute('fill',color);p.setAttribute('transform',HW_TF);
-  return p;
-}
-function setSt(ci,msg,cls){
-  const el=document.getElementById(`st-${ci}`);if(!el)return;
-  el.textContent=msg;el.className='tzg-status'+(cls?' '+cls:'');
-}
+function mkP(d,color){const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',d);p.setAttribute('fill',color);p.setAttribute('transform',HW_TF);return p;}
+function setSt(ci,msg,cls){const el=document.getElementById(`st-${ci}`);if(!el)return;el.textContent=msg;el.className='tzg-status'+(cls?' '+cls:'');}
 
-// ── per-char controls ──
 function charNext(ci){
-  if(S.followMode)return;
-  const c=S.chars[ci];if(!c||!c.charData)return;
+  if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charData)return;
   const n=c.charData.strokes.length;
   if(c.stepIdx>=n){c.stepIdx=0;renderSvg(ci,0);setTimeout(()=>{c.stepIdx=1;renderSvg(ci,1,0);updateSt(ci);},60);return;}
   const prev=c.stepIdx++;renderSvg(ci,c.stepIdx,prev);updateSt(ci);
 }
-function charPrev(ci){
-  if(S.followMode)return;
-  const c=S.chars[ci];if(!c||!c.charData||c.stepIdx<=0)return;
-  c.stepIdx--;renderSvg(ci,c.stepIdx);updateSt(ci);
-}
-function charReset(ci){
-  if(S.followMode)return;
-  exitCharQuiz(ci);
-  const c=S.chars[ci];if(!c||!c.charData)return;
-  c.stepIdx=c.charData.strokes.length;renderSvg(ci,c.stepIdx);updateSt(ci);
-}
-function updateSt(ci){
-  const c=S.chars[ci];if(!c||!c.charData)return;
-  const n=c.charData.strokes.length,s=c.stepIdx;
-  setSt(ci,s===0?`${n}笔（隐藏）`:s===n?`${n}笔`:`第${s}/${n}笔`,s===n?'ok':'');
-}
+function charPrev(ci){if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charData||c.stepIdx<=0)return;c.stepIdx--;renderSvg(ci,c.stepIdx);updateSt(ci);}
+function charReset(ci){if(S.followMode)return;exitCharQuiz(ci);const c=S.chars[ci];if(!c||!c.charData)return;c.stepIdx=c.charData.strokes.length;renderSvg(ci,c.stepIdx);updateSt(ci);}
+function updateSt(ci){const c=S.chars[ci];if(!c||!c.charData)return;const n=c.charData.strokes.length,s=c.stepIdx;setSt(ci,s===0?`${n}笔（隐藏）`:s===n?`${n}笔`:`第${s}/${n}笔`,s===n?'ok':'');}
 
 function resetAll(){
   exitAllQuiz();S.followMode=false;S.coverMode=false;
-  document.getElementById('btn-follow').classList.remove('toggled');
-  document.getElementById('btn-follow').textContent='🖊 跟写';
-  document.getElementById('btn-cover').classList.remove('toggled');
-  document.getElementById('btn-cover').textContent='👁 遮盖';
+  document.getElementById('btn-follow').classList.remove('toggled');document.getElementById('btn-follow').textContent='🖊 跟写';
+  document.getElementById('btn-cover').classList.remove('toggled');document.getElementById('btn-cover').textContent='👁 遮盖';
   document.getElementById('study-quiz-msg').textContent='';
-  // unhide covers
   S.chars.forEach((_,ci)=>{const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.remove('show');});
   S.chars.forEach((_,ci)=>charReset(ci));
 }
 
-// ── follow mode ──
+// follow mode
 function toggleFollow(){
   S.followMode=!S.followMode;
   const btn=document.getElementById('btn-follow');
   btn.classList.toggle('toggled',S.followMode);
   if(!S.followMode){btn.textContent='🖊 跟写';exitAllQuiz();return;}
   btn.textContent=S.coverMode?'✋ 退出默写':'✋ 退出跟写';
-  startFollow();
-}
-function startFollow(){
-  // If cover is on, this is 默写 mode: hide cover for quiz (quiz handles display), no outline shown
-  S.chars.forEach((c,ci)=>{
-    exitCharQuiz(ci);
-    if(c.charData){c.stepIdx=0;renderSvg(ci,0);}
-    // If covering, hide cover during quiz (quiz div is on top anyway at z-index 2, cover at 3)
-    // We'll temporarily hide cover per char during its quiz, restore after
-  });
+  S.chars.forEach((c,ci)=>{exitCharQuiz(ci);if(c.charData){c.stepIdx=0;renderSvg(ci,0);}});
   S.followCharIdx=0;advanceFollow();
 }
 function advanceFollow(){
   if(!S.followMode)return;
   const ci=S.followCharIdx;
   if(ci>=S.chars.length){finishFollow();return;}
-  const c=S.chars[ci];
-  if(!c||!c.charData){S.followCharIdx++;advanceFollow();return;}
-  const box=document.getElementById(`box-${ci}`);
-  if(!box)return;
-
-  // During quiz, hide cover so drawing is visible, hide char SVG
-  const cvEl=document.getElementById(`cv-${ci}`);
-  if(cvEl) cvEl.classList.remove('show'); // temporarily hide cover during drawing
+  const c=S.chars[ci];if(!c||!c.charData){S.followCharIdx++;advanceFollow();return;}
+  const box=document.getElementById(`box-${ci}`);if(!box)return;
+  const cvEl=document.getElementById(`cv-${ci}`);if(cvEl)cvEl.classList.remove('show');
   document.getElementById(`svg-${ci}`).style.display='none';
-
-  const qd=document.getElementById(`qd-${ci}`);
-  qd.style.display='block';qd.innerHTML='';
-  // quiz div is z-index 2, needs to be on top
-  qd.style.zIndex='4';
-
-  const bsz=box.clientWidth||240;
-  const isMowrite=S.coverMode; // 默写: no outline hint
-  document.getElementById('study-quiz-msg').textContent= isMowrite?`✏️ 默写「${c.ch}」`:`✏️ 请描写「${c.ch}」`;
-
+  const qd=document.getElementById(`qd-${ci}`);qd.style.display='block';qd.innerHTML='';qd.style.zIndex='4';
+  const bsz=box.clientWidth||240,isMo=S.coverMode;
+  document.getElementById('study-quiz-msg').textContent=isMo?`✏️ 默写「${c.ch}」`:`✏️ 描写「${c.ch}」`;
   S.quizWriter=HanziWriter.create(`qd-${ci}`,c.ch,{
+    width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:!isMo,
+    strokeColor:'#444',outlineColor:'#e0cbb0',drawingColor:'#ff6b00',
+    drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:isMo?5:3,highlightColor:'#fbbf24',
+    charDataLoader:(ch2,onL,onE)=>{fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch2)}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}).then(onL).catch(onE);},
+    onLoadCharDataSuccess:()=>{S.quizWriter.quiz({
+      onMistake:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔再试！😅`;},
+      onCorrectStroke:d=>{document.getElementById('study-quiz-msg').textContent=isMo?`第${d.strokeNum+1}笔✓`:`第${d.strokeNum+1}笔棒棒！👍`;},
+      onComplete:sum=>{
+        document.getElementById('study-quiz-msg').textContent=isMo?`「${c.ch}」默写完成！错${sum.totalMistakes}次🎉`:`「${c.ch}」完成！错${sum.totalMistakes}次🎉`;
+        exitCharQuiz(ci);document.getElementById(`svg-${ci}`).style.display='';
+        c.stepIdx=c.charData.strokes.length;renderSvg(ci,c.stepIdx);
+        if(S.coverMode){const cv2=document.getElementById(`cv-${ci}`);if(cv2)cv2.classList.add('show');}
+        S.followCharIdx++;setTimeout(()=>advanceFollow(),700);
+      }
+    });}
+  });
+}
+function finishFollow(){S.followMode=false;const b=document.getElementById('btn-follow');b.classList.remove('toggled');b.textContent='🖊 跟写';document.getElementById('study-quiz-msg').textContent='🎉 全部完成！';}
+function exitCharQuiz(ci){const qd=document.getElementById(`qd-${ci}`);if(qd){qd.style.display='none';qd.innerHTML='';qd.style.zIndex='2';}const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display='';S.quizWriter=null;}
+function exitAllQuiz(){S.quizWriter=null;S.chars.forEach((_,ci)=>exitCharQuiz(ci));}
+
+function toggleCover(){
+  S.coverMode=!S.coverMode;
+  S.chars.forEach((_,ci)=>{const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',S.coverMode);});
+  const btn=document.getElementById('btn-cover');btn.classList.toggle('toggled',S.coverMode);
+  btn.textContent=S.coverMode?'👁 显示':'👁 遮盖';
+}
+function speakCurrent(){const e=currentEntry();if(!e||!window.speechSynthesis)return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(e.hanzi);u.lang='zh-CN';u.rate=.8;window.speechSynthesis.speak(u);}
+document.addEventListener('keydown',e=>{
+  if(!document.getElementById('page-study').classList.contains('active'))return;
+  if(document.querySelector('.modal-overlay.open'))return;
+  if(e.key==='ArrowRight')goNextEntry();if(e.key==='ArrowLeft')goPrevEntry();
+});
+
+// ══════════════════════════════════════════
+// PRACTICE MODULE
+// ══════════════════════════════════════════
+let P={
+  groupId:null,mode:'simple',
+  queue:[],       // [{hanzi,pinyin,charCfg,entry}] — one item per CHARACTER (not entry)
+  idx:0,
+  hwWriter:null,
+  charData:null,
+  phase:'write',  // 'write' | 'trace'
+  mistakeCount:0,
+};
+
+function openPractice(){
+  showPage('practice');
+  // Show select screen
+  document.getElementById('prac-sel').style.display='flex';
+  document.getElementById('prac-quiz').style.display='none';
+  // Render group picker
+  const grid=document.getElementById('prac-gpick-grid');grid.innerHTML='';
+  if(!store.groups.length){
+    grid.innerHTML=`<div class="gpick-empty"><div class="gpick-empty-icon">📚</div><div class="gpick-empty-text">暂无分组</div><div class="gpick-empty-sub">先在字词管理添加内容</div></div>`;
+    return;
+  }
+  P.groupId=store.groups[0].id;
+  store.groups.forEach(g=>{
+    const card=document.createElement('div');card.className='gpick-card';
+    card.style.cursor='pointer';
+    const isSelected=g.id===P.groupId;
+    if(isSelected)card.style.background='linear-gradient(135deg,#ff6b00,#ff9a3c)',card.style.borderColor='transparent',card.style.color='#fff';
+    const n=g.entries.length;
+    card.innerHTML=`<div class="gpick-card-top"><span class="gpick-name" style="${isSelected?'color:#fff':''}">${g.name}</span><span class="gpick-arrow" style="${isSelected?'color:rgba(255,255,255,.7)':''}">›</span></div><div class="gpick-meta" style="${isSelected?'color:rgba(255,255,255,.8)':''}">${n}条内容</div>`;
+    card.onclick=()=>{P.groupId=g.id;renderPracGpick();};
+    grid.appendChild(card);
+  });
+}
+function renderPracGpick(){
+  const grid=document.getElementById('prac-gpick-grid');grid.innerHTML='';
+  store.groups.forEach(g=>{
+    const card=document.createElement('div');card.className='gpick-card';
+    const isSelected=g.id===P.groupId;
+    if(isSelected){card.style.background='linear-gradient(135deg,#ff6b00,#ff9a3c)';card.style.borderColor='transparent';}
+    const n=g.entries.length;
+    card.innerHTML=`<div class="gpick-card-top"><span class="gpick-name" style="${isSelected?'color:#fff':''}">${g.name}</span><span class="gpick-arrow" style="${isSelected?'color:rgba(255,255,255,.7)':''}">›</span></div><div class="gpick-meta" style="${isSelected?'color:rgba(255,255,255,.8)':''}">${n}条内容</div>`;
+    card.onclick=()=>{P.groupId=g.id;renderPracGpick();};
+    grid.appendChild(card);
+  });
+}
+function selectPracMode(m){
+  P.mode=m;
+  document.getElementById('pmc-simple').classList.toggle('active',m==='simple');
+  document.getElementById('pmc-standard').classList.toggle('active',m==='standard');
+}
+
+function startPractice(){
+  const g=store.groups.find(x=>x.id===P.groupId);if(!g||!g.entries.length){alert('请先选择有内容的分组');return;}
+  // Build queue: expand each entry into individual chars
+  P.queue=[];
+  g.entries.forEach(entry=>{
+    const chars=[...entry.hanzi];
+    const cfgs=entry.type==='word'?(entry.charCfg||chars.map(()=>({mode:'simple',redRange:''}))):[{mode:entry.mode||'simple',redRange:entry.redRange||''}];
+    const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');
+    chars.forEach((ch,ci)=>{
+      P.queue.push({ch,pinyin:pinyins[ci]||autoPinyin(ch),cfg:cfgs[ci]||{mode:'simple',redRange:''},entryHanzi:entry.hanzi});
+    });
+  });
+  // Shuffle
+  for(let i=P.queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[P.queue[i],P.queue[j]]=[P.queue[j],P.queue[i]];}
+  P.idx=0;P.hwWriter=null;P.charData=null;
+  document.getElementById('prac-sel').style.display='none';
+  document.getElementById('prac-quiz').style.display='flex';
+  document.getElementById('prac-quiz').style.flexDirection='column';
+  document.getElementById('prac-title').textContent=g.name+' · '+(P.mode==='simple'?'简单模式':'标准模式');
+  loadPracChar();
+}
+
+function loadPracChar(){
+  if(P.hwWriter){try{P.hwWriter.cancelAnimation();}catch(e){}P.hwWriter=null;}
+  const item=P.queue[P.idx];if(!item)return;
+  P.phase='write';P.mistakeCount=0;
+  // progress dots
+  const prog=document.getElementById('prac-progress');prog.innerHTML='';
+  P.queue.forEach((_,i)=>{const d=document.createElement('div');d.className='prac-prog-dot'+(i<P.idx?' done':i===P.idx?' current':'');prog.appendChild(d);});
+  // prev/next
+  document.getElementById('prac-prev').disabled=P.idx<=0;
+  document.getElementById('prac-next').disabled=P.idx>=P.queue.length-1;
+  // pinyin hint: show in standard mode, hide in simple mode initially
+  const phint=document.getElementById('prac-pinyin-hint');
+  const hlbl=document.getElementById('prac-hint-label');
+  if(P.mode==='standard'){
+    phint.textContent=item.pinyin;hlbl.style.display='none';
+  } else {
+    phint.textContent='';hlbl.style.display='none';
+  }
+  // message
+  document.getElementById('prac-msg').textContent=P.mode==='standard'?'根据拼音写出这个字':'写出这个字';
+  // Build tzg-row with single char box for quiz
+  const row=document.getElementById('prac-tzg-row');row.innerHTML='';
+  const unit=document.createElement('div');unit.className='tzg-unit';
+  // no pinyin label in practice (shown separately above)
+  const box=document.createElement('div');box.className='tzg-box';box.id='prac-box';
+  box.appendChild(makeTzgSvg('position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0'));
+  // HanziWriter will be rendered into box directly
+  unit.appendChild(box);row.appendChild(unit);
+  // Fetch char data then create writer
+  fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(item.ch)}.json`)
+    .then(r=>{if(!r.ok)throw 0;return r.json();})
+    .then(data=>{P.charData=data;initPracWriter(item,data);})
+    .catch(()=>{document.getElementById('prac-msg').textContent='⚠️ 无法加载字形数据';});
+}
+
+function initPracWriter(item,data){
+  const box=document.getElementById('prac-box');if(!box)return;
+  const bsz=box.clientWidth||240;
+  const cfg=item.cfg;
+  const isComplex=cfg.mode==='complex'&&cfg.redRange;
+  if(P.hwWriter){try{P.hwWriter.cancelAnimation();}catch(e){}}
+  // Clear box except grid svg (first child)
+  while(box.children.length>1)box.removeChild(box.lastChild);
+  P.hwWriter=HanziWriter.create(box,item.ch,{
     width:bsz,height:bsz,padding:0,
-    showCharacter:false,
-    showOutline:!isMowrite, // 默写时不显示轮廓
-    strokeColor:'#444',outlineColor:'#DDD',
-    drawingColor:'#3B82F6',drawingWidth:Math.max(5,Math.round(bsz*.025)),
-    showHintAfterMisses: isMowrite? 5 : 3, // 默写多给几次机会才提示
-    highlightColor:'#EAB308',
-    charDataLoader:(ch2,onL,onE)=>{
-      fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch2)}.json`)
-        .then(r=>{if(!r.ok)throw new Error();return r.json();}).then(onL).catch(onE);
-    },
+    showCharacter:false,showOutline:false,
+    strokeColor:'#ff6b00',outlineColor:'#e0cbb0',
+    drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),
+    showHintAfterMisses:999,// we manage hints manually
+    highlightColor:'#fbbf24',
+    charDataLoader:(ch2,onL,onE)=>{onL(data);},
     onLoadCharDataSuccess:()=>{
-      S.quizWriter.quiz({
-        onMistake:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔再试！😅`;},
-        onCorrectStroke:d=>{document.getElementById('study-quiz-msg').textContent= isMowrite?`第${d.strokeNum+1}笔✓`:`第${d.strokeNum+1}笔棒棒！👍`;},
+      if(P.mode==='simple'&&isComplex){
+        // Show structure hint: randomly pick red or blue part
+        showStructureHint(item,data,bsz,()=>startPracQuiz(item,data));
+      } else {
+        startPracQuiz(item,data);
+      }
+    }
+  });
+}
+
+function showStructureHint(item,data,bsz,cb){
+  // Figure out red strokes vs blue strokes
+  const n=data.strokes.length;
+  const rs=parseRange(item.cfg.redRange,n);
+  const redIdxs=[],blueIdxs=[];
+  for(let i=1;i<=n;i++){(rs.has(i)?redIdxs:blueIdxs).push(i-1);}
+  if(!redIdxs.length&&!blueIdxs.length){cb();return;}
+  const showRed=Math.random()<.5&&redIdxs.length||!blueIdxs.length;
+  const hintIdxs=showRed?redIdxs:blueIdxs;
+  const hintColor=showRed?'#ef4444':'#3b82f6';
+  const partName=showRed?'红色部件':'蓝色部件';
+  const hlbl=document.getElementById('prac-hint-label');
+  hlbl.textContent=`提示：${partName}`;hlbl.style.display='block';
+  document.getElementById('prac-msg').textContent='观察结构提示，然后默写…';
+  // Draw the hint strokes for 1.5s then clear and start quiz
+  const box=document.getElementById('prac-box');
+  // Overlay a temporary SVG with hint strokes
+  const hsvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+  hsvg.setAttribute('viewBox','0 0 1024 1024');
+  hsvg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none';
+  hintIdxs.forEach(i=>{
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',data.strokes[i]);p.setAttribute('fill',hintColor);p.setAttribute('transform',HW_TF);
+    hsvg.appendChild(p);
+  });
+  box.appendChild(hsvg);
+  setTimeout(()=>{
+    if(box.contains(hsvg))box.removeChild(hsvg);
+    hlbl.style.display='none';
+    document.getElementById('prac-msg').textContent='开始写！';
+    cb();
+  },1800);
+}
+
+function startPracQuiz(item,data){
+  if(!P.hwWriter)return;
+  P.phase='write';
+  document.getElementById('prac-msg').textContent=P.mode==='standard'?'根据拼音写出这个字':'写出这个字';
+  P.hwWriter.quiz({
+    leniency:1.1,
+    onMistake:info=>{
+      P.mistakeCount++;
+      document.getElementById('prac-msg').textContent=`第${info.strokeNum+1}笔再试试！(错${P.mistakeCount}次)`;
+      if(P.mistakeCount>=3&&P.phase==='write'){
+        // After 3 mistakes, show hint automatically
+        P.mistakeCount=0;
+        document.getElementById('prac-msg').textContent='来看看正确写法…';
+        P.hwWriter.cancelQuiz();
+        playAnimationThenTrace(item,data);
+      }
+    },
+    onCorrectStroke:info=>{
+      document.getElementById('prac-msg').textContent=`第${info.strokeNum+1}笔✓ 继续！`;
+    },
+    onComplete:summary=>{
+      if(P.phase==='trace'){
+        document.getElementById('prac-msg').textContent=`描完了！错${summary.totalMistakes}次 ✅`;
+        setTimeout(()=>pracAutoNext(),900);
+      } else {
+        document.getElementById('prac-msg').textContent=`太棒了！错${summary.totalMistakes}次 🎉`;
+        setTimeout(()=>pracAutoNext(),900);
+      }
+    }
+  });
+}
+
+function playAnimationThenTrace(item,data){
+  // Animate the full character, then enter trace mode
+  P.phase='trace';
+  document.getElementById('prac-msg').textContent='看笔顺…';
+  P.hwWriter.animateCharacter({
+    onComplete:()=>{
+      document.getElementById('prac-msg').textContent='现在描一遍 →';
+      // Re-show outline for tracing
+      P.hwWriter.updateColor('strokeColor','#aaaaaa');
+      P.hwWriter.showOutline();
+      P.hwWriter.quiz({
+        leniency:1.2,
+        onMistake:()=>{document.getElementById('prac-msg').textContent='描慢一点，跟着轮廓走…';},
+        onCorrectStroke:()=>{document.getElementById('prac-msg').textContent='描对了，继续…';},
         onComplete:sum=>{
-          document.getElementById('study-quiz-msg').textContent=
-            isMowrite?`「${c.ch}」默写完成！错${sum.totalMistakes}次 🎉`:`「${c.ch}」完成！错${sum.totalMistakes}次 🎉`;
-          exitCharQuiz(ci);
-          // After quiz: show colored strokes, restore cover if in cover mode
-          document.getElementById(`svg-${ci}`).style.display='';
-          c.stepIdx=c.charData.strokes.length;renderSvg(ci,c.stepIdx);
-          if(S.coverMode){
-            const cv2=document.getElementById(`cv-${ci}`);
-            if(cv2) cv2.classList.add('show'); // restore cover
-          }
-          S.followCharIdx++;setTimeout(()=>advanceFollow(),700);
+          document.getElementById('prac-msg').textContent=`描完了！✅`;
+          setTimeout(()=>pracAutoNext(),900);
         }
       });
     }
   });
 }
-function finishFollow(){S.followMode=false;const b=document.getElementById('btn-follow');b.classList.remove('toggled');b.textContent='🖊 跟写';document.getElementById('study-quiz-msg').textContent='🎉 全部完成！';}
-function exitCharQuiz(ci){
-  const qd=document.getElementById(`qd-${ci}`);
-  if(qd){qd.style.display='none';qd.innerHTML='';qd.style.zIndex='2';} // reset zIndex
-  const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display='';
-  S.quizWriter=null;
-}
-function exitAllQuiz(){S.quizWriter=null;S.chars.forEach((_,ci)=>exitCharQuiz(ci));}
 
-// ── cover mode ──
-function toggleCover(){
-  S.coverMode=!S.coverMode;
-  S.chars.forEach((_,ci)=>{const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',S.coverMode);});
-  const btn=document.getElementById('btn-cover');
-  btn.classList.toggle('toggled',S.coverMode);
-  btn.textContent=S.coverMode?'👁 显示':'👁 遮盖';
+function pracAutoNext(){
+  if(P.idx<P.queue.length-1){P.idx++;loadPracChar();}
+  else{
+    document.getElementById('prac-msg').textContent='🎉 本组练习完成！';
+    document.getElementById('prac-progress').querySelectorAll('.prac-prog-dot').forEach(d=>{d.classList.remove('current');d.classList.add('done');});
+  }
+}
+function pracGoPrev(){if(P.idx<=0)return;if(P.hwWriter){try{P.hwWriter.cancelAnimation();P.hwWriter.cancelQuiz();}catch(e){}}P.hwWriter=null;P.idx--;loadPracChar();}
+function pracGoNext(){if(P.idx>=P.queue.length-1)return;if(P.hwWriter){try{P.hwWriter.cancelAnimation();P.hwWriter.cancelQuiz();}catch(e){}}P.hwWriter=null;P.idx++;loadPracChar();}
+function pracSkip(){pracGoNext();}
+function pracShowHint(){
+  const item=P.queue[P.idx];if(!item||!P.charData||!P.hwWriter)return;
+  document.getElementById('prac-msg').textContent='播放笔顺演示…';
+  try{P.hwWriter.cancelQuiz();}catch(e){}
+  playAnimationThenTrace(item,P.charData);
+}
+function pracRestart(){
+  if(P.hwWriter){try{P.hwWriter.cancelAnimation();P.hwWriter.cancelQuiz();}catch(e){}}
+  P.hwWriter=null;P.idx=0;
+  for(let i=P.queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[P.queue[i],P.queue[j]]=[P.queue[j],P.queue[i]];}
+  loadPracChar();
+}
+function exitPractice(){
+  if(P.hwWriter){try{P.hwWriter.cancelAnimation();P.hwWriter.cancelQuiz();}catch(e){}}
+  P.hwWriter=null;
+  document.getElementById('prac-sel').style.display='flex';
+  document.getElementById('prac-quiz').style.display='none';
+}
+function speakPrac(){
+  const item=P.queue[P.idx];if(!item||!window.speechSynthesis)return;
+  window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(item.ch);u.lang='zh-CN';u.rate=.8;window.speechSynthesis.speak(u);
 }
 
-// ── speak ──
-function speakCurrent(){
-  const e=currentEntry();if(!e||!window.speechSynthesis)return;
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(e.hanzi);
-  u.lang='zh-CN';u.rate=0.8;u.pitch=1.1;window.speechSynthesis.speak(u);
-}
-
-// ══════════════════════════════════════
-// MANAGE
-// ══════════════════════════════════════
+// ══ MANAGE ══
 function renderManage(){
   const body=document.getElementById('manage-body');body.innerHTML='';
   if(!store.groups.length){
@@ -1006,25 +1058,20 @@ function renderManage(){
   }
   store.groups.forEach(g=>{
     const card=document.createElement('div');card.className='wm-group';
-    card.innerHTML=`<div class="wm-gh"><span class="wm-gdot" style="background:${g.color}"></span><span class="wm-gname">${g.name}</span><span class="wm-gcnt">${g.entries.length}条</span><div class="wm-ga"><button class="btn btn-ghost btn-sm btn-icon" onclick="startStudy('${g.id}')" title="学习">📖</button><button class="btn btn-ghost btn-sm btn-icon" onclick="openEditGroup('${g.id}')" title="编辑">✏️</button></div></div><div class="wm-entries" id="wme-${g.id}"></div>`;
+    card.innerHTML=`<div class="wm-gh"><span class="wm-gname">${g.name}</span><span class="wm-gcnt">${g.entries.length}条</span><div class="wm-ga"><button class="btn btn-ghost btn-sm btn-icon" onclick="startStudy('${g.id}')" title="学习">📖</button><button class="btn btn-ghost btn-sm btn-icon" onclick="openEditGroup('${g.id}')" title="编辑">✏️</button></div></div><div class="wm-entries" id="wme-${g.id}"></div>`;
     body.appendChild(card);
     const el=card.querySelector(`#wme-${g.id}`);
     g.entries.forEach((e,ei)=>{
       const item=document.createElement('div');item.className='wm-entry';item.onclick=()=>openEditEntry(g.id,ei);
-      const tag=e.type==='word'?'word':e.mode;
-      const tl=e.type==='word'?'词语':e.mode==='simple'?'简':'复';
-      item.innerHTML=`<div><div class="wm-ehanzi">${e.hanzi}</div><div class="wm-epy">${e.pinyin||autoPinyin(e.hanzi)}</div></div><span class="wm-etag ${tag}">${tl}</span>`;
+      item.innerHTML=`<div><div class="wm-ehanzi">${e.hanzi}</div><div class="wm-epy">${e.pinyin||autoPinyin(e.hanzi)}</div></div>`;
       el.appendChild(item);
     });
-    const ab=document.createElement('button');ab.className='wm-add';ab.title='添加';ab.textContent='＋';ab.onclick=()=>openAddEntry(g.id);
-    el.appendChild(ab);
+    const ab=document.createElement('button');ab.className='wm-add';ab.textContent='＋';ab.onclick=()=>openAddEntry(g.id);el.appendChild(ab);
   });
 }
 
-// ══════════════════════════════════════
-// MODAL: entry
-// ══════════════════════════════════════
-let ms={groupId:null,entryIdx:null,formMode:'simple',entryType:'char',selColor:GRP_COLORS[0],editGroupId:null};
+// ══ MODAL: entry ══
+let ms={groupId:null,entryIdx:null,formMode:'simple',entryType:'char',editGroupId:null};
 
 function openAddEntry(gid){
   ms.groupId=gid;ms.entryIdx=null;ms.formMode='simple';ms.entryType='char';
@@ -1033,8 +1080,7 @@ function openAddEntry(gid){
   document.getElementById('m-pinyin').value='';document.getElementById('m-red').value='';
   document.getElementById('m-del').style.display='none';
   document.getElementById('wcc-table').innerHTML='';
-  setEntryType('char');setFormMode('simple');
-  openModal('modal-entry');
+  setEntryType('char');setFormMode('simple');openModal('modal-entry');
 }
 function openEditEntry(gid,ei){
   const g=store.groups.find(x=>x.id===gid);if(!g)return;
@@ -1046,7 +1092,7 @@ function openEditEntry(gid,ei){
   document.getElementById('m-red').value=e.redRange||'';
   document.getElementById('m-del').style.display='inline-flex';
   setEntryType(ms.entryType);setFormMode(ms.formMode);
-  if(ms.entryType==='word') buildWccTable(e.hanzi,e.charCfg||[]);
+  if(ms.entryType==='word')buildWccTable(e.hanzi,e.charCfg||[]);
   openModal('modal-entry');
 }
 function setEntryType(t){
@@ -1068,44 +1114,26 @@ function setFormMode(m){
   document.getElementById('red-range-row').style.flexDirection='column';
   document.getElementById('red-range-row').style.gap='4px';
 }
-function onHanziInput(){
-  if(ms.entryType==='word'){
-    const h=document.getElementById('m-hanzi').value.trim();
-    buildWccTable(h,[]);
-  }
-}
+function onHanziInput(){if(ms.entryType==='word'){const h=document.getElementById('m-hanzi').value.trim();if(h)buildWccTable(h,[]);}}
 function buildWccTable(hanzi,existing){
   const tbl=document.getElementById('wcc-table');tbl.innerHTML='';
-  const chars=[...hanzi];
-  chars.forEach((ch,i)=>{
+  [...hanzi].forEach((ch,i)=>{
     const cfg=(existing||[])[i]||{mode:'simple',redRange:''};
     const row=document.createElement('div');row.className='wcc-row';
-    const rangeId=`wcc-range-${i}`;
-    row.innerHTML=`
-      <span class="wcc-ch">${ch}</span>
-      <div class="wcc-tabs">
-        <button class="wcc-tab ${cfg.mode==='simple'?'active':''}" onclick="setWccMode(${i},'simple')">🎨 简单</button>
-        <button class="wcc-tab ${cfg.mode==='complex'?'active':''}" onclick="setWccMode(${i},'complex')">🧩 复杂</button>
-      </div>
-      <input class="wcc-range ${cfg.mode==='complex'?'show':''}" id="${rangeId}" placeholder="红色笔画 如1-3" value="${cfg.redRange||''}">`;
+    row.innerHTML=`<span class="wcc-ch">${ch}</span><div class="wcc-tabs"><button class="wcc-tab ${cfg.mode==='simple'?'active':''}" onclick="setWccMode(${i},'simple')">🎨 七彩</button><button class="wcc-tab ${cfg.mode==='complex'?'active':''}" onclick="setWccMode(${i},'complex')">🧩 红蓝</button></div><input class="wcc-range ${cfg.mode==='complex'?'show':''}" id="wcc-range-${i}" placeholder="红色笔画如1-3" value="${cfg.redRange||''}">`;
     tbl.appendChild(row);
   });
 }
 function setWccMode(i,m){
-  const tbl=document.getElementById('wcc-table');
-  const rows=tbl.querySelectorAll('.wcc-row');
-  if(!rows[i])return;
+  const rows=document.getElementById('wcc-table').querySelectorAll('.wcc-row');if(!rows[i])return;
   rows[i].querySelectorAll('.wcc-tab').forEach(t=>t.classList.remove('active'));
   rows[i].querySelectorAll('.wcc-tab')[m==='complex'?1:0].classList.add('active');
-  const ri=rows[i].querySelector('.wcc-range');
-  if(ri)ri.classList.toggle('show',m==='complex');
+  const ri=rows[i].querySelector('.wcc-range');if(ri)ri.classList.toggle('show',m==='complex');
 }
 function getWccConfig(){
-  const tbl=document.getElementById('wcc-table');
-  const rows=tbl.querySelectorAll('.wcc-row');
-  return Array.from(rows).map(row=>{
+  return Array.from(document.getElementById('wcc-table').querySelectorAll('.wcc-row')).map(row=>{
     const active=row.querySelector('.wcc-tab.active');
-    const mode=active&&active.textContent.includes('复杂')?'complex':'simple';
+    const mode=active&&active.textContent.includes('红蓝')?'complex':'simple';
     const range=row.querySelector('.wcc-range');
     return{mode,redRange:range?range.value.trim():''};
   });
@@ -1117,13 +1145,9 @@ function saveEntry(){
   if(!pinyin)pinyin=autoPinyin(hanzi);
   const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;
   let obj;
-  if(ms.entryType==='char'){
-    obj={type:'char',hanzi,pinyin,mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};
-  } else {
-    obj={type:'word',hanzi,pinyin,charCfg:getWccConfig()};
-  }
-  if(ms.entryIdx===null)g.entries.push(obj);
-  else g.entries[ms.entryIdx]=obj;
+  if(ms.entryType==='char'){obj={type:'char',hanzi,pinyin,mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};}
+  else{obj={type:'word',hanzi,pinyin,charCfg:getWccConfig()};}
+  if(ms.entryIdx===null)g.entries.push(obj);else g.entries[ms.entryIdx]=obj;
   saveStore();closeModal('modal-entry');renderManage();renderHome();
 }
 function deleteEntry(){
@@ -1132,36 +1156,26 @@ function deleteEntry(){
   g.entries.splice(ms.entryIdx,1);saveStore();closeModal('modal-entry');renderManage();renderHome();
 }
 
-// ══════════════════════════════════════
-// MODAL: group
-// ══════════════════════════════════════
-function initCp(){
-  const el=document.getElementById('mg-color');el.innerHTML='';
-  GRP_COLORS.forEach(c=>{
-    const d=document.createElement('div');d.className='cp-dot'+(c===ms.selColor?' selected':'');
-    d.style.background=c;d.onclick=()=>{ms.selColor=c;el.querySelectorAll('.cp-dot').forEach(x=>x.classList.remove('selected'));d.classList.add('selected');};
-    el.appendChild(d);
-  });
-}
+// ══ MODAL: group (no color) ══
 function openAddGroup(){
-  ms.editGroupId=null;ms.selColor=GRP_COLORS[store.groups.length%GRP_COLORS.length];
+  ms.editGroupId=null;
   document.getElementById('mgtitle').textContent='新建分组';
   document.getElementById('mg-name').value='';
   document.getElementById('mg-del').style.display='none';
-  initCp();openModal('modal-group');
+  openModal('modal-group');
 }
 function openEditGroup(gid){
   const g=store.groups.find(x=>x.id===gid);if(!g)return;
-  ms.editGroupId=gid;ms.selColor=g.color;
+  ms.editGroupId=gid;
   document.getElementById('mgtitle').textContent='编辑分组';
   document.getElementById('mg-name').value=g.name;
   document.getElementById('mg-del').style.display='inline-flex';
-  initCp();openModal('modal-group');
+  openModal('modal-group');
 }
 function saveGroup(){
   const name=document.getElementById('mg-name').value.trim();if(!name){alert('请输入分组名称');return;}
-  if(ms.editGroupId){const g=store.groups.find(x=>x.id===ms.editGroupId);if(g){g.name=name;g.color=ms.selColor;}}
-  else store.groups.push({id:'g'+Date.now(),name,color:ms.selColor,entries:[]});
+  if(ms.editGroupId){const g=store.groups.find(x=>x.id===ms.editGroupId);if(g)g.name=name;}
+  else store.groups.push({id:'g'+Date.now(),name,entries:[]});
   saveStore();closeModal('modal-group');renderManage();renderHome();
 }
 function deleteGroup(){
@@ -1170,21 +1184,8 @@ function deleteGroup(){
   saveStore();closeModal('modal-group');renderManage();renderHome();
 }
 
-// ══════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════
-function autoPinyin(s){
-  if(window.pinyinPro){try{return pinyinPro.pinyin(s,{toneType:'symbol',type:'string'});}catch(e){}}
-  return '';
-}
-
-// keyboard: ← → switch entry in study
-document.addEventListener('keydown',e=>{
-  if(!document.getElementById('page-study').classList.contains('active'))return;
-  if(document.querySelector('.modal-overlay.open'))return;
-  if(e.key==='ArrowRight')goNextEntry();
-  if(e.key==='ArrowLeft')goPrevEntry();
-});
+// ══ UTILS ══
+function autoPinyin(s){if(window.pinyinPro){try{return pinyinPro.pinyin(s,{toneType:'symbol',type:'string'});}catch(e){}}return '';}
 
 renderHome();
 </script>
