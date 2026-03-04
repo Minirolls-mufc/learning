@@ -87,27 +87,30 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .g-chip-n{font-size:.67rem;color:var(--muted);font-weight:400}
 
 /* ════════════════════════
-   GROUP PICKER MODAL (shown when entering study)
+   GROUP PICKER — full page
 ════════════════════════ */
-#modal-group-pick{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;
-                  display:none;align-items:center;justify-content:center;padding:20px}
-#modal-group-pick.open{display:flex}
-.gpick-box{background:var(--paper);border-radius:20px;width:100%;max-width:360px;
-           box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .22s ease;overflow:hidden}
-@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
-.gpick-header{padding:18px 18px 12px;border-bottom:1.5px solid var(--border)}
-.gpick-title{font-family:'ZCOOL XiaoWei',cursive;font-size:1rem;letter-spacing:2px}
-.gpick-sub{font-size:.75rem;color:var(--muted);margin-top:3px}
-.gpick-list{max-height:320px;overflow-y:auto}
-.gpick-item{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;
-            border-bottom:1px solid var(--border);transition:background .12s}
-.gpick-item:last-child{border-bottom:none}
-.gpick-item:hover{background:var(--bg)}
-.gpick-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-.gpick-name{flex:1;font-weight:700;font-size:.9rem}
-.gpick-count{font-size:.75rem;color:var(--muted)}
-.gpick-arrow{color:var(--muted);font-size:.8rem}
-.gpick-empty{padding:24px;text-align:center;color:var(--muted);font-size:.85rem}
+#page-gpick{background:var(--bg)}
+.gpick-body{flex:1;overflow-y:auto;padding:20px 16px 32px}
+.gpick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.gpick-card{
+  background:var(--paper);border:1.5px solid var(--border);border-radius:16px;
+  padding:20px 18px 16px;cursor:pointer;transition:all .18s;
+  display:flex;flex-direction:column;gap:10px;
+  box-shadow:0 1px 4px rgba(0,0,0,.05);position:relative;overflow:hidden;
+}
+.gpick-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.09)}
+.gpick-card:active{transform:scale(.97)}
+.gpick-card-top{display:flex;align-items:center;gap:10px}
+.gpick-dot{width:14px;height:14px;border-radius:50%;flex-shrink:0}
+.gpick-name{font-weight:900;font-size:1rem;flex:1}
+.gpick-arrow{font-size:1.1rem;color:var(--muted)}
+.gpick-meta{display:flex;gap:8px;flex-wrap:wrap}
+.gpick-tag{font-size:.72rem;padding:3px 9px;border-radius:99px;background:var(--bg);
+           border:1px solid var(--border);color:var(--muted);font-weight:600}
+.gpick-empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.gpick-empty-icon{font-size:3rem;opacity:.3;margin-bottom:10px}
+.gpick-empty-text{font-size:.88rem;font-weight:700;color:var(--ink2);margin-bottom:6px}
+.gpick-empty-sub{font-size:.78rem;line-height:1.6}
 
 /* ════════════════════════
    STUDY PAGE
@@ -147,37 +150,29 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 /* char row: one or more tian zi ge boxes */
 .tzg-row{display:flex;gap:14px;align-items:flex-end;justify-content:center;flex-wrap:wrap}
 
-/* single unit: box + pinyin below */
-.tzg-unit{display:flex;flex-direction:column;align-items:center;gap:6px}
+/* single unit: pinyin ABOVE box, then box, then controls */
+.tzg-unit{display:flex;flex-direction:column;align-items:center;gap:8px}
 
-/* pinyin label — sits below the box */
+/* pinyin label — sits ABOVE the box */
 .tzg-pinyin{
-  font-size:1.1rem;color:var(--stamp);font-weight:900;
-  letter-spacing:3px;font-family:'Noto Sans SC',sans-serif;
-  min-height:1.4em;text-align:center;
+  font-size:1.3rem;color:var(--stamp);font-weight:900;
+  letter-spacing:4px;font-family:'Noto Sans SC',sans-serif;
+  min-height:1.6em;text-align:center;line-height:1.2;
 }
 /* Bigger for single char */
-.tzg-unit.single .tzg-pinyin{font-size:1.6rem;letter-spacing:5px}
+.tzg-unit.single .tzg-pinyin{font-size:1.9rem;letter-spacing:6px}
 
 /* the box */
 .tzg-box{
   position:relative;background:#fff;
-  border:2px solid #2a2520;border-radius:5px;
+  border:2.5px solid #2a2520;border-radius:5px;
   overflow:hidden;flex-shrink:0;
 }
-/* cross dashed center lines */
-.tzg-box::before{
-  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-  background-image:
-    linear-gradient(to right,transparent calc(50% - .7px),#c0b8a8 calc(50% - .7px),#c0b8a8 calc(50% + .7px),transparent calc(50% + .7px)),
-    linear-gradient(to bottom,transparent calc(50% - .7px),#c0b8a8 calc(50% - .7px),#c0b8a8 calc(50% + .7px),transparent calc(50% + .7px));
-  background-size:100% 100%;
-}
-.tzg-diag{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+/* no ::before lines — grid is drawn by SVG inside the box */
 .tzg-char-svg{position:absolute;inset:0;width:100%;height:100%;z-index:1}
 .tzg-quiz-div{position:absolute;inset:0;z-index:2;display:none}
-/* cover = blank white field (no question mark) */
-.tzg-cover{position:absolute;inset:0;z-index:3;background:#fff;display:none}
+/* cover: hidden by default; when .show → covers strokes with white+grid */
+.tzg-cover{position:absolute;inset:0;z-index:3;display:none}
 .tzg-cover.show{display:block}
 
 /* Size system: auto-fit 1–4 chars */
@@ -304,7 +299,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   <div class="home-body">
     <div class="sec-label">主菜单</div>
     <div class="nav-grid">
-      <div class="nav-card hl" onclick="openGroupPicker()">
+      <div class="nav-card hl" onclick="showPage('gpick');renderGpick()">
         <div class="nav-icon">📖</div><div class="nav-name">学 习</div>
         <div class="nav-desc">笔顺动画，彩色笔划</div><div class="nav-badge">NEW</div>
       </div>
@@ -323,14 +318,15 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   </div>
 </div>
 
-<!-- ═══════ GROUP PICKER MODAL ═══════ -->
-<div id="modal-group-pick">
-  <div class="gpick-box">
-    <div class="gpick-header">
-      <div class="gpick-title">选择学习分组</div>
-      <div class="gpick-sub">选好之后进入学习页面</div>
-    </div>
-    <div class="gpick-list" id="gpick-list"></div>
+<!-- ═══════ GROUP PICKER PAGE ═══════ -->
+<div id="page-gpick" class="page">
+  <div class="topbar">
+    <button class="icon-btn" onclick="showPage('home');renderHome()" title="返回首页">🏠</button>
+    <div class="topbar-title">选择学习分组</div>
+    <div style="width:34px"></div>
+  </div>
+  <div class="gpick-body">
+    <div class="gpick-grid" id="gpick-grid"></div>
   </div>
 </div>
 
@@ -520,37 +516,49 @@ function renderHome(){
   const el=document.getElementById('home-chips');
   el.innerHTML='';
   store.groups.forEach(g=>{
-    const c=document.createElement('div');c.className='g-chip';c.onclick=()=>{openGroupPicker(g.id);};
+    const c=document.createElement('div');c.className='g-chip';c.onclick=()=>startStudy(g.id);
     c.innerHTML=`<span class="g-chip-dot" style="background:${g.color}"></span>${g.name}<span class="g-chip-n">${g.entries.length}条</span>`;
     el.appendChild(c);
   });
 }
 
 // ══════════════════════════════════════
-// GROUP PICKER
+// GROUP PICKER (full page)
 // ══════════════════════════════════════
-function openGroupPicker(preselect){
-  const list=document.getElementById('gpick-list');
-  list.innerHTML='';
+function renderGpick(){
+  const grid=document.getElementById('gpick-grid');
+  grid.innerHTML='';
   if(!store.groups.length){
-    list.innerHTML='<div class="gpick-empty">暂无分组，请先在「字词管理」新建分组</div>';
+    grid.innerHTML=`<div class="gpick-empty" style="grid-column:1/-1">
+      <div class="gpick-empty-icon">📚</div>
+      <div class="gpick-empty-text">暂无分组</div>
+      <div class="gpick-empty-sub">请先在「字词管理」新建分组和字词</div>
+    </div>`;
+    return;
   }
   store.groups.forEach(g=>{
-    const item=document.createElement('div');item.className='gpick-item';
-    item.onclick=()=>startStudy(g.id);
-    item.innerHTML=`<span class="gpick-dot" style="background:${g.color}"></span>
-      <span class="gpick-name">${g.name}</span>
-      <span class="gpick-count">${g.entries.length} 条</span>
-      <span class="gpick-arrow">›</span>`;
-    list.appendChild(item);
+    const card=document.createElement('div');card.className='gpick-card';
+    card.onclick=()=>startStudy(g.id);
+    // accent left bar color
+    card.style.borderLeftColor=g.color;
+    card.style.borderLeftWidth='4px';
+    const charCount=g.entries.filter(e=>e.type==='char').length;
+    const wordCount=g.entries.filter(e=>e.type==='word').length;
+    card.innerHTML=`
+      <div class="gpick-card-top">
+        <span class="gpick-dot" style="background:${g.color}"></span>
+        <span class="gpick-name">${g.name}</span>
+        <span class="gpick-arrow">›</span>
+      </div>
+      <div class="gpick-meta">
+        ${charCount?`<span class="gpick-tag">${charCount} 个字</span>`:''}
+        ${wordCount?`<span class="gpick-tag">${wordCount} 个词</span>`:''}
+        ${!g.entries.length?'<span class="gpick-tag">暂无内容</span>':''}
+      </div>`;
+    grid.appendChild(card);
   });
-  document.getElementById('modal-group-pick').classList.add('open');
-  // close on backdrop
-  const overlay=document.getElementById('modal-group-pick');
-  overlay.onclick=e=>{ if(e.target===overlay) overlay.classList.remove('open'); };
 }
 function startStudy(gid){
-  document.getElementById('modal-group-pick').classList.remove('open');
   const g=store.groups.find(x=>x.id===gid);
   if(!g) return;
   S.groupId=gid;
@@ -626,6 +634,32 @@ function loadEntry(){
   const sz=n===1?'s1':n===2?'s2':'s34';
   const boxPx=n===1?240:n===2?185:148;
 
+  // Helper: build a tian zi ge SVG (cross + diagonals).
+  // Uses viewBox="0 0 100 100" with preserveAspectRatio so it scales to any container size.
+  function makeTzgSvg(extraStyle){
+    const s=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    s.setAttribute('viewBox','0 0 100 100');
+    s.setAttribute('preserveAspectRatio','none');
+    s.setAttribute('xmlns','http://www.w3.org/2000/svg');
+    s.style.cssText=extraStyle||'';
+    const mkL=(x1,y1,x2,y2,sw,color,dash)=>{
+      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+      l.setAttribute('x1',x1);l.setAttribute('y1',y1);
+      l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+      l.setAttribute('stroke',color||'#c0b8a8');
+      l.setAttribute('stroke-width',sw||'1');
+      if(dash)l.setAttribute('stroke-dasharray',dash);
+      return l;
+    };
+    // center vertical & horizontal dashed lines
+    s.appendChild(mkL(50,0,50,100,'1','#c0b8a8','6,4'));
+    s.appendChild(mkL(0,50,100,50,'1','#c0b8a8','6,4'));
+    // diagonals dashed lighter
+    s.appendChild(mkL(0,0,100,100,'0.8','#d0c8b8','5,5'));
+    s.appendChild(mkL(100,0,0,100,'0.8','#d0c8b8','5,5'));
+    return s;
+  }
+
   chars.forEach((ch,ci)=>{
     const cfg=charCfgs[ci]||{mode:'simple',redRange:''};
     S.chars.push({ch,charData:null,strokeColors:[],stepIdx:0,mode:cfg.mode,redRange:cfg.redRange||''});
@@ -633,42 +667,44 @@ function loadEntry(){
     const unit=document.createElement('div');
     unit.className='tzg-unit'+(n===1?' single':'');
 
-    // Box
+    // ── PINYIN ABOVE the box ──
+    const pyEl=document.createElement('div');
+    pyEl.className='tzg-pinyin';
+    const pinyinParts=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');
+    pyEl.textContent=pinyinParts[ci]||autoPinyin(ch);
+    unit.appendChild(pyEl);   // <-- added BEFORE box
+
+    // ── Box ──
     const box=document.createElement('div');
     box.className=`tzg-box ${sz}`;
     box.id=`box-${ci}`;
 
-    // diagonal SVG
-    const dsvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-    dsvg.setAttribute('viewBox',`0 0 ${boxPx} ${boxPx}`);
-    dsvg.style.cssText='position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0';
-    const mkL=(x1,y1,x2,y2)=>{
-      const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-      [['x1',x1],['y1',y1],['x2',x2],['y2',y2]].forEach(([k,v])=>l.setAttribute(k,v));
-      l.setAttribute('stroke','#d0c8b8');l.setAttribute('stroke-width','0.8');
-      l.setAttribute('stroke-dasharray','4,4');return l;
-    };
-    dsvg.appendChild(mkL(0,0,boxPx,boxPx));
-    dsvg.appendChild(mkL(boxPx,0,0,boxPx));
-    box.appendChild(dsvg);
+    // background grid SVG (z-index 0)
+    box.appendChild(makeTzgSvg('position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0'));
 
-    // char SVG
+    // char SVG (z-index 1)
     const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('viewBox','0 0 1024 1024');
     svg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:1';
     svg.id=`svg-${ci}`;
     box.appendChild(svg);
 
-    // quiz div
+    // quiz div (z-index 2)
     const qd=document.createElement('div');
     qd.style.cssText='position:absolute;inset:0;z-index:2;display:none';
     qd.id=`qd-${ci}`;
     box.appendChild(qd);
 
-    // cover (blank, no question mark)
+    // cover: white rect + grid lines (z-index 3) — hides strokes but shows grid
     const cv=document.createElement('div');
     cv.className='tzg-cover';
     cv.id=`cv-${ci}`;
+    // SVG: white background rect + grid lines on top
+    const cvSvg=makeTzgSvg('position:absolute;inset:0;width:100%;height:100%');
+    const whiteRect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    whiteRect.setAttribute('width','100');whiteRect.setAttribute('height','100');whiteRect.setAttribute('fill','#fff');
+    cvSvg.insertBefore(whiteRect,cvSvg.firstChild);
+    cv.appendChild(cvSvg);
     box.appendChild(cv);
 
     unit.appendChild(box);
@@ -686,14 +722,6 @@ function loadEntry(){
     const st=document.createElement('div');
     st.className='tzg-status';st.id=`st-${ci}`;st.textContent='加载…';
     unit.appendChild(st);
-
-    // pinyin below
-    const pyEl=document.createElement('div');
-    pyEl.className='tzg-pinyin';
-    // For word: split pinyin by spaces; for single char: whole pinyin
-    const pinyinParts=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');
-    pyEl.textContent=pinyinParts[ci]||autoPinyin(ch);
-    unit.appendChild(pyEl);
 
     row.appendChild(unit);
     fetchCharData(ch,ci);
@@ -819,7 +847,7 @@ function advanceFollow(){
   const bsz=box.clientWidth||240;
   document.getElementById('study-quiz-msg').textContent=`✏️ 请描写「${c.ch}」`;
   S.quizWriter=HanziWriter.create(`qd-${ci}`,c.ch,{
-    width:bsz,height:bsz,padding:Math.round(bsz*.05),
+    width:bsz,height:bsz,padding:0,
     showCharacter:false,showOutline:true,
     strokeColor:'#444',outlineColor:'#DDD',
     drawingColor:'#3B82F6',drawingWidth:Math.max(5,Math.round(bsz*.025)),
@@ -879,7 +907,7 @@ function renderManage(){
   }
   store.groups.forEach(g=>{
     const card=document.createElement('div');card.className='wm-group';
-    card.innerHTML=`<div class="wm-gh"><span class="wm-gdot" style="background:${g.color}"></span><span class="wm-gname">${g.name}</span><span class="wm-gcnt">${g.entries.length}条</span><div class="wm-ga"><button class="btn btn-ghost btn-sm btn-icon" onclick="openGroupPicker('${g.id}')" title="学习">📖</button><button class="btn btn-ghost btn-sm btn-icon" onclick="openEditGroup('${g.id}')" title="编辑">✏️</button></div></div><div class="wm-entries" id="wme-${g.id}"></div>`;
+    card.innerHTML=`<div class="wm-gh"><span class="wm-gdot" style="background:${g.color}"></span><span class="wm-gname">${g.name}</span><span class="wm-gcnt">${g.entries.length}条</span><div class="wm-ga"><button class="btn btn-ghost btn-sm btn-icon" onclick="startStudy('${g.id}')" title="学习">📖</button><button class="btn btn-ghost btn-sm btn-icon" onclick="openEditGroup('${g.id}')" title="编辑">✏️</button></div></div><div class="wm-entries" id="wme-${g.id}"></div>`;
     body.appendChild(card);
     const el=card.querySelector(`#wme-${g.id}`);
     g.entries.forEach((e,ei)=>{
