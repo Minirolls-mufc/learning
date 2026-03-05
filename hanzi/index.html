@@ -179,10 +179,11 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .gpick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-hero);border-radius:16px 16px 0 0}
 .gpick-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(255,107,0,.13)}
 .gpick-card:active{transform:scale(.97)}
-.gpick-card.selected{background:var(--grad-hero);border-color:transparent}
-.gpick-card.selected::before{display:none}
-.gpick-card.selected .gpick-name,.gpick-card.selected .gpick-arrow{color:#fff}
-.gpick-card.selected .gpick-meta{color:rgba(255,255,255,.8)}
+.gpick-card.selected{background:var(--paper);border-color:var(--o1);box-shadow:0 0 0 3px rgba(255,107,0,.15),0 4px 16px rgba(255,107,0,.1)}
+.gpick-card.selected::before{background:var(--grad-hero)}
+.gpick-card.selected .gpick-name{color:var(--o1)}
+.gpick-card.selected .gpick-arrow{color:var(--o2)}
+.gpick-card.selected .gpick-meta{color:var(--muted)}
 .gpick-card-top{display:flex;align-items:center;gap:8px}
 .gpick-name{font-weight:900;font-size:.92rem;flex:1;color:var(--ink)}
 .gpick-arrow{font-size:1rem;color:var(--muted)}
@@ -251,11 +252,12 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   min-width:155px;max-width:195px;box-shadow:0 2px 8px rgba(255,107,0,.05);
 }
 .prac-mode-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.13);border-color:var(--o2)}
-.prac-mode-card.active{background:var(--grad-btn);border-color:transparent;box-shadow:0 4px 16px rgba(255,107,0,.38)}
+.prac-mode-card.active{background:var(--paper);border-color:var(--o1);box-shadow:0 0 0 3px rgba(255,107,0,.15),0 4px 16px rgba(255,107,0,.12)}
 .prac-mode-card .pm-icon{font-size:2.2rem;display:block;margin-bottom:8px}
 .prac-mode-card .pm-name{font-weight:900;font-size:.95rem;color:var(--ink);display:block}
 .prac-mode-card .pm-desc{font-size:.7rem;color:var(--muted);line-height:1.5;margin-top:5px;display:block}
-.prac-mode-card.active .pm-name,.prac-mode-card.active .pm-desc{color:#fff}
+.prac-mode-card.active .pm-name{color:var(--o1)}
+.prac-mode-card.active .pm-desc{color:var(--muted)}
 
 /* Step 2 – group select */
 .prac-grp-body{flex:1;overflow-y:auto;padding:16px 14px 80px}
@@ -602,7 +604,8 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
     </div>
     <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
     <div class="prac-grp-footer">
-      <button class="btn btn-primary" onclick="startPractice()">开始练习 →</button>
+      <button class="btn btn-ghost" onclick="generateWorksheet()" id="btn-gen-sheet">📄 生成练习纸</button>
+      <button class="btn btn-primary" onclick="startPractice()">✏️ 在线练习 →</button>
     </div>
   </div>
 
@@ -683,6 +686,24 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
       <button class="btn btn-danger btn-sm" id="mg-del" onclick="deleteGroup()" style="display:none;margin-right:auto">🗑 删除</button>
       <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-group')">取消</button>
       <button class="btn btn-primary btn-sm" onclick="saveGroup()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ WORKSHEET PREVIEW MODAL ════════════════ -->
+<div class="modal-overlay" id="modal-worksheet">
+  <div class="modal" style="max-width:520px">
+    <div class="mhdr">
+      <div class="mtitle">📄 练习纸预览</div>
+      <button class="mclose" onclick="closeModal('modal-worksheet')">✕</button>
+    </div>
+    <div class="mbody" style="gap:14px">
+      <div id="ws-status" style="font-size:.82rem;color:var(--muted);text-align:center;padding:8px 0">正在生成，请稍候…</div>
+      <canvas id="ws-canvas" style="width:100%;border:1.5px solid var(--border);border-radius:8px;display:none"></canvas>
+    </div>
+    <div class="mfooter" style="gap:8px">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-worksheet')">关闭</button>
+      <button class="btn btn-primary btn-sm" id="ws-save-btn" onclick="saveWorksheet()" style="display:none">💾 保存图片</button>
     </div>
   </div>
 </div>
@@ -1443,6 +1464,171 @@ function deleteGroup(){if(!confirm('确定删除整个分组？'))return;store.g
    UTILS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function autoPinyin(s){if(window.pinyinPro){try{return pinyinPro.pinyin(s,{toneType:'symbol',type:'string'});}catch(e){}}return '';}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   WORKSHEET GENERATOR
+   Canvas A4 practice sheet
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const WS={
+  W:1240, H:1754,
+  MX:72, MY:80,
+  TITLE_H:68,
+  INFO_H:66,
+  ROW_GAP:28,
+  CELL:108,
+  CELL_GAP:8,
+  GROUP_GAP:28,
+  PINYIN_H:30,
+};
+
+async function generateWorksheet(){
+  const isErr=P.groupId==='_mistakes';
+  let entries=[];
+  if(isErr){
+    entries=store.ach.mistakes.map(m=>({type:'char',hanzi:m.ch,pinyin:m.pinyin,mode:'simple',redRange:''}));
+  } else {
+    const grp=store.groups.find(x=>x.id===P.groupId);
+    if(!grp||!grp.entries.length){alert('所选分组暂无内容');return;}
+    entries=grp.entries;
+  }
+  const grpName=isErr?'错词本':(store.groups.find(x=>x.id===P.groupId)||{name:''}).name;
+
+  openModal('modal-worksheet');
+  const stEl=document.getElementById('ws-status');
+  const canvas=document.getElementById('ws-canvas');
+  const saveBtn=document.getElementById('ws-save-btn');
+  stEl.textContent='正在加载字形数据，请稍候…';stEl.style.display='block';
+  canvas.style.display='none';saveBtn.style.display='none';
+
+  // Fetch char data
+  const fetchChar=ch=>fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch)}.json`)
+    .then(r=>r.ok?r.json():null).catch(()=>null);
+
+  const entryItems=[];
+  for(const entry of entries){
+    const chars=[...entry.hanzi];
+    const cfgs=entry.type==='word'
+      ?(entry.charCfg||chars.map(()=>({mode:'simple',redRange:''})))
+      :[{mode:entry.mode||'simple',redRange:entry.redRange||''}];
+    const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');
+    const dataArr=await Promise.all(chars.map(ch=>fetchChar(ch)));
+    entryItems.push({pinyins,chars:chars.map((ch,ci)=>({ch,pinyin:pinyins[ci]||'',cfg:cfgs[ci]||{mode:'simple',redRange:''},data:dataArr[ci]}))});
+  }
+
+  // ── Canvas setup ──
+  canvas.width=WS.W; canvas.height=WS.H;
+  const ctx=canvas.getContext('2d');
+  ctx.fillStyle='#ffffff'; ctx.fillRect(0,0,WS.W,WS.H);
+  const mode=P.mode;
+
+  // Title
+  ctx.fillStyle='#111111';
+  ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;
+  ctx.textAlign='center';
+  ctx.fillText(`${grpName} · ${mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`, WS.W/2, WS.MY+46);
+
+  // Info row
+  const iy=WS.MY+WS.TITLE_H+28;
+  ctx.font=`22px 'Noto Sans SC',Arial,sans-serif`;
+  ctx.textAlign='left'; ctx.fillStyle='#222';
+  ctx.fillText('姓名：', WS.MX+20, iy);
+  ctx.strokeStyle='#444'; ctx.lineWidth=1.2;
+  ctx.beginPath(); ctx.moveTo(WS.MX+95,iy+3); ctx.lineTo(WS.MX+310,iy+3); ctx.stroke();
+  ctx.fillText('班级：', WS.W/2+30, iy);
+  ctx.beginPath(); ctx.moveTo(WS.W/2+105,iy+3); ctx.lineTo(WS.W-WS.MX-20,iy+3); ctx.stroke();
+
+  // Layout
+  const CELL=WS.CELL, PINY=WS.PINYIN_H;
+  let curX=WS.MX, curY=WS.MY+WS.TITLE_H+WS.INFO_H+20;
+
+  function needsNewRow(w){ return curX+w>WS.W-WS.MX; }
+  function newRow(){ curX=WS.MX; curY+=PINY+CELL+WS.ROW_GAP; }
+
+  // Draw 田字格
+  function drawTzg(x,y,sz){
+    ctx.save();
+    ctx.strokeStyle='#2d2d2d'; ctx.lineWidth=1.6;
+    ctx.strokeRect(x,y,sz,sz);
+    ctx.setLineDash([5,4]);
+    ctx.strokeStyle='#b0b0b0'; ctx.lineWidth=0.9;
+    ctx.beginPath(); ctx.moveTo(x+sz/2,y); ctx.lineTo(x+sz/2,y+sz); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x,y+sz/2); ctx.lineTo(x+sz,y+sz/2); ctx.stroke();
+    ctx.strokeStyle='#d0d0d0'; ctx.lineWidth=0.6;
+    ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+sz,y+sz); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x+sz,y); ctx.lineTo(x,y+sz); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Draw hanzi stroke path (HanziWriter coord system: 0-1024, Y-flipped)
+  function drawStroke(pathD,color,cx,cy,sz){
+    const sc=sz/900;
+    ctx.save();
+    ctx.translate(cx, cy+sz);
+    ctx.scale(sc,-sc);
+    ctx.fillStyle=color;
+    try{ ctx.fill(new Path2D(pathD)); }catch(e){}
+    ctx.restore();
+  }
+
+  // Draw pinyin label
+  function drawPy(txt,x,y,totalW){
+    ctx.save();
+    ctx.fillStyle='#1a1a1a';
+    ctx.font=`19px 'Noto Sans SC',Arial,sans-serif`;
+    ctx.textAlign='center';
+    ctx.fillText(txt, x+totalW/2, y+20);
+    ctx.restore();
+  }
+
+  for(const entry of entryItems){
+    const n=entry.chars.length;
+    const wordW=n*CELL+(n-1)*WS.CELL_GAP;
+    if(needsNewRow(wordW)) newRow();
+    if(curY+PINY+CELL > WS.H-WS.MY-20) break;
+
+    drawPy(entry.pinyins.join('  '), curX, curY, wordW);
+
+    entry.chars.forEach((ci2,ci)=>{
+      const cx=curX+ci*(CELL+WS.CELL_GAP);
+      const cy=curY+PINY;
+      drawTzg(cx,cy,CELL);
+
+      if(mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
+        const ns=ci2.data.strokes.length;
+        const rs=parseRange(ci2.cfg.redRange,ns);
+        const redIdx=[],blueIdx=[];
+        for(let k=1;k<=ns;k++){ (rs.has(k)?redIdx:blueIdx).push(k-1); }
+        const showRed=blueIdx.length===0||(redIdx.length>0&&Math.random()<.5);
+        const shown=showRed?redIdx:blueIdx;
+        const col=showRed?'#dc2626':'#1d4ed8';
+        shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL));
+      }
+      // standard mode: blank tzg only
+    });
+
+    curX+=wordW+WS.GROUP_GAP;
+  }
+
+  // Footer
+  ctx.fillStyle='#bbbbbb';
+  ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;
+  ctx.textAlign='center';
+  ctx.fillText('Romeo 汉字课堂 · 加油！', WS.W/2, WS.H-38);
+
+  stEl.style.display='none';
+  canvas.style.display='block';
+  saveBtn.style.display='inline-flex';
+}
+
+function saveWorksheet(){
+  const canvas=document.getElementById('ws-canvas');
+  const isErr=P.groupId==='_mistakes';
+  const grpName=isErr?'错词本':(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name;
+  const a=document.createElement('a');
+  a.download=`${grpName}_${P.mode==='simple'?'简单':'标准'}_练习纸.png`;
+  a.href=canvas.toDataURL('image/png');
+  a.click();
+}
 
 renderHome();
 </script>
