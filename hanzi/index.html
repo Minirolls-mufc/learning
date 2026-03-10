@@ -118,14 +118,10 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .home-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.09)}
 .home-hero::after{content:'';position:absolute;left:-30px;bottom:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.07)}
 .hero-eyebrow{font-size:.64rem;letter-spacing:5px;color:rgba(255,255,255,.65);margin-bottom:6px;text-transform:uppercase}
-.hero-title{font-family:'Ma Shan Zheng',cursive;font-size:2.6rem;line-height:1;letter-spacing:8px;margin-bottom:4px}
+.hero-title{font-family:'Ma Shan Zheng',cursive;font-size:2.6rem;line-height:1;letter-spacing:8px;margin-bottom:2px}
 .hero-title span{color:#ffd199}
-.hero-sub{font-size:.8rem;color:rgba(255,255,255,.75);letter-spacing:1px}
-.hero-streak{
-  display:inline-flex;align-items:center;gap:6px;margin-top:10px;
-  background:rgba(255,255,255,.18);border-radius:99px;padding:4px 13px;
-  font-size:.72rem;font-weight:700;color:rgba(255,255,255,.92);
-}
+.hero-romeo{font-family:'ZCOOL XiaoWei',cursive;font-size:1rem;letter-spacing:6px;color:rgba(255,255,255,.75);margin-bottom:6px}
+.hero-sub{font-size:.8rem;color:rgba(255,255,255,.7);letter-spacing:1px}
 .home-body{flex:1;overflow-y:auto;padding:16px 14px 24px}
 .sec-label{
   font-size:.62rem;letter-spacing:3px;color:var(--muted);
@@ -483,6 +479,36 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 }
 .wcc-range.show{display:block}
 .wcc-range:focus{border-color:var(--o2)}
+/* ═══════════════════════════════════
+   CLOUD SYNC
+═══════════════════════════════════ */
+.sync-section{
+  background:var(--paper);border:1.5px solid var(--border);border-radius:16px;
+  margin:12px 14px 0;padding:14px 16px;
+  box-shadow:0 2px 7px rgba(255,107,0,.05);
+}
+.sync-label{
+  font-size:.6rem;letter-spacing:3px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;margin-bottom:10px;
+}
+.sync-btns{display:flex;gap:8px;flex-wrap:wrap}
+.sync-btn{
+  flex:1;min-width:80px;display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);
+  background:var(--paper);font-family:inherit;font-size:.76rem;font-weight:700;
+  color:var(--ink2);cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.sync-btn:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
+.sync-btn.primary{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(255,107,0,.28)}
+.sync-btn.primary:hover{filter:brightness(1.08)}
+.sync-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
+.sync-status{
+  font-size:.7rem;color:var(--muted);margin-top:8px;min-height:1.1em;
+  display:flex;align-items:center;gap:5px;
+}
+.sync-status.ok{color:var(--green)}.sync-status.err{color:var(--red)}.sync-status.ing{color:var(--o1)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-block;animation:spin .8s linear infinite}
 </style>
 </head>
 <body>
@@ -490,10 +516,10 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 <!-- ════════════════ HOME ════════════════ -->
 <div id="page-home" class="page active">
   <div class="home-hero">
-    <div class="hero-eyebrow">Romeo · 小学汉字学习</div>
-    <div class="hero-title">汉字<span>课堂</span></div>
+    <div class="hero-eyebrow">小学汉字学习</div>
+    <div class="hero-title">汉字<span>加油站</span></div>
+    <div class="hero-romeo">Romeo</div>
     <div class="hero-sub">一笔一划，认识每个汉字</div>
-    <div class="hero-streak" id="home-streak">🔥 <span id="home-streak-txt">开始学习吧！</span></div>
   </div>
   <div class="home-body">
     <div class="sec-label">功能导航</div>
@@ -654,6 +680,17 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
       <button class="tb-btn" onclick="showPage('home');renderHome()">← 首页</button>
     </div>
   </div>
+  <div class="sync-section">
+    <div class="sync-label">☁ Cloud Sync</div>
+    <div class="sync-btns">
+      <button class="sync-btn primary" id="sync-upload-btn" onclick="cloudUpload()">☁ 上传</button>
+      <button class="sync-btn" id="sync-restore-btn" onclick="cloudRestore()">🔽 恢复</button>
+      <button class="sync-btn" id="sync-export-btn" onclick="exportLocal()">📤 导出</button>
+      <button class="sync-btn" id="sync-import-btn" onclick="importLocal()">📥 导入</button>
+    </div>
+    <div class="sync-status" id="sync-status"></div>
+  </div>
+  <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="onImportFile(event)">
   <div class="manage-body" id="manage-body"></div>
 </div>
 
@@ -745,6 +782,12 @@ const DEFAULT_STORE={
 };
 let store=JSON.parse(JSON.stringify(DEFAULT_STORE));
 function saveStore(){try{localStorage.setItem('romeo_hxkt_v1',JSON.stringify(store));}catch(e){}}
+/* Auto-sync to cloud with 4s debounce – called from all data-mutating paths */
+let _autoSyncTimer=null;
+function scheduleAutoSync(){
+  clearTimeout(_autoSyncTimer);
+  _autoSyncTimer=setTimeout(()=>cloudUpload(true),4000);
+}
 function loadStore(){
   try{
     const raw=localStorage.getItem('romeo_hxkt_v1');
@@ -799,13 +842,6 @@ document.querySelectorAll('.modal-overlay').forEach(el=>
    HOME
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function renderHome(){
-  // streak bar
-  const ac=store.ach;
-  const stEl=document.getElementById('home-streak-txt');
-  if(stEl){
-    if(ac.streak>1) stEl.textContent=`连续${ac.streak}天 · 已掌握${ac.learnedChars.length}字`;
-    else stEl.textContent=`已掌握${ac.learnedChars.length}个字，加油！`;
-  }
   // chips
   const el=document.getElementById('home-chips');el.innerHTML='';
   store.groups.forEach(g=>{
@@ -1105,7 +1141,7 @@ function startPractice(){
     });
   });
   for(let i=P.queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[P.queue[i],P.queue[j]]=[P.queue[j],P.queue[i]];}
-  P.idx=0;store.ach.sessions++;saveStore();
+  P.idx=0;store.ach.sessions++;saveStore();scheduleAutoSync();
   document.getElementById('prac-quiz-title').textContent=(P.groupId==='_mistakes'?'错词本':'练习')+' · '+(P.mode==='simple'?'简单':'标准');
   pracGoStep(3);loadPracEntry();
 }
@@ -1265,7 +1301,7 @@ function pracAutoHintChar(ci){
   });
 }
 function checkAllCharsDone(){
-  if(P.chars.every(cs=>cs.done)){
+  if(P.chars.every(cs=>cs.done)){scheduleAutoSync();
     document.getElementById('prac-msg').textContent='🎉 全对！继续下一题';
     const dots=document.getElementById('prac-progress').querySelectorAll('.prac-prog-dot');
     if(dots[P.idx]){dots[P.idx].classList.remove('current');dots[P.idx].classList.add('done');}
@@ -1453,12 +1489,12 @@ function onHanziInput(){if(ms.entryType==='word'){const h=document.getElementByI
 function buildWccTable(hanzi,existing){const tbl=document.getElementById('wcc-table');tbl.innerHTML='';[...hanzi].forEach((ch,i)=>{const cfg=(existing||[])[i]||{mode:'simple',redRange:''};const row=document.createElement('div');row.className='wcc-row';row.innerHTML=`<span class="wcc-ch">${ch}</span><div class="wcc-tabs"><button class="wcc-tab ${cfg.mode==='simple'?'active':''}" onclick="setWccMode(${i},'simple')">🎨 七彩</button><button class="wcc-tab ${cfg.mode==='complex'?'active':''}" onclick="setWccMode(${i},'complex')">🧩 红蓝</button></div><input class="wcc-range ${cfg.mode==='complex'?'show':''}" id="wcc-range-${i}" placeholder="红色笔画如1-3" value="${cfg.redRange||''}">`;tbl.appendChild(row);});}
 function setWccMode(i,m){const rows=document.getElementById('wcc-table').querySelectorAll('.wcc-row');if(!rows[i])return;rows[i].querySelectorAll('.wcc-tab').forEach(t=>t.classList.remove('active'));rows[i].querySelectorAll('.wcc-tab')[m==='complex'?1:0].classList.add('active');const ri=rows[i].querySelector('.wcc-range');if(ri)ri.classList.toggle('show',m==='complex');}
 function getWccConfig(){return Array.from(document.getElementById('wcc-table').querySelectorAll('.wcc-row')).map(row=>{const active=row.querySelector('.wcc-tab.active');const mode=active&&active.textContent.includes('红蓝')?'complex':'simple';return{mode,redRange:(row.querySelector('.wcc-range')||{}).value||''};});}
-function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim();if(!hanzi){alert('请输入汉字');return;}let pinyin=document.getElementById('m-pinyin').value.trim();if(!pinyin)pinyin=autoPinyin(hanzi);const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;let obj;if(ms.entryType==='char'){obj={type:'char',hanzi,pinyin,mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};}else{obj={type:'word',hanzi,pinyin,charCfg:getWccConfig()};}if(ms.entryIdx===null)g.entries.push(obj);else g.entries[ms.entryIdx]=obj;saveStore();closeModal('modal-entry');renderManage();renderHome();}
-function deleteEntry(){if(!confirm('删除？'))return;const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;g.entries.splice(ms.entryIdx,1);saveStore();closeModal('modal-entry');renderManage();renderHome();}
+function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim();if(!hanzi){alert('请输入汉字');return;}let pinyin=document.getElementById('m-pinyin').value.trim();if(!pinyin)pinyin=autoPinyin(hanzi);const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;let obj;if(ms.entryType==='char'){obj={type:'char',hanzi,pinyin,mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};}else{obj={type:'word',hanzi,pinyin,charCfg:getWccConfig()};}if(ms.entryIdx===null)g.entries.push(obj);else g.entries[ms.entryIdx]=obj;saveStore();scheduleAutoSync();closeModal('modal-entry');renderManage();renderHome();}
+function deleteEntry(){if(!confirm('删除？'))return;const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;g.entries.splice(ms.entryIdx,1);saveStore();scheduleAutoSync();closeModal('modal-entry');renderManage();renderHome();}
 function openAddGroup(){ms.editGroupId=null;document.getElementById('mgtitle').textContent='新建分组';document.getElementById('mg-name').value='';document.getElementById('mg-del').style.display='none';openModal('modal-group');}
 function openEditGroup(gid){const g=store.groups.find(x=>x.id===gid);if(!g)return;ms.editGroupId=gid;document.getElementById('mgtitle').textContent='编辑分组';document.getElementById('mg-name').value=g.name;document.getElementById('mg-del').style.display='inline-flex';openModal('modal-group');}
-function saveGroup(){const name=document.getElementById('mg-name').value.trim();if(!name){alert('请输入名称');return;}if(ms.editGroupId){const g=store.groups.find(x=>x.id===ms.editGroupId);if(g)g.name=name;}else store.groups.push({id:'g'+Date.now(),name,entries:[]});saveStore();closeModal('modal-group');renderManage();renderHome();}
-function deleteGroup(){if(!confirm('确定删除整个分组？'))return;store.groups=store.groups.filter(x=>x.id!==ms.editGroupId);saveStore();closeModal('modal-group');renderManage();renderHome();}
+function saveGroup(){const name=document.getElementById('mg-name').value.trim();if(!name){alert('请输入名称');return;}if(ms.editGroupId){const g=store.groups.find(x=>x.id===ms.editGroupId);if(g)g.name=name;}else store.groups.push({id:'g'+Date.now(),name,entries:[]});saveStore();scheduleAutoSync();closeModal('modal-group');renderManage();renderHome();}
+function deleteGroup(){if(!confirm('确定删除整个分组？'))return;store.groups=store.groups.filter(x=>x.id!==ms.editGroupId);saveStore();scheduleAutoSync();closeModal('modal-group');renderManage();renderHome();}
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    UTILS
@@ -1629,6 +1665,124 @@ function saveWorksheet(){
   a.href=canvas.toDataURL('image/png');
   a.click();
 }
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   CLOUD SYNC  (JSONBin.io)
+   Stores: groups (字词+拼音+笔划规则) + ach (成就记录)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+const CLOUD_API_KEY='$2a$10$uEeLgIqeB1wImpeUneAhref2IXtkWjDsrQ1rh4tDTOdjMu8zDeYBC';
+const CLOUD_BIN_ID='69afb52cf3aefa4d159b2eec';
+const CLOUD_BASE='https://api.jsonbin.io/v3/b';
+
+function setSyncStatus(msg,cls){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  el.innerHTML=msg;
+  el.className='sync-status'+(cls?' '+cls:'');
+}
+function setSyncBtnsDisabled(v){
+  ['sync-upload-btn','sync-restore-btn','sync-export-btn','sync-import-btn']
+    .forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=v;});
+}
+function cloudPayload(){
+  return {
+    groups:store.groups,          // 字词管理：字、拼音、笔划规则
+    ach:store.ach,                // 成就：已学字、错词、答对次数、连击
+    _ts:Date.now(),
+    _ver:'romeo_v1'
+  };
+}
+
+/* ─ Upload: push local → cloud ─ */
+async function cloudUpload(silent=false){
+  if(!silent){
+    setSyncStatus('<span class="spin">⏳</span> 上传中…','ing');
+    setSyncBtnsDisabled(true);
+  }
+  try{
+    const res=await fetch(`${CLOUD_BASE}/${CLOUD_BIN_ID}`,{
+      method:'PUT',
+      headers:{
+        'Content-Type':'application/json',
+        'X-Master-Key':CLOUD_API_KEY,
+        'X-Bin-Versioning':'false'
+      },
+      body:JSON.stringify(cloudPayload())
+    });
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const now=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    setSyncStatus(`✅ 已同步到云端 ${now}`,'ok');
+  }catch(e){
+    if(!silent)setSyncStatus(`❌ 上传失败：${e.message}`,'err');
+  }finally{
+    if(!silent)setSyncBtnsDisabled(false);
+  }
+}
+
+/* ─ Restore: pull cloud → local ─ */
+async function cloudRestore(){
+  if(!confirm('从云端恢复会覆盖当前本地数据，确定吗？'))return;
+  setSyncStatus('<span class="spin">⏳</span> 读取云端…','ing');
+  setSyncBtnsDisabled(true);
+  try{
+    const res=await fetch(`${CLOUD_BASE}/${CLOUD_BIN_ID}/latest`,{
+      headers:{'X-Master-Key':CLOUD_API_KEY,'X-Bin-Meta':'false'}
+    });
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    const payload=data.record||data;
+    if(!payload.groups&&!payload.ach)throw new Error('云端数据格式不正确');
+    if(payload.groups)store.groups=payload.groups;
+    if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);
+    saveStore();
+    renderHome();
+    renderManage();
+    const now=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    setSyncStatus(`✅ 恢复成功 ${now}，共${store.groups.length}个分组`,'ok');
+  }catch(e){
+    setSyncStatus(`❌ 恢复失败：${e.message}`,'err');
+  }finally{
+    setSyncBtnsDisabled(false);
+  }
+}
+
+/* ─ Export: save local JSON file ─ */
+function exportLocal(){
+  const blob=new Blob([JSON.stringify(cloudPayload(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  const d=new Date().toISOString().slice(0,10);
+  a.download=`romeo_backup_${d}.json`;
+  a.click();
+  setSyncStatus('✅ 已导出到本地文件','ok');
+}
+
+/* ─ Import: load from local JSON file ─ */
+function importLocal(){
+  document.getElementById('import-file-input').click();
+}
+function onImportFile(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const payload=JSON.parse(e.target.result);
+      if(!payload.groups&&!payload.ach)throw new Error('文件格式不正确');
+      if(!confirm('导入将覆盖本地数据，确定吗？'))return;
+      if(payload.groups)store.groups=payload.groups;
+      if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);
+      saveStore();
+      renderHome();
+      renderManage();
+      setSyncStatus(`✅ 导入成功，共${store.groups.length}个分组`,'ok');
+    }catch(err){
+      setSyncStatus(`❌ 导入失败：${err.message}`,'err');
+    }
+    ev.target.value='';
+  };
+  reader.readAsText(file);
+}
+
 
 renderHome();
 </script>
