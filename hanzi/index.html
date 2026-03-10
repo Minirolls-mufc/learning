@@ -111,21 +111,37 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
    HOME
 ═══════════════════════════════════ */
 #page-home{background:var(--bg)}
-.home-hero{
-  flex-shrink:0;background:var(--grad-hero);color:#fff;
-  padding:28px 22px 36px;position:relative;overflow:hidden;
+/* Home topbar — brand only, no back button */
+.home-topbar{
+  flex-shrink:0;height:56px;display:flex;align-items:center;
+  padding:0 16px;background:var(--paper);
+  border-bottom:2px solid var(--border);
+  box-shadow:0 2px 10px rgba(255,107,0,.07);
 }
-.home-hero::before{content:'';position:absolute;right:-50px;top:-50px;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.09)}
-.home-hero::after{content:'';position:absolute;left:-30px;bottom:-30px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.07)}
-.hero-eyebrow{font-size:.64rem;letter-spacing:5px;color:rgba(255,255,255,.65);margin-bottom:6px;text-transform:uppercase}
-.hero-title{font-family:'Ma Shan Zheng',cursive;font-size:2.6rem;line-height:1;letter-spacing:8px;margin-bottom:2px}
-.hero-title span{color:#ffd199}
-.hero-romeo{font-family:'ZCOOL XiaoWei',cursive;font-size:1rem;letter-spacing:6px;color:rgba(255,255,255,.75);margin-bottom:6px}
-.hero-sub{font-size:.8rem;color:rgba(255,255,255,.7);letter-spacing:1px}
+.home-brand{display:flex;align-items:center;gap:11px}
+.home-brand-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--grad-btn);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:1.1rem;color:#fff;
+  box-shadow:0 3px 10px rgba(255,107,0,.35);
+  font-family:'ZCOOL XiaoWei',cursive;
+}
+.home-brand-title{
+  font-family:'ZCOOL XiaoWei',cursive;font-size:1.05rem;font-weight:700;
+  letter-spacing:1px;color:var(--ink);
+}
+.home-brand-sub{font-size:.63rem;color:var(--muted);letter-spacing:.5px;margin-top:1px}
 .home-body{flex:1;overflow-y:auto;padding:16px 14px 24px}
 .sec-label{
   font-size:.62rem;letter-spacing:3px;color:var(--muted);
   margin-bottom:9px;font-weight:700;text-transform:uppercase;
+}
+/* Home cloud sync section */
+.home-sync-section{
+  background:var(--paper);border:1.5px solid var(--border);border-radius:14px;
+  padding:14px 14px 10px;margin-top:4px;
+  box-shadow:0 2px 7px rgba(255,107,0,.04);
 }
 
 /* 2×2 nav grid — white cards, all equal */
@@ -151,15 +167,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   background:var(--o4);color:var(--ink);
   font-size:.52rem;font-weight:900;padding:2px 6px;border-radius:99px;
 }
-.group-chips{display:flex;flex-wrap:wrap;gap:7px}
-.g-chip{
-  display:inline-flex;align-items:center;justify-content:center;
-  gap:5px;padding:6px 12px;
-  background:var(--paper);border:1.5px solid var(--border);border-radius:99px;
-  cursor:pointer;transition:all .15s;font-size:.76rem;font-weight:700;
-}
-.g-chip:hover{border-color:var(--o2);background:#fff5ec;color:var(--o1)}
-.g-chip-n{font-size:.62rem;color:var(--muted);font-weight:400}
+
 
 /* ═══════════════════════════════════
    GROUP PICKER
@@ -515,14 +523,16 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 
 <!-- ════════════════ HOME ════════════════ -->
 <div id="page-home" class="page active">
-  <div class="home-hero">
-    <div class="hero-eyebrow">小学汉字学习</div>
-    <div class="hero-title">汉字<span>加油站</span></div>
-    <div class="hero-romeo">Romeo</div>
-    <div class="hero-sub">一笔一划，认识每个汉字</div>
+  <div class="home-topbar">
+    <div class="home-brand">
+      <div class="home-brand-icon">R</div>
+      <div class="home-brand-text">
+        <div class="home-brand-title">Romeo 汉字加油站</div>
+        <div class="home-brand-sub">小学汉字学习</div>
+      </div>
+    </div>
   </div>
   <div class="home-body">
-    <div class="sec-label">功能导航</div>
     <div class="nav-grid">
       <div class="nav-card" onclick="goStudy()">
         <span class="nav-icon">📖</span>
@@ -546,8 +556,17 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
         <span class="nav-desc">添加分组·管理字词</span>
       </div>
     </div>
-    <div class="sec-label">快速开始</div>
-    <div class="group-chips" id="home-chips"></div>
+    <div class="home-sync-section">
+      <div class="sync-label">☁ Cloud Sync</div>
+      <div class="sync-btns">
+        <button class="sync-btn primary" id="sync-upload-btn" onclick="cloudUpload()">☁ 上传</button>
+        <button class="sync-btn" id="sync-restore-btn" onclick="cloudRestore()">🔽 恢复</button>
+        <button class="sync-btn" id="sync-export-btn" onclick="exportLocal()">📤 导出</button>
+        <button class="sync-btn" id="sync-import-btn" onclick="importLocal()">📥 导入</button>
+      </div>
+      <div class="sync-status" id="sync-status"></div>
+    </div>
+    <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="onImportFile(event)">
   </div>
 </div>
 
@@ -680,17 +699,6 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
       <button class="tb-btn" onclick="showPage('home');renderHome()">← 首页</button>
     </div>
   </div>
-  <div class="sync-section">
-    <div class="sync-label">☁ Cloud Sync</div>
-    <div class="sync-btns">
-      <button class="sync-btn primary" id="sync-upload-btn" onclick="cloudUpload()">☁ 上传</button>
-      <button class="sync-btn" id="sync-restore-btn" onclick="cloudRestore()">🔽 恢复</button>
-      <button class="sync-btn" id="sync-export-btn" onclick="exportLocal()">📤 导出</button>
-      <button class="sync-btn" id="sync-import-btn" onclick="importLocal()">📥 导入</button>
-    </div>
-    <div class="sync-status" id="sync-status"></div>
-  </div>
-  <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="onImportFile(event)">
   <div class="manage-body" id="manage-body"></div>
 </div>
 
@@ -842,20 +850,7 @@ document.querySelectorAll('.modal-overlay').forEach(el=>
    HOME
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function renderHome(){
-  // chips
-  const el=document.getElementById('home-chips');el.innerHTML='';
-  store.groups.forEach(g=>{
-    const c=document.createElement('div');c.className='g-chip';
-    c.innerHTML=`${g.name}<span class="g-chip-n">${g.entries.length}条</span>`;
-    c.onclick=()=>startStudy(g.id);el.appendChild(c);
-  });
-  if(ac.mistakes.length){
-    const m=document.createElement('div');m.className='g-chip';
-    m.style.cssText='border-color:#fecaca;color:#ef4444';
-    m.innerHTML=`❌ 错词本<span class="g-chip-n">${ac.mistakes.length}个</span>`;
-    m.onclick=()=>{showPage('achieve');renderAchieve();};
-    el.appendChild(m);
-  }
+  // nothing to render dynamically on home now
 }
 function goStudy(){showPage('gpick');renderGpick();}
 
