@@ -25,7 +25,6 @@
   --text-2: #6b7280;
   --radius: 20px;
   --shadow: 0 4px 20px rgba(0,0,0,0.07);
-  --phonics-colors: #e63946, #4f7ef8;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; user-select: none; }
 body {
@@ -55,21 +54,16 @@ header {
 }
 .brand-name { font-weight: 900; font-size: 17px; font-family: 'Fredoka One', cursive; }
 .brand-sub { font-size: 11px; color: var(--text-2); font-weight: 600; }
-
 #app {
   flex: 1; overflow-y: auto; padding: 20px;
   padding-bottom: max(30px, env(safe-area-inset-bottom));
   -webkit-overflow-scrolling: touch;
 }
-
-/* Cards */
 .card {
   background: var(--card); border-radius: var(--radius); padding: 22px;
   box-shadow: var(--shadow); margin-bottom: 14px;
   border: 1px solid rgba(0,0,0,0.03);
 }
-
-/* Buttons */
 .btn {
   display: flex; align-items: center; justify-content: center; gap: 10px;
   width: 100%; padding: 17px;
@@ -88,30 +82,20 @@ header {
 .btn-row { display: flex; gap: 10px; }
 .btn-row .btn { margin-bottom: 0; }
 .btn-sm { padding: 10px 16px; font-size: 14px; border-radius: 10px; width: auto; }
-
-/* Home hero */
 .hero-title {
   font-family: 'Fredoka One', cursive;
   font-size: 52px; color: #1a1a2e;
   text-shadow: 3px 3px 0 #dce3ef;
-  margin: 0 0 6px 0;
-  letter-spacing: 1px;
+  margin: 0 0 6px 0; letter-spacing: 1px;
 }
-
-/* Mode selector cards */
 .home-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 14px;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; margin-bottom: 14px;
 }
 .mode-card {
-  background: var(--card);
-  border-radius: var(--radius);
-  padding: 20px 16px;
-  cursor: pointer;
-  box-shadow: var(--shadow);
-  border: 2px solid transparent;
+  background: var(--card); border-radius: var(--radius);
+  padding: 20px 16px; cursor: pointer;
+  box-shadow: var(--shadow); border: 2px solid transparent;
   transition: border-color 0.2s, transform 0.1s;
   display: flex; flex-direction: column; align-items: center;
   text-align: center; gap: 10px;
@@ -125,119 +109,96 @@ header {
 .mode-info h3 { margin: 0 0 3px 0; font-size: 16px; font-weight: 800; }
 .mode-info p { margin: 0; font-size: 12px; color: var(--text-2); font-weight: 600; line-height: 1.4; }
 
-/* =================== LEARN MODULE =================== */
+/* Tabs */
+.tab-bar {
+  display: flex; gap: 0; margin-bottom: 16px;
+  background: #f1f3f7; border-radius: 14px; padding: 4px; overflow-x: auto;
+}
+.tab-btn {
+  flex-shrink: 0; padding: 9px 16px; border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 700; cursor: pointer;
+  background: transparent; color: var(--text-2); transition: all 0.15s;
+  font-family: 'Nunito', sans-serif; white-space: nowrap;
+}
+.tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+
+/* Target practice card */
+.target-card {
+  border-radius: 16px; padding: 18px; margin-bottom: 12px; cursor: pointer;
+  background: linear-gradient(135deg, #fff5f0 0%, #fff 70%);
+  border: 2px solid #ffccb3; box-shadow: 0 3px 12px rgba(255,100,50,0.08);
+  display: flex; align-items: center; gap: 14px;
+}
+.target-card:active { transform: scale(0.98); }
+.target-card.practice-type {
+  background: linear-gradient(135deg, #f0f8ff 0%, #fff 70%);
+  border-color: #b3d4ff;
+}
+
+/* Word stats badge */
+.stat-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: 800;
+}
+.stat-correct { background: #e6faf0; color: #1a7f45; }
+.stat-wrong { background: #ffeef0; color: #c0392b; }
+.stat-net-pos { background: #e8f5ff; color: #2563eb; }
+.stat-net-neg { background: #fff0e8; color: #c2410c; }
+
+/* Learn module */
 .learn-progress {
-  text-align: center;
-  font-size: 13px; color: var(--text-2); font-weight: 700;
-  margin-bottom: 14px;
-  letter-spacing: 0.5px;
+  text-align: center; font-size: 13px; color: var(--text-2); font-weight: 700;
+  margin-bottom: 14px; letter-spacing: 0.5px;
 }
 .learn-word-card {
-  background: #fff;
-  border-radius: 24px;
-  padding: 40px 24px;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(79,126,248,0.1);
-  border: 2px solid #e8effd;
-  margin-bottom: 16px;
-  min-height: 160px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+  background: #fff; border-radius: 24px; padding: 40px 24px;
+  text-align: center; box-shadow: 0 8px 32px rgba(79,126,248,0.1);
+  border: 2px solid #e8effd; margin-bottom: 16px; min-height: 160px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
 }
-.learn-full-word {
-  font-family: 'Fredoka One', cursive;
-  font-size: 64px;
-  color: #1a1a2e;
-  letter-spacing: 3px;
-  line-height: 1.1;
-  transition: opacity 0.3s;
-  min-height: 80px;
-  display: flex; align-items: center; justify-content: center;
-}
-.learn-full-word.hidden { opacity: 0; }
-
-/* Phonics colored display */
 .phonics-display {
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 0;
-  font-family: 'Literata', Georgia, serif;
-  font-size: 76px;
-  font-weight: 400;
-  line-height: 1.15;
-  min-height: 92px;
-  align-items: center;
-  letter-spacing: 1px;
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 0;
+  font-family: 'Literata', Georgia, serif; font-size: 76px; font-weight: 400;
+  line-height: 1.15; min-height: 92px; align-items: center; letter-spacing: 1px;
 }
-.phonics-chunk {
-  display: inline-flex;
-  transition: opacity 0.3s, transform 0.3s;
-}
+.phonics-chunk { display: inline-flex; transition: opacity 0.3s, transform 0.3s; }
 .phonics-chunk.hidden-chunk { opacity: 0; transform: translateY(8px); pointer-events: none; }
 .phonics-chunk.color-0 { color: #e63946; }
 .phonics-chunk.color-1 { color: #4f7ef8; }
-.phonics-chunk.color-2 { color: #e63946; }
-.phonics-chunk.color-3 { color: #4f7ef8; }
-.phonics-chunk.color-4 { color: #e63946; }
-.phonics-chunk.color-5 { color: #4f7ef8; }
-
-/* Learn controls */
-.learn-controls {
-  display: flex; flex-direction: column; gap: 10px;
-}
+.learn-controls { display: flex; flex-direction: column; gap: 10px; }
 .learn-step-hint {
   text-align: center; color: var(--text-2); font-size: 13px; font-weight: 700;
   letter-spacing: 0.5px; padding: 8px; background: #f8faff; border-radius: 10px;
 }
 
-/* =================== PRACTICE MODULE =================== */
-
-/* Easy mode: letter tiles */
-.tiles-container {
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 10px; margin: 20px 0;
-}
+/* Practice */
+.tiles-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 20px 0; }
 .letter-tile {
-  width: 58px; height: 68px;
-  background: var(--primary);
-  color: #fff;
-  border-radius: 12px;
-  font-size: 34px; font-weight: 400;
+  width: 58px; height: 68px; background: var(--primary); color: #fff;
+  border-radius: 12px; font-size: 34px; font-weight: 400;
   font-family: 'Literata', Georgia, serif;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; cursor: pointer;
   box-shadow: 0 5px 0 var(--primary-dark);
-  transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s;
-  border: none;
+  transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s; border: none;
 }
 .letter-tile:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--primary-dark); }
 .letter-tile.used { opacity: 0; pointer-events: none; }
 .letter-tile.wrong-tile { background: var(--red); box-shadow: 0 5px 0 #c0392b; animation: shake 0.35s ease; }
-
-/* Answer slots */
-.slots-container {
-  display: flex; flex-wrap: wrap; justify-content: center;
-  gap: 10px; margin: 18px 0 24px 0;
-}
+.slots-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 18px 0 24px 0; }
 .answer-slot {
-  width: 58px; height: 68px;
-  border-bottom: 5px solid #e0e0e0;
+  width: 58px; height: 68px; border-bottom: 5px solid #e0e0e0;
   font-size: 34px; font-weight: 400; font-family: 'Literata', Georgia, serif;
   display: flex; align-items: center; justify-content: center;
-  background: #fff; color: #333; border-radius: 8px;
-  transition: all 0.2s;
+  background: #fff; color: #333; border-radius: 8px; transition: all 0.2s;
 }
 .answer-slot.filled { border-bottom-color: var(--primary); background: #f0f4ff; color: var(--primary); }
 .answer-slot.correct { background: var(--green); border-bottom-color: var(--green); color: #fff; border-radius: 12px; border-bottom-width: 0; }
 .answer-slot.wrong { background: var(--red); border-bottom-color: var(--red); color: #fff; border-radius: 12px; border-bottom-width: 0; }
-
-/* Normal mode: typing blanks */
 .blank-char {
-  width: 52px; height: 64px;
-  border-bottom: 5px solid #e0e0e0;
+  width: 52px; height: 64px; border-bottom: 5px solid #e0e0e0;
   font-size: 38px; font-weight: 400; font-family: 'Literata', Georgia, serif;
   display: flex; align-items: center; justify-content: center;
-  background: #fff; color: #333; border-radius: 8px;
-  transition: all 0.15s;
+  background: #fff; color: #333; border-radius: 8px; transition: all 0.15s;
 }
 .blank-char.active { border-bottom-color: var(--primary); background: #f0f5ff; transform: translateY(-3px); }
 .blank-char.filled { border-bottom-color: #333; }
@@ -245,8 +206,10 @@ header {
 .blank-char.wrong { color: #fff; background: var(--red); border: none; border-radius: 12px; }
 .blanks-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0 28px 0; }
 
-/* Other UI */
+/* Manager */
 .manage-item { display: flex; justify-content: space-between; align-items: center; padding: 16px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+
+/* Records */
 .history-item { background: #fff; border-radius: 14px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); overflow: hidden; }
 .history-header { display: flex; justify-content: space-between; align-items: center; padding: 16px; cursor: pointer; }
 .history-details { padding: 0 16px 16px 16px; display: none; border-top: 1px solid #f0f0f0; }
@@ -254,29 +217,25 @@ header {
 .detail-tag { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 5px 10px; border-radius: 8px; font-size: 14px; margin: 6px 4px 0 0; font-weight: 700; }
 .word-wall { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 .wall-item { background: #f0f4ff; border: 1.5px solid #c7d8ff; padding: 7px 12px; border-radius: 10px; font-size: 14px; font-weight: 700; color: var(--primary); }
-.icons-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; font-size: 22px; }
 .score-header { background: linear-gradient(135deg, #4f7ef8, #7c3aed); border-radius: var(--radius); padding: 28px 22px; color: #fff; margin-bottom: 14px; }
 .big-score { font-size: 72px; font-family: 'Fredoka One', cursive; margin: 6px 0; line-height: 1; }
-
-textarea { width: 100%; border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 16px; background: #fff; font-family: 'Nunito', sans-serif; font-weight: 600; transition: border 0.2s; user-select: auto; }
-textarea:focus { border-color: var(--primary); outline: none; }
-input[type="date"] { font-family: 'Nunito', sans-serif; width: 100%; padding: 13px 14px; border: 2px solid #e0e0e0; border-radius: 12px; margin: 5px 0 14px; font-size: 16px; font-weight: 600; }
-
-#hiddenInput { position: fixed; top: 0; left: -1000px; opacity: 0; font-size: 16px; height: 100px; }
-#fileInput { display: none; }
+.icons-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 12px; font-size: 22px; }
 
 /* Practice mode selector */
 .practice-mode-btn {
   background: #fff; border: 2px solid #e5eaf5; border-radius: 16px;
   padding: 20px; cursor: pointer; transition: all 0.15s;
-  text-align: left; width: 100%; margin-bottom: 12px;
-  font-family: 'Nunito', sans-serif;
+  text-align: left; width: 100%; margin-bottom: 12px; font-family: 'Nunito', sans-serif;
 }
 .practice-mode-btn:active { transform: scale(0.98); }
 .practice-mode-btn.easy { border-color: #fde68a; background: #fffdf0; }
 .practice-mode-btn.normal { border-color: #b3caff; background: #f5f7ff; }
 .pmb-title { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
 .pmb-desc { font-size: 13px; color: var(--text-2); font-weight: 600; }
+
+textarea { width: 100%; border: 2px solid #e0e0e0; border-radius: 12px; padding: 14px; font-size: 16px; background: #fff; font-family: 'Nunito', sans-serif; font-weight: 600; transition: border 0.2s; user-select: auto; }
+textarea:focus { border-color: var(--primary); outline: none; }
+.feedback-text { text-align: center; height: 30px; margin-bottom: 8px; font-weight: 800; font-size: 17px; }
 
 @keyframes shake {
   0%,100% { transform: translateX(0); }
@@ -288,14 +247,13 @@ input[type="date"] { font-family: 'Nunito', sans-serif; width: 100%; padding: 13
   to { transform: scale(1); opacity: 1; }
 }
 .pop-in { animation: pop-in 0.2s ease; }
-
-.feedback-text { text-align: center; height: 30px; margin-bottom: 8px; font-weight: 800; font-size: 17px; }
 </style>
 </head>
 <body>
 
-<input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-<input type="file" id="fileInput" accept=".json" onchange="importData(this)">
+<input type="text" id="hiddenInput" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+  style="position:fixed;top:0;left:-1000px;opacity:0;font-size:16px;height:100px;">
+<input type="file" id="fileInput" accept=".json" onchange="importData(this)" style="display:none">
 
 <header>
   <div class="brand">
@@ -311,72 +269,92 @@ input[type="date"] { font-family: 'Nunito', sans-serif; width: 100%; padding: 13
 <div id="app"></div>
 
 <script>
-/* ============================================================
-   JSONBin.io CONFIG
-   ============================================================ */
+/* ==================== CONFIG ==================== */
 const BIN_ID = '695b813c43b1c97be91a29d3';
 const API_KEY = '$2a$10$uEeLgIqeB1wImpeUneAhref2IXtkWjDsrQ1rh4tDTOdjMu8zDeYBC';
-/* ============================================================ */
 
+/* ==================== STATE ==================== */
 let db;
 let currentSetDate = null;
-let practiceList = [], currentIndex = 0, wrongList = [], sessionMasteredSet = new Set();
+let practiceList = [], currentIndex = 0, sessionMasteredSet = new Set();
+let sessionWrongSet = new Set(); // words that were wrong at least once this session
 let isProcessing = false;
+let easyHadWrong = false; // track if current easy word had any wrong attempt
 
-// Learn module state
-let learnList = [], learnIndex = 0, learnChunks = [], learnRevealedCount = 0, learnCovered = false;
-
+// Learn state
+let learnList = [], learnIndex = 0, learnChunks = [], learnRevealedCount = 0, learnCovered = false, learnInStepMode = false;
 // Easy practice state
 let easyAnswerArr = [], easyTileArr = [], easyTileOrder = [];
+// Normal practice state
+let targetWord = "", currentInput = "";
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
 function unlockAudio() {
   if (audioCtx.state === 'suspended') audioCtx.resume();
   const u = new SpeechSynthesisUtterance(''); speechSynthesis.speak(u);
 }
-
-// Unlock audio on first user interaction anywhere
 document.addEventListener('touchstart', unlockAudio, { once: true });
 document.addEventListener('click', unlockAudio, { once: true });
 
-// DB Init - v6: wordSets key changed from 'date' to 'id'
-const DB_REQ = indexedDB.open('romeo_spelling_v6', 2);
+/* ==================== DB INIT (v7) ==================== */
+// v7 adds: groups store, updates wrongBank schema
+const DB_REQ = indexedDB.open('romeo_spelling_v7', 1);
 DB_REQ.onupgradeneeded = (e) => {
   db = e.target.result;
-  const oldDb = e.oldVersion;
-
-  // wordSets: recreate with keyPath 'id'
-  if (db.objectStoreNames.contains('wordSets')) db.deleteObjectStore('wordSets');
-  db.createObjectStore('wordSets', { keyPath: 'id' });
-
+  if (!db.objectStoreNames.contains('wordSets'))
+    db.createObjectStore('wordSets', { keyPath: 'id' });
+  if (!db.objectStoreNames.contains('groups'))
+    db.createObjectStore('groups', { keyPath: 'id', autoIncrement: true });
   if (!db.objectStoreNames.contains('wrongBank'))
     db.createObjectStore('wrongBank', { keyPath: 'word' });
   if (!db.objectStoreNames.contains('practiceLogs'))
     db.createObjectStore('practiceLogs', { keyPath: 'id', autoIncrement: true });
+};
+DB_REQ.onsuccess = (e) => {
+  db = e.target.result;
+  // Migrate from v6 if it exists
+  migrateFromV6().then(() => renderHome());
+};
 
-  // Migrate old data from v5 (romeo_spelling_v5)
-  if (oldDb < 2) {
-    const migrateReq = indexedDB.open('romeo_spelling_v5', 1);
-    migrateReq.onsuccess = (me) => {
-      const oldDb5 = me.target.result;
-      if (!oldDb5.objectStoreNames.contains('wordSets')) { oldDb5.close(); return; }
-      const oldTx = oldDb5.transaction('wordSets', 'readonly');
-      getAll(oldTx.objectStore('wordSets')).then(oldSets => {
-        oldDb5.close();
-        if (!oldSets.length) return;
-        const newTx = db.transaction('wordSets', 'readwrite');
-        oldSets.forEach(s => {
-          // Remap: use existing 'date' field as 'id', drop 'date'
-          newTx.objectStore('wordSets').put({ id: s.id || s.date, words: s.words });
+function migrateFromV6() {
+  return new Promise(resolve => {
+    const req = indexedDB.open('romeo_spelling_v6', 2);
+    req.onsuccess = (e) => {
+      const oldDb = e.target.result;
+      if (!oldDb.objectStoreNames.contains('wordSets')) { oldDb.close(); return resolve(); }
+      const tx6 = oldDb.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
+      Promise.all([
+        getAll(tx6.objectStore('wordSets')),
+        getAll(tx6.objectStore('wrongBank')),
+        getAll(tx6.objectStore('practiceLogs'))
+      ]).then(([sets, wrongs, logs]) => {
+        oldDb.close();
+        // Check if v7 already has data
+        const checkTx = db.transaction('wordSets', 'readonly');
+        getAll(checkTx.objectStore('wordSets')).then(existing => {
+          if (existing.length > 0) return resolve(); // already migrated
+          if (!sets.length && !wrongs.length) return resolve();
+          const tx7 = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
+          sets.forEach(s => tx7.objectStore('wordSets').put({ id: s.id || s.date, words: s.words }));
+          // Migrate wrongBank: old format {word, lastWrong} → new format {word, lastPractice, correctCount, wrongCount}
+          wrongs.forEach(w => tx7.objectStore('wrongBank').put({
+            word: w.word,
+            lastPractice: w.lastWrong || w.lastPractice || new Date().toISOString(),
+            correctCount: w.correctCount || 0,
+            wrongCount: w.wrongCount || 1
+          }));
+          logs.forEach(l => tx7.objectStore('practiceLogs').put(l));
+          tx7.oncomplete = () => resolve();
         });
       });
     };
-  }
-};
-DB_REQ.onsuccess = (e) => { db = e.target.result; renderHome(); };
+    req.onerror = () => resolve();
+  });
+}
 
-function getAll(store) { return new Promise(r => { const req = store.getAll(); req.onsuccess = () => r(req.result); }); }
+function getAll(store) {
+  return new Promise(r => { const req = store.getAll(); req.onsuccess = () => r(req.result); req.onerror = () => r([]); });
+}
 
 function keepFocus() {
   const hidden = document.getElementById('hiddenInput');
@@ -389,14 +367,13 @@ document.addEventListener('click', (e) => {
 
 /* ==================== CLOUD SYNC ==================== */
 async function syncToCloud(isSilent = false) {
-  if (!BIN_ID.includes('6')) { if (!isSilent) alert("请先配置 JSONBin ID"); return; }
-  const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
-  const [sets, wrongs, logs] = await Promise.all([
-    getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
+  const tx = db.transaction(['wordSets', 'groups', 'wrongBank', 'practiceLogs'], 'readonly');
+  const [sets, groups, wrongs, logs] = await Promise.all([
+    getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
+    getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
   ]);
-  const payload = { updatedAt: new Date(), data: { wordSets: sets, wrongBank: wrongs, practiceLogs: logs } };
+  const payload = { updatedAt: new Date(), data: { wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs } };
 
-  // Silent mode: show a floating toast, never touch headerBtn
   let toast = null;
   if (isSilent) {
     toast = document.createElement('div');
@@ -411,38 +388,36 @@ async function syncToCloud(isSilent = false) {
     });
     if (!res.ok) throw new Error();
     if (isSilent && toast) {
-      toast.textContent = '✅ 已同步';
-      toast.style.background = '#1a7f45';
+      toast.textContent = '✅ 已同步'; toast.style.background = '#1a7f45';
       setTimeout(() => toast.remove(), 2000);
     } else alert("✅ 云端同步成功！");
-  } catch (e) {
-    if (!isSilent) alert("同步失败");
-    else if (toast) {
-      toast.textContent = '❌ 同步失败';
-      toast.style.background = '#c0392b';
-      setTimeout(() => toast.remove(), 3000);
-    }
+  } catch (err) {
+    if (!isSilent) alert("同步失败，请检查网络");
+    else if (toast) { toast.textContent = '❌ 同步失败'; toast.style.background = '#c0392b'; setTimeout(() => toast.remove(), 3000); }
   }
 }
 
 async function syncFromCloud() {
-  if (!BIN_ID.includes('6')) return alert("请先配置 JSONBin ID");
-  if (!confirm("⚠️ 警告：将从云端下载并【覆盖】当前设备的所有数据。\n确定吗？")) return;
+  if (!confirm("⚠️ 将从云端下载并【覆盖】当前所有数据。确定吗？")) return;
   try {
     const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, { headers: { 'X-Master-Key': API_KEY } });
     const result = await res.json();
     const content = result.record.data;
     if (!content) return alert("云端数据为空");
-    const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
-    ['wordSets', 'wrongBank', 'practiceLogs'].forEach(s => tx.objectStore(s).clear());
-    // Normalize: support both old {date, words} and new {id, words}
-    (content.wordSets || []).forEach(s => {
-      tx.objectStore('wordSets').put({ id: s.id || s.date, words: s.words });
-    });
-    (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
+    const stores = ['wordSets', 'groups', 'wrongBank', 'practiceLogs'];
+    const tx = db.transaction(stores, 'readwrite');
+    stores.forEach(s => tx.objectStore(s).clear());
+    (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put({ id: s.id || s.date, words: s.words }));
+    (content.groups || []).forEach(g => tx.objectStore('groups').put(g));
+    (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put({
+      word: w.word,
+      lastPractice: w.lastPractice || w.lastWrong || new Date().toISOString(),
+      correctCount: w.correctCount || 0,
+      wrongCount: w.wrongCount || (w.lastWrong ? 1 : 0)
+    }));
     (content.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
     tx.oncomplete = () => { alert("✅ 恢复成功！"); renderHome(); };
-  } catch (e) { alert("下载失败"); }
+  } catch (err) { alert("下载失败，请检查网络"); }
 }
 
 /* ==================== HOME ==================== */
@@ -468,7 +443,7 @@ function renderHome() {
       </div>
       <div class="mode-card manage" onclick="renderWordManager()">
         <div class="mode-icon">📂</div>
-        <div class="mode-info"><h3 style="color:#7c3aed">单词管理</h3><p>录入、编辑、删除</p></div>
+        <div class="mode-info"><h3 style="color:#7c3aed">单词管理</h3><p>词组、分组、编辑</p></div>
       </div>
     </div>
     <div class="card" style="background:#f5f8ff;border:1.5px solid #d4e1ff">
@@ -484,49 +459,74 @@ function renderHome() {
 }
 
 /* ==================== SET SELECTION ==================== */
-function renderSetSelection(mode) {
+function renderSetSelection(mode, activeTab) {
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
-  const tx = db.transaction(['wordSets', 'wrongBank'], 'readonly');
-  Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank'))]).then(([sets, wrongs]) => {
+  const stores = ['wordSets', 'groups', 'wrongBank'];
+  const tx = db.transaction(stores, 'readonly');
+  Promise.all([
+    getAll(tx.objectStore('wordSets')),
+    getAll(tx.objectStore('groups')),
+    getAll(tx.objectStore('wrongBank'))
+  ]).then(([sets, groups, wrongBank]) => {
     sets.sort((a, b) => a.id.localeCompare(b.id));
-    const modeLabel = mode === 'learn' ? '选择要学习的词组' : '选择要练习的词组';
+    groups.sort((a, b) => a.name.localeCompare(b.name));
+    activeTab = activeTab || 'all';
+
+    const modeLabel = mode === 'learn' ? '单词学习' : '拼写练习';
     const modeIcon = mode === 'learn' ? '📖' : '✏️';
 
+    // Build tab bar: All + each group
+    let tabsHtml = `<button class="tab-btn ${activeTab === 'all' ? 'active' : ''}" onclick="renderSetSelection('${mode}','all')">全部</button>`;
+    groups.forEach(g => {
+      const gid = g.id;
+      tabsHtml += `<button class="tab-btn ${activeTab == gid ? 'active' : ''}" onclick="renderSetSelection('${mode}',${gid})">${g.name}</button>`;
+    });
+
+    // Filter sets by active tab
+    let filteredSets = sets;
+    if (activeTab !== 'all') {
+      const grp = groups.find(g => g.id == activeTab);
+      const setIds = grp ? (grp.setIds || []) : [];
+      filteredSets = sets.filter(s => setIds.includes(s.id));
+    }
+
+    // Target entry card
+    const targetLabel = mode === 'learn' ? '🎯 针对复习' : '🎯 针对练习';
+    const targetDesc = mode === 'learn' ? '按掌握程度排序，选择要加强的词' : '按掌握程度排序，选择要攻克的词';
+    const targetFn = mode === 'learn' ? `renderTargetSelection('learn')` : `renderTargetSelection('practice')`;
+
     let html = `
-      <div style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center">
+      <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
         <h3 style="margin:0;font-size:20px">${modeIcon} ${modeLabel}</h3>
-        <span style="background:#eef2ff;padding:4px 12px;border-radius:12px;font-size:12px;color:#4f7ef8;font-weight:800">${sets.length} 个</span>
-      </div>`;
+        <span style="background:#eef2ff;padding:4px 12px;border-radius:12px;font-size:12px;color:#4f7ef8;font-weight:800">${filteredSets.length} 个</span>
+      </div>
 
-    if (mode === 'practice' && wrongs.length > 0) {
-      html += `<div class="mode-card" style="border-color:#ffd5d3;background:#fff5f5;margin-bottom:14px;cursor:pointer;flex-direction:row;text-align:left;gap:16px" onclick="renderPracticeMode('wrong_bank')">
-        <div class="mode-icon" style="font-size:36px">🔥</div>
-        <div class="mode-info"><h3 style="color:#d32f2f">错题突击</h3><p>${wrongs.length} 个错词等待攻克</p></div>
-      </div>`;
-    }
+      <div class="target-card ${mode === 'practice' ? 'practice-type' : ''}" onclick="${targetFn}">
+        <div style="font-size:36px">🎯</div>
+        <div>
+          <div style="font-size:17px;font-weight:800;margin-bottom:2px">${targetLabel}</div>
+          <div style="font-size:13px;color:var(--text-2);font-weight:600">${targetDesc}</div>
+        </div>
+      </div>
 
-    if (mode === 'learn' && wrongs.length > 0) {
-      html += `<div class="mode-card" style="border-color:#ffd5d3;background:#fff5f5;margin-bottom:14px;cursor:pointer;flex-direction:row;text-align:left;gap:16px" onclick="startLearnWrong()">
-        <div class="mode-icon" style="font-size:36px">🔥</div>
-        <div class="mode-info"><h3 style="color:#d32f2f">错词复习</h3><p>${wrongs.length} 个错词，可选择复习哪些</p></div>
-      </div>`;
-    }
+      <div class="tab-bar">${tabsHtml}</div>
+    `;
 
-    if (sets.length === 0) {
+    if (filteredSets.length === 0) {
       html += `<div class="card" style="text-align:center;padding:40px;color:#999">
         <div style="font-size:48px;margin-bottom:12px">📭</div>
-        <div style="font-weight:700">暂无词组，去管理页面录入吧！</div>
+        <div style="font-weight:700">${activeTab === 'all' ? '暂无词组，去管理页面录入吧！' : '该分组暂无词组'}</div>
       </div>`;
     } else {
-      sets.forEach(s => {
-        const preview = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0, 4).join('  ');
-        const fn = mode === 'learn' ? `startLearn('${s.id}')` : `renderPracticeMode('${s.id}')`;
-        html += `<div class="card" style="cursor:pointer;padding:18px;display:flex;justify-content:space-between;align-items:center" onclick="${fn}">
-          <div>
+      filteredSets.forEach(s => {
+        const preview = s.words.map(w => w.replace(/\//g, '')).slice(0, 4).join('  ');
+        const fn = mode === 'learn' ? `startLearn('${esc(s.id)}')` : `renderPracticeMode('${esc(s.id)}')`;
+        html += `<div class="card" style="cursor:pointer;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px" onclick="${fn}">
+          <div style="min-width:0;flex:1">
             <div style="font-weight:800;font-size:17px;margin-bottom:4px">${s.id}</div>
-            <div style="font-size:13px;color:var(--text-2);font-weight:600">${preview}${s.words.length > 4 ? '...' : ''}</div>
+            <div style="font-size:13px;color:var(--text-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${preview}${s.words.length > 4 ? '…' : ''}</div>
           </div>
-          <div style="font-weight:800;color:var(--primary);background:#eef2ff;padding:8px 14px;border-radius:12px;font-size:15px">${s.words.length}词 ›</div>
+          <div style="font-weight:800;color:var(--primary);background:#eef2ff;padding:8px 14px;border-radius:12px;font-size:15px;flex-shrink:0">${s.words.length}词 ›</div>
         </div>`;
       });
     }
@@ -534,19 +534,95 @@ function renderSetSelection(mode) {
   });
 }
 
+/* ==================== TARGET SELECTION ==================== */
+// Shows all words from wrongBank sorted by (correctCount - wrongCount) asc, then lastPractice asc
+function renderTargetSelection(mode) {
+  const backFn = `renderSetSelection('${mode}')`;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="${backFn}">‹ 返回</button>`;
+
+  const tx = db.transaction('wrongBank', 'readonly');
+  getAll(tx.objectStore('wrongBank')).then(bank => {
+    if (bank.length === 0) {
+      document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:40px;color:#999">
+        <div style="font-size:48px;margin-bottom:12px">🎉</div>
+        <div style="font-weight:700;font-size:17px">还没有练习记录</div>
+        <div style="font-size:13px;color:var(--text-2);margin-top:8px;font-weight:600">先去练习几个词组，这里就会出现数据了！</div>
+      </div>`;
+      return;
+    }
+
+    // Sort: net score (correct - wrong) asc, then lastPractice asc (oldest first = needs most review)
+    bank.sort((a, b) => {
+      const netA = (a.correctCount || 0) - (a.wrongCount || 0);
+      const netB = (b.correctCount || 0) - (b.wrongCount || 0);
+      if (netA !== netB) return netA - netB;
+      return new Date(a.lastPractice || 0) - new Date(b.lastPractice || 0);
+    });
+
+    const title = mode === 'learn' ? '🎯 针对复习' : '🎯 针对练习';
+    const desc = mode === 'learn' ? '按掌握程度排序，全选或选择要复习的词' : '按掌握程度排序，全选或选择要练习的词';
+    const startFn = mode === 'learn' ? `startTargetLearn` : `startTargetPractice`;
+    const wordsJson = JSON.stringify(bank.map(w => w.word)).replace(/"/g, '&quot;');
+
+    let listHtml = bank.map((w, i) => {
+      const clean = w.word.replace(/\//g, '');
+      const net = (w.correctCount || 0) - (w.wrongCount || 0);
+      const netClass = net >= 0 ? 'stat-net-pos' : 'stat-net-neg';
+      const netSign = net >= 0 ? '+' : '';
+      const lp = w.lastPractice ? new Date(w.lastPractice).toLocaleDateString('zh-CN', {month:'numeric',day:'numeric'}) : '—';
+      return `<label style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer">
+        <input type="checkbox" id="tchk-${i}" checked style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
+        <span style="font-family:'Literata',Georgia,serif;font-size:20px;color:#1a1a2e;flex:1;min-width:0">${clean}</span>
+        <span style="display:flex;gap:5px;flex-shrink:0;align-items:center">
+          <span class="stat-badge stat-correct">✓${w.correctCount||0}</span>
+          <span class="stat-badge stat-wrong">✗${w.wrongCount||0}</span>
+          <span class="stat-badge ${netClass}">${netSign}${net}</span>
+          <span style="font-size:11px;color:#bbb;font-weight:600">${lp}</span>
+        </span>
+      </label>`;
+    }).join('');
+
+    document.getElementById('app').innerHTML = `
+      <h3 style="margin:0 0 4px 0">${title}</h3>
+      <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:14px">${desc}</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px">
+        <button class="btn btn-gray btn-sm" onclick="toggleAllTarget(true)">全选</button>
+        <button class="btn btn-gray btn-sm" onclick="toggleAllTarget(false)">全不选</button>
+        <span style="margin-left:auto;font-size:12px;color:var(--text-2);font-weight:600;align-self:center">${bank.length} 个词</span>
+      </div>
+      <div class="card" style="padding:4px 0;margin-bottom:14px">${listHtml}</div>
+      <button class="btn btn-primary" onclick="${startFn}(${wordsJson})">开始 ›</button>
+    `;
+  });
+}
+
+function toggleAllTarget(checked) {
+  document.querySelectorAll('[id^="tchk-"]').forEach(cb => cb.checked = checked);
+}
+
+function startTargetLearn(words) {
+  const selected = words.filter((_, i) => { const cb = document.getElementById(`tchk-${i}`); return cb && cb.checked; });
+  if (!selected.length) return alert("请至少选择一个单词");
+  currentSetDate = 'target';
+  learnList = selected; learnIndex = 0;
+  renderLearnUI();
+}
+
+function startTargetPractice(words) {
+  const selected = words.filter((_, i) => { const cb = document.getElementById(`tchk-${i}`); return cb && cb.checked; });
+  if (!selected.length) return alert("请至少选择一个单词");
+  currentSetDate = 'target';
+  renderPracticeMode('target', selected);
+}
+
 /* ==================== LEARN MODULE ==================== */
 function parseChunks(rawWord) {
-  const clean = rawWord.replace(/[\/\-]/g, '');
-  if (rawWord.includes('/') || rawWord.includes('-')) {
-    return rawWord.split(/[\/\-]/).filter(c => c.length > 0);
-  }
-  // Auto phonics split
+  const clean = rawWord.replace(/\//g, '');
+  if (rawWord.includes('/')) return rawWord.split('/').filter(c => c.length > 0);
   const chunks = clean.match(/[^aeiouy]*[aeiouy]+(?:[^aeiouy]*$|[^aeiouy](?=[^aeiouy]))?/gi);
   if (!chunks || chunks.length <= 1) return [clean];
-  if (chunks.length > 1) {
-    const last = chunks[chunks.length - 1];
-    if (last === 'e' || last === 'es') chunks[chunks.length - 2] += chunks.pop();
-  }
+  const last = chunks[chunks.length - 1];
+  if (last === 'e' || last === 'es') chunks[chunks.length - 2] += chunks.pop();
   return chunks;
 }
 
@@ -554,62 +630,13 @@ function startLearn(id) {
   const tx = db.transaction('wordSets', 'readonly');
   tx.objectStore('wordSets').get(id).onsuccess = (e) => {
     const data = e.target.result; if (!data) return;
-    currentSetDate = id;
-    learnList = data.words;
-    learnIndex = 0;
+    currentSetDate = id; learnList = data.words; learnIndex = 0;
     renderLearnUI();
   };
 }
 
-function startLearnWrong() {
-  const tx = db.transaction('wrongBank', 'readonly');
-  getAll(tx.objectStore('wrongBank')).then(wrongs => {
-    if (wrongs.length === 0) return alert("错题本是空的！");
-    const words = wrongs.map(w => w.word);
-    // Show selection UI
-    document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderSetSelection('learn')">‹ 返回</button>`;
-    let html = `
-      <h3 style="margin:0 0 6px 0">🔥 错词复习</h3>
-      <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:16px">选择要复习的单词（可多选）</div>
-      <div style="margin-bottom:14px;display:flex;gap:8px">
-        <button class="btn btn-gray btn-sm" onclick="toggleAllWrong(true)">全选</button>
-        <button class="btn btn-gray btn-sm" onclick="toggleAllWrong(false)">全不选</button>
-      </div>
-      <div class="card" style="padding:10px 4px" id="wrongSelectList">
-    `;
-    words.forEach((w, i) => {
-      const clean = w.replace(/[\/\-]/g, '');
-      html += `<label style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer">
-        <input type="checkbox" id="wchk-${i}" checked style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer">
-        <span style="font-family:'Literata',Georgia,serif;font-size:22px;color:#1a1a2e">${clean}</span>
-      </label>`;
-    });
-    html += `</div>
-      <button class="btn btn-primary" style="margin-top:16px" onclick="startLearnWrongSelected(${JSON.stringify(words).replace(/"/g, '&quot;')})">开始复习 ›</button>
-    `;
-    document.getElementById('app').innerHTML = html;
-  });
-}
-
-function toggleAllWrong(checked) {
-  document.querySelectorAll('[id^="wchk-"]').forEach(cb => cb.checked = checked);
-}
-
-function startLearnWrongSelected(words) {
-  const selected = words.filter((_, i) => {
-    const cb = document.getElementById(`wchk-${i}`);
-    return cb && cb.checked;
-  });
-  if (selected.length === 0) return alert("请至少选择一个单词");
-  currentSetDate = 'wrong_bank';
-  learnList = selected;
-  learnIndex = 0;
-  renderLearnUI();
-}
-
-
-function exitLearn() { if(confirm('退出学习？')) renderHome(); }
-function exitPracticeSession() { if(confirm('退出练习？')) renderHome(); }
+function exitLearn() { if (confirm('退出学习？')) renderHome(); }
+function exitPracticeSession() { if (confirm('退出练习？')) renderHome(); }
 
 function renderLearnUI() {
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="exitLearn()">🏃 退出</button>`;
@@ -630,45 +657,34 @@ function loadLearnWord() {
     </div>`;
     return;
   }
-
   const rawWord = learnList[learnIndex];
-  const cleanWord = rawWord.replace(/[\/\-]/g, '');
+  const cleanWord = rawWord.replace(/\//g, '');
   learnChunks = parseChunks(rawWord);
-  learnRevealedCount = learnChunks.length; // start fully visible
-  learnCovered = false;
-  learnInStepMode = false;
+  learnRevealedCount = learnChunks.length;
+  learnCovered = false; learnInStepMode = false;
 
-  const container = document.getElementById('learnContainer');
-  container.innerHTML = `
+  document.getElementById('learnContainer').innerHTML = `
     <div class="learn-progress">单词 ${learnIndex + 1} / ${learnList.length}</div>
     <div class="learn-word-card">
       <div class="phonics-display" id="learnPhonics"></div>
     </div>
-
     <div style="text-align:center;margin-bottom:16px">
       <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:12px 28px;border-radius:30px;font-size:16px"
         ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
         🔊 <span style="font-weight:800">听发音</span>
       </button>
     </div>
-
     <div id="learnStepHint" class="learn-step-hint">👂 先听发音，记住整个单词</div>
     <div class="learn-controls" id="learnControls"></div>
   `;
-
   renderLearnPhonics(learnChunks.length);
   renderLearnInitControls();
   setTimeout(() => speak(cleanWord), 350);
 }
 
-// learnCovered: true = word hidden, false = word shown
-// learnInStepMode: true = currently doing step-by-step reveal
-let learnInStepMode = false;
-
 function renderLearnInitControls() {
   learnInStepMode = false;
-  const controls = document.getElementById('learnControls');
-  controls.innerHTML = `
+  document.getElementById('learnControls').innerHTML = `
     <div class="btn-row" style="margin-top:4px">
       <button class="btn btn-yellow" style="flex:1;margin-bottom:0" id="toggleBtn" onclick="learnToggle()">🙈 隐藏</button>
       <button class="btn btn-green" style="flex:1;margin-bottom:0" onclick="learnStartStep()">👁 逐步展示</button>
@@ -697,31 +713,22 @@ function learnToggle() {
 }
 
 function learnStartStep() {
-  learnInStepMode = true;
-  learnCovered = true;
-  learnRevealedCount = 0;
+  learnInStepMode = true; learnCovered = true; learnRevealedCount = 0;
   renderLearnPhonics(0);
-  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
+  document.getElementById('learnStepHint').textContent = '点击"+1展示"逐步揭示每个部分';
   renderLearnStepControls();
 }
 
 function renderLearnStepControls() {
   const allDone = learnRevealedCount >= learnChunks.length;
-  // Left btn: if hidden → "展示" (全展示退出逐步); if allDone → "隐藏"
   const leftBtn = (allDone && !learnCovered)
     ? `<button class="btn btn-yellow" style="flex:1;margin-bottom:0" onclick="learnStepHide()">🙈 隐藏</button>`
     : `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnStepShowAll()">👁 展示</button>`;
-  // Right btn: step progress or done
   const rightBtn = !allDone
     ? `<button class="btn btn-green" style="flex:1;margin-bottom:0" onclick="learnRevealNext()">+1 展示 (${learnRevealedCount}/${learnChunks.length})</button>`
     : `<span style="flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--green);padding:10px 0">✅ 展示完毕</span>`;
-
-  const controls = document.getElementById('learnControls');
-  controls.innerHTML = `
-    <div class="btn-row" style="margin-top:4px">
-      ${leftBtn}
-      ${rightBtn}
-    </div>
+  document.getElementById('learnControls').innerHTML = `
+    <div class="btn-row" style="margin-top:4px">${leftBtn}${rightBtn}</div>
     <div class="btn-row" style="margin-top:10px">
       ${learnIndex > 0 ? `<button class="btn btn-outline" style="flex:1;margin-bottom:0" onclick="learnIndex--;loadLearnWord()">‹ 上一词</button>` : '<div style="flex:1"></div>'}
       <button class="btn btn-primary" style="flex:2;margin-bottom:0" onclick="learnIndex++;loadLearnWord()">下一词 ›</button>
@@ -730,20 +737,16 @@ function renderLearnStepControls() {
 }
 
 function learnStepShowAll() {
-  // "展示" clicked during step mode → show everything, exit step mode
-  learnInStepMode = false;
-  learnCovered = false;
-  learnRevealedCount = learnChunks.length;
+  learnInStepMode = false; learnCovered = false; learnRevealedCount = learnChunks.length;
   renderLearnPhonics(learnChunks.length);
   document.getElementById('learnStepHint').textContent = '👂 先听发音，记住整个单词';
   renderLearnInitControls();
 }
 
 function learnStepHide() {
-  learnCovered = true;
-  learnRevealedCount = 0;
+  learnCovered = true; learnRevealedCount = 0;
   renderLearnPhonics(0);
-  document.getElementById('learnStepHint').textContent = '点击"展示"逐步揭示每个部分';
+  document.getElementById('learnStepHint').textContent = '点击"+1展示"逐步揭示每个部分';
   renderLearnStepControls();
 }
 
@@ -773,37 +776,43 @@ function learnRevealNext() {
 }
 
 /* ==================== PRACTICE MODE SELECTION ==================== */
-function renderPracticeMode(date) {
-  currentSetDate = date;
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderSetSelection('practice')">‹ 返回</button>`;
+function renderPracticeMode(setId, preloadedWords) {
+  currentSetDate = setId;
+  const backFn = preloadedWords ? `renderSetSelection('practice')` : `renderSetSelection('practice')`;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="${backFn}">‹ 返回</button>`;
+  const wordsAttr = preloadedWords ? `data-words='${JSON.stringify(preloadedWords)}'` : '';
   document.getElementById('app').innerHTML = `
     <h3 style="margin:0 0 18px 0">选择练习方式</h3>
-    <button class="practice-mode-btn easy" onclick="startPractice('${date}', 'easy')">
+    <button class="practice-mode-btn easy" id="modeEasyBtn" ${wordsAttr} onclick="startPracticeFromBtn(this,'easy')">
       <div class="pmb-title">🎮 简单模式 — 字母拼图</div>
       <div class="pmb-desc">打乱字母展示成磁贴，按顺序点击拼出单词</div>
     </button>
-    <button class="practice-mode-btn normal" onclick="startPractice('${date}', 'normal')">
+    <button class="practice-mode-btn normal" id="modeNormalBtn" ${wordsAttr} onclick="startPracticeFromBtn(this,'normal')">
       <div class="pmb-title">✍️ 普通模式 — 听写输入</div>
       <div class="pmb-desc">听到发音，用键盘逐一输入字母</div>
     </button>
   `;
 }
 
-/* ==================== PRACTICE CORE ==================== */
-function startPractice(date, mode) {
-  if (date === 'wrong_bank') {
-    const tx = db.transaction('wrongBank', 'readonly');
-    getAll(tx.objectStore('wrongBank')).then(list => {
-      if (list.length === 0) return alert("错题本是空的！");
-      practiceList = list.map(i => i.word); currentIndex = 0; wrongList = []; sessionMasteredSet = new Set();
+function startPracticeFromBtn(btn, mode) {
+  const rawWords = btn.getAttribute('data-words');
+  if (rawWords) {
+    try {
+      const words = JSON.parse(rawWords);
+      practiceList = words; currentIndex = 0; sessionMasteredSet = new Set(); sessionWrongSet = new Set();
       renderPracticeUI(mode);
-    });
-    return;
+    } catch(e) { startPractice(currentSetDate, mode); }
+  } else {
+    startPractice(currentSetDate, mode);
   }
+}
+
+/* ==================== PRACTICE CORE ==================== */
+function startPractice(setId, mode) {
   const tx = db.transaction('wordSets', 'readonly');
-  tx.objectStore('wordSets').get(date).onsuccess = (e) => {
+  tx.objectStore('wordSets').get(setId).onsuccess = (e) => {
     const data = e.target.result; if (!data) return;
-    practiceList = data.words; currentIndex = 0; wrongList = []; sessionMasteredSet = new Set();
+    practiceList = data.words; currentIndex = 0; sessionMasteredSet = new Set(); sessionWrongSet = new Set();
     renderPracticeUI(mode);
   };
 }
@@ -812,7 +821,9 @@ function renderPracticeUI(mode) {
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="exitPracticeSession()">🏃 退出</button>`;
   const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
   document.getElementById('app').innerHTML = `
-    <div style="text-align:center;margin-bottom:14px;color:var(--text-2);font-weight:700;font-size:13px">${modeLabel} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span></div>
+    <div style="text-align:center;margin-bottom:14px;color:var(--text-2);font-weight:700;font-size:13px" id="practiceProgress">
+      ${modeLabel} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span>
+    </div>
     <div class="card" id="practiceCard" style="min-height:320px"></div>
   `;
   loadPracticeWord(mode);
@@ -821,29 +832,21 @@ function renderPracticeUI(mode) {
 function loadPracticeWord(mode) {
   if (currentIndex >= practiceList.length) { finishPractice(); return; }
   isProcessing = false;
+  easyHadWrong = false;
   const rawWord = practiceList[currentIndex];
-  const cleanWord = rawWord.replace(/[\/\-]/g, '');
-
-  // Update progress counter
-  const progressEl = document.querySelector('[style*="margin-bottom:14px"]');
-  if (progressEl) {
-    const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
-    progressEl.innerHTML = `${modeLabel} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span>`;
-  }
-
+  const cleanWord = rawWord.replace(/\//g, '');
+  const prog = document.getElementById('practiceProgress');
+  const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
+  if (prog) prog.innerHTML = `${modeLabel} • <span style="color:var(--primary)">${currentIndex + 1} / ${practiceList.length}</span>`;
   if (mode === 'easy') loadEasyWord(cleanWord, rawWord);
   else loadNormalWord(cleanWord, rawWord, mode);
 }
 
 /* ---------- EASY MODE ---------- */
-function loadEasyWord(cleanWord, rawWord) {
+function loadEasyWord(cleanWord) {
   easyAnswerArr = new Array(cleanWord.length).fill('');
-  // Shuffle letters
-  easyTileArr = cleanWord.split('');
   easyTileOrder = shuffleArr([...Array(cleanWord.length).keys()]);
-
-  const container = document.getElementById('practiceCard');
-  container.innerHTML = `
+  document.getElementById('practiceCard').innerHTML = `
     <div style="text-align:center;margin-bottom:16px">
       <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px"
         ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
@@ -856,78 +859,66 @@ function loadEasyWord(cleanWord, rawWord) {
     <div class="tiles-container" id="letterTiles"></div>
     <button class="btn btn-gray" style="margin-top:12px;font-size:14px" ontouchstart="event.preventDefault();skipEasy()" onclick="skipEasy()">跳过 ›</button>
   `;
-
-  renderSlots(cleanWord);
-  renderTiles(cleanWord);
-  setTimeout(() => speak(cleanWord), 350);
-}
-
-function renderSlots(cleanWord) {
-  const container = document.getElementById('answerSlots');
-  container.innerHTML = '';
+  // Render slots
+  const slotsEl = document.getElementById('answerSlots');
   for (let i = 0; i < cleanWord.length; i++) {
     const slot = document.createElement('div');
-    slot.className = 'answer-slot';
-    slot.id = `slot-${i}`;
-    container.appendChild(slot);
+    slot.className = 'answer-slot'; slot.id = `slot-${i}`;
+    slotsEl.appendChild(slot);
   }
-}
-
-function renderTiles(cleanWord) {
-  const container = document.getElementById('letterTiles');
-  container.innerHTML = '';
-  easyTileOrder.forEach((origIdx) => {
+  // Render tiles
+  const tilesEl = document.getElementById('letterTiles');
+  easyTileOrder.forEach(origIdx => {
     const tile = document.createElement('button');
     tile.className = 'letter-tile pop-in';
     tile.textContent = cleanWord[origIdx].toLowerCase();
-    tile.dataset.origIdx = origIdx;
-    tile.id = `tile-${origIdx}`;
+    tile.dataset.origIdx = origIdx; tile.id = `tile-${origIdx}`;
     tile.onclick = () => handleTileClick(origIdx, cleanWord);
     tile.ontouchstart = (e) => { e.preventDefault(); handleTileClick(origIdx, cleanWord); };
-    container.appendChild(tile);
+    tilesEl.appendChild(tile);
   });
+  setTimeout(() => speak(cleanWord), 350);
 }
 
 function handleTileClick(origIdx, cleanWord) {
   if (isProcessing) return;
   const tile = document.getElementById(`tile-${origIdx}`);
   if (!tile || tile.classList.contains('used')) return;
-
-  // Find next empty slot
   const nextEmpty = easyAnswerArr.findIndex(c => c === '');
   if (nextEmpty === -1) return;
-
   const expectedChar = cleanWord[nextEmpty];
   const clickedChar = cleanWord[origIdx];
-
   if (clickedChar.toLowerCase() === expectedChar.toLowerCase()) {
-    // Correct
     easyAnswerArr[nextEmpty] = clickedChar;
     tile.classList.add('used');
     const slot = document.getElementById(`slot-${nextEmpty}`);
-    slot.textContent = clickedChar.toLowerCase();
-    slot.classList.add('filled');
-    slot.classList.add('pop-in');
-
+    slot.textContent = clickedChar.toLowerCase(); slot.classList.add('filled', 'pop-in');
     if (easyAnswerArr.every(c => c !== '')) {
-      // All filled correctly
       isProcessing = true;
       document.querySelectorAll('.answer-slot').forEach(s => { s.classList.remove('filled'); s.classList.add('correct'); });
       document.getElementById('feedback').innerHTML = `<span style="color:var(--green)">太棒了！🎉</span>`;
       playSuccessTone();
-      sessionMasteredSet.add(cleanWord.toLowerCase());
-      if (currentSetDate === 'wrong_bank') removeFromWrongBank(practiceList[currentIndex]);
+      const wordKey = practiceList[currentIndex].replace(/\//g, '').toLowerCase();
+      if (!easyHadWrong) {
+        sessionMasteredSet.add(wordKey);
+        recordWordResult(practiceList[currentIndex], true);
+      } else {
+        recordWordResult(practiceList[currentIndex], false);
+      }
       setTimeout(() => { currentIndex++; loadPracticeWord('easy'); }, 900);
     }
   } else {
-    // Wrong
+    // Wrong tap
+    easyHadWrong = true;
+    const wordKey = practiceList[currentIndex].replace(/\//g, '').toLowerCase();
+    if (!sessionWrongSet.has(wordKey)) {
+      sessionWrongSet.add(wordKey);
+      recordEasyWrong(practiceList[currentIndex]); // record wrong once per word
+    }
     tile.classList.add('wrong-tile');
     const slot = document.getElementById(`slot-${nextEmpty}`);
     slot.classList.add('wrong');
     document.getElementById('feedback').innerHTML = `<span style="color:var(--red)">不对，再想想！</span>`;
-    addToWrongBank(practiceList[currentIndex]);
-
-    // Flash wrong, then reset that slot and tile
     setTimeout(() => {
       tile.classList.remove('wrong-tile');
       slot.classList.remove('wrong');
@@ -939,11 +930,8 @@ function handleTileClick(origIdx, cleanWord) {
 function skipEasy() { currentIndex++; loadPracticeWord('easy'); }
 
 /* ---------- NORMAL MODE ---------- */
-let targetWord = "", currentInput = "";
-
 function loadNormalWord(cleanWord, rawWord, mode) {
-  const container = document.getElementById('practiceCard');
-  container.innerHTML = `
+  document.getElementById('practiceCard').innerHTML = `
     <div style="text-align:center;margin-bottom:18px">
       <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px"
         ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
@@ -952,8 +940,10 @@ function loadNormalWord(cleanWord, rawWord, mode) {
     </div>
     <div class="blanks-container" id="blanksArea"></div>
     <div class="feedback-text" id="feedback"></div>
-    <button class="btn btn-primary" id="confirmBtn" ontouchstart="event.preventDefault();checkNormal('${mode}')" onclick="checkNormal('${mode}')">✨ 确认 (Enter)</button>
-    <button class="btn btn-gray" style="margin-top:0;font-size:14px" ontouchstart="event.preventDefault();skipNormal('${mode}')" onclick="skipNormal('${mode}')">跳过 ›</button>
+    <button class="btn btn-primary" id="confirmBtn"
+      ontouchstart="event.preventDefault();checkNormal('${mode}')" onclick="checkNormal('${mode}')">✨ 确认 (Enter)</button>
+    <button class="btn btn-gray" style="margin-top:0;font-size:14px"
+      ontouchstart="event.preventDefault();skipNormal('${mode}')" onclick="skipNormal('${mode}')">跳过 ›</button>
   `;
   setupNormalInput(cleanWord, mode);
   setTimeout(() => speak(cleanWord), 350);
@@ -964,13 +954,10 @@ function setupNormalInput(word, mode) {
   const blanks = document.getElementById('blanksArea');
   blanks.innerHTML = '';
   for (let i = 0; i < word.length; i++) {
-    const b = document.createElement('div');
-    b.className = 'blank-char';
-    blanks.appendChild(b);
+    const b = document.createElement('div'); b.className = 'blank-char'; blanks.appendChild(b);
   }
   const hidden = document.getElementById('hiddenInput');
-  hidden.value = '';
-  hidden.focus();
+  hidden.value = ''; hidden.focus();
   hidden.oninput = (e) => {
     if (isProcessing) return;
     currentInput = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, targetWord.length);
@@ -983,37 +970,43 @@ function setupNormalInput(word, mode) {
 function updateNormalBlanks() {
   const chars = document.querySelectorAll('.blank-char');
   for (let i = 0; i < targetWord.length; i++) {
-    const ch = chars[i];
-    const inp = currentInput[i] || '';
-    ch.textContent = inp;
-    ch.classList.remove('active', 'filled');
+    const ch = chars[i]; const inp = currentInput[i] || '';
+    ch.textContent = inp; ch.classList.remove('active', 'filled');
     if (i === currentInput.length) ch.classList.add('active');
     if (inp) ch.classList.add('filled');
   }
 }
 
 function checkNormal(mode) {
-  if (isProcessing) return;
-  const fb = document.getElementById('feedback');
-  if (!currentInput.trim()) return;
+  if (isProcessing || !currentInput.trim()) return;
   const cleanInput = currentInput.trim().toLowerCase();
   const cleanTarget = targetWord.trim().toLowerCase();
-
+  const fb = document.getElementById('feedback');
   if (cleanInput === cleanTarget) {
     isProcessing = true;
     fb.innerHTML = `<span style="color:var(--green)">太棒了！🎉</span>`;
     document.querySelectorAll('.blank-char').forEach(c => c.classList.add('correct'));
     playSuccessTone();
-    sessionMasteredSet.add(cleanTarget);
-    if (currentSetDate === 'wrong_bank') removeFromWrongBank(practiceList[currentIndex]);
+    const wordKey = cleanTarget;
+    const rawWord = practiceList[currentIndex];
+    const hadWrong = sessionWrongSet.has(wordKey);
+    if (!hadWrong) {
+      sessionMasteredSet.add(wordKey);
+      recordWordResult(rawWord, true);
+    } else {
+      recordWordResult(rawWord, false);
+    }
     setTimeout(() => { currentIndex++; loadPracticeWord(mode); }, 800);
   } else {
     fb.innerHTML = `<span style="color:var(--red)">正确: ${targetWord}</span>`;
     document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
-    addToWrongBank(practiceList[currentIndex]);
+    const wordKey = targetWord.toLowerCase();
+    if (!sessionWrongSet.has(wordKey)) {
+      sessionWrongSet.add(wordKey);
+      recordWordResult(practiceList[currentIndex], false, true); // mark wrong
+    }
     const btn = document.getElementById('confirmBtn');
-    btn.innerText = "记住了 ↺ 重试";
-    btn.className = "btn btn-yellow";
+    btn.innerText = "记住了 ↺ 重试"; btn.className = "btn btn-yellow";
     btn.ontouchstart = (e) => { e.preventDefault(); resetNormal(btn, mode); };
     btn.onclick = () => resetNormal(btn, mode);
     keepFocus();
@@ -1021,13 +1014,11 @@ function checkNormal(mode) {
 }
 
 function resetNormal(btn, mode) {
-  currentInput = "";
-  document.getElementById('hiddenInput').value = "";
+  currentInput = ""; document.getElementById('hiddenInput').value = "";
   updateNormalBlanks();
   document.querySelectorAll('.blank-char').forEach(c => c.classList.remove('wrong'));
   document.getElementById('feedback').innerHTML = "";
-  btn.innerText = "✨ 确认 (Enter)";
-  btn.className = "btn btn-primary";
+  btn.innerText = "✨ 确认 (Enter)"; btn.className = "btn btn-primary";
   btn.ontouchstart = (e) => { e.preventDefault(); checkNormal(mode); };
   btn.onclick = () => checkNormal(mode);
   keepFocus();
@@ -1035,15 +1026,58 @@ function resetNormal(btn, mode) {
 
 function skipNormal(mode) { currentIndex++; loadPracticeWord(mode); }
 
+/* ==================== WRONG BANK RECORD KEEPING ==================== */
+// isWrongOnly: true = only increment wrongCount (for normal mode on first wrong answer)
+// isCorrect: true = no wrong happened, add correctCount
+function recordWordResult(rawWord, isCorrect, isWrongOnly) {
+  const word = rawWord; // keep raw word as key
+  const now = new Date().toISOString();
+  const tx = db.transaction('wrongBank', 'readwrite');
+  const store = tx.objectStore('wrongBank');
+  const req = store.get(word);
+  req.onsuccess = (e) => {
+    const existing = e.target.result || { word, lastPractice: now, correctCount: 0, wrongCount: 0 };
+    existing.lastPractice = now;
+    if (isWrongOnly) {
+      existing.wrongCount = (existing.wrongCount || 0) + 1;
+    } else if (isCorrect) {
+      existing.correctCount = (existing.correctCount || 0) + 1;
+    } else {
+      // Had wrong earlier in session, then got correct → add wrong + don't add correct
+      existing.wrongCount = (existing.wrongCount || 0) + 1;
+    }
+    store.put(existing);
+  };
+}
+
+// For easy mode: record wrong when first wrong tap occurs (called once per word per session)
+function recordEasyWrong(rawWord) {
+  const now = new Date().toISOString();
+  const tx = db.transaction('wrongBank', 'readwrite');
+  const store = tx.objectStore('wrongBank');
+  const req = store.get(rawWord);
+  req.onsuccess = (e) => {
+    const existing = e.target.result || { word: rawWord, lastPractice: now, correctCount: 0, wrongCount: 0 };
+    existing.lastPractice = now;
+    existing.wrongCount = (existing.wrongCount || 0) + 1;
+    store.put(existing);
+  };
+}
+
 function finishPractice() {
+  // Record all session wrongs (easy mode - wrongs recorded per-tap, but we need to finalize)
   const masteredCount = sessionMasteredSet.size;
   if (masteredCount > 0) {
     const tx = db.transaction('practiceLogs', 'readwrite');
     tx.objectStore('practiceLogs').add({
-      date: new Date().toISOString().slice(0, 10), timestamp: Date.now(),
-      count: masteredCount, words: Array.from(sessionMasteredSet), source: currentSetDate
+      date: new Date().toISOString().slice(0, 10),
+      timestamp: Date.now(),
+      count: masteredCount,
+      words: Array.from(sessionMasteredSet),
+      source: currentSetDate
     });
   }
+  document.getElementById('headerBtn').innerHTML = '';
   document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
     <div style="font-size:70px;margin-bottom:12px">🎉</div>
     <h2 style="font-family:'Fredoka One',cursive;font-size:30px;margin-bottom:8px">练习完成！</h2>
@@ -1056,79 +1090,226 @@ function finishPractice() {
 }
 
 /* ==================== WORD MANAGER ==================== */
-function renderWordManager() {
+function renderWordManager(activeTab) {
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
-  const tx = db.transaction('wordSets', 'readonly');
-  getAll(tx.objectStore('wordSets')).then(sets => {
+  activeTab = activeTab || 'sets';
+  const tx = db.transaction(['wordSets', 'groups'], 'readonly');
+  Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups'))]).then(([sets, groups]) => {
     sets.sort((a, b) => a.id.localeCompare(b.id));
-    const listHtml = sets.length ? sets.map(s => {
-      const preview = s.words.map(w => w.replace(/[\/\-]/g, '')).slice(0, 6).join('　');
-      return `
-      <div class="manage-item" onclick="editSet('${s.id.replace(/'/g, "\\'")}')">
-        <div style="flex:1;min-width:0">
-          <div style="font-weight:800;color:#333;display:flex;align-items:center;gap:8px">
-            ${s.id}
-            <span style="font-size:11px;font-weight:700;color:#fff;background:var(--primary);padding:2px 8px;border-radius:20px;flex-shrink:0">${s.words.length}词</span>
-          </div>
-          <div style="font-size:13px;color:#aaa;margin-top:3px;font-family:'Literata',Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${preview}${s.words.length > 6 ? ' …' : ''}</div>
-        </div>
-        <div style="color:var(--primary);font-size:14px;font-weight:700;flex-shrink:0;margin-left:10px">编辑 ›</div>
-      </div>`;
-    }).join('') : '<div style="padding:20px;color:#999;text-align:center;font-weight:600">暂无记录</div>';
+    groups.sort((a, b) => a.name.localeCompare(b.name));
 
-    document.getElementById('app').innerHTML = `
-      <div class="card" id="managerCard">
-        <h3 style="margin-top:0" id="mgrTitle">新建词组</h3>
-        <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">词组名称（唯一 ID，如 2025-06-01 或 Year2-Unit3）</div>
-        <input type="text" id="newSetId" placeholder="例如：2025-06-01 或 Year 2 first part"
-          style="width:100%;padding:13px 14px;border:2px solid #e0e0e0;border-radius:12px;margin:4px 0 14px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:600;box-sizing:border-box;user-select:auto"
-          autocomplete="off" autocorrect="off" autocapitalize="off">
-        <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">单词列表（每行一个，可用 / 标注音节，如 <b>hap/py</b>）</div>
-        <textarea id="newWords" rows="7" placeholder="例如：&#10;apple&#10;ba/na/na&#10;hap/py&#10;beau/ti/ful"></textarea>
-        <div style="margin-top:18px;display:flex;gap:10px">
-          <button class="btn btn-primary" style="flex:2" onclick="saveSet()">💾 保存 / 更新</button>
-          <button class="btn btn-red" id="delBtn" style="flex:1;display:none" onclick="deleteSet()">🗑️ 删除</button>
-        </div>
-        <button id="cancelBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="renderWordManager()">取消编辑</button>
+    const tabsHtml = `
+      <div class="tab-bar" style="margin-bottom:18px">
+        <button class="tab-btn ${activeTab === 'sets' ? 'active' : ''}" onclick="renderWordManager('sets')">📝 词组管理</button>
+        <button class="tab-btn ${activeTab === 'groups' ? 'active' : ''}" onclick="renderWordManager('groups')">🗂 分组管理</button>
       </div>
-      <h4 style="margin-left:6px;color:var(--text-2)">所有词组</h4>
-      <div class="card" style="padding:0">${listHtml}</div>`;
+    `;
+
+    if (activeTab === 'sets') {
+      renderSetsTab(sets, groups, tabsHtml);
+    } else {
+      renderGroupsTab(sets, groups, tabsHtml);
+    }
   });
 }
 
+function renderSetsTab(sets, groups, tabsHtml) {
+  // Build group lookup: setId → group name
+  const setGroupMap = {};
+  groups.forEach(g => (g.setIds || []).forEach(sid => setGroupMap[sid] = g.name));
+
+  const listHtml = sets.length ? sets.map(s => {
+    const preview = s.words.map(w => w.replace(/\//g, '')).slice(0, 6).join('　');
+    const grpName = setGroupMap[s.id];
+    return `
+    <div class="manage-item" onclick="editSet('${esc(s.id)}')">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;color:#333;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          ${s.id}
+          <span style="font-size:11px;font-weight:700;color:#fff;background:var(--primary);padding:2px 8px;border-radius:20px">${s.words.length}词</span>
+          ${grpName ? `<span style="font-size:11px;font-weight:700;color:#7c3aed;background:#f0e8ff;padding:2px 8px;border-radius:20px">📁 ${grpName}</span>` : ''}
+        </div>
+        <div style="font-size:13px;color:#aaa;margin-top:3px;font-family:'Literata',Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${preview}${s.words.length > 6 ? ' …' : ''}</div>
+      </div>
+      <div style="color:var(--primary);font-size:14px;font-weight:700;flex-shrink:0;margin-left:10px">编辑 ›</div>
+    </div>`;
+  }).join('') : '<div style="padding:20px;color:#999;text-align:center;font-weight:600">暂无词组</div>';
+
+  // Group options for dropdown
+  const groupOptions = groups.map(g => `<option value="${g.id}">${g.name}</option>`).join('');
+
+  document.getElementById('app').innerHTML = `
+    ${tabsHtml}
+    <div class="card" id="managerCard">
+      <h3 style="margin-top:0" id="mgrTitle">新建词组</h3>
+      <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">词组名称（唯一 ID）</div>
+      <input type="text" id="newSetId" placeholder="例如：2025-06-01 或 Year 2 first part"
+        style="width:100%;padding:13px 14px;border:2px solid #e0e0e0;border-radius:12px;margin:4px 0 14px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:600;box-sizing:border-box;user-select:auto"
+        autocomplete="off" autocorrect="off" autocapitalize="off">
+      <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">所属分组（可选）</div>
+      <select id="setGroupSelect" style="width:100%;padding:13px 14px;border:2px solid #e0e0e0;border-radius:12px;margin:4px 0 14px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:600;background:#fff;box-sizing:border-box">
+        <option value="">— 不加入分组 —</option>
+        ${groupOptions}
+      </select>
+      <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">单词列表（每行一个，可用 / 标注音节）</div>
+      <textarea id="newWords" rows="7" placeholder="例如：&#10;apple&#10;ba/na/na&#10;hap/py"></textarea>
+      <div style="margin-top:18px;display:flex;gap:10px">
+        <button class="btn btn-primary" style="flex:2" onclick="saveSet()">💾 保存 / 更新</button>
+        <button class="btn btn-red" id="delBtn" style="flex:1;display:none" onclick="deleteSet()">🗑️ 删除</button>
+      </div>
+      <button id="cancelBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="renderWordManager('sets')">取消编辑</button>
+    </div>
+    <h4 style="margin-left:6px;color:var(--text-2)">所有词组</h4>
+    <div class="card" style="padding:0">${listHtml}</div>
+  `;
+}
+
+function renderGroupsTab(sets, groups, tabsHtml) {
+  const listHtml = groups.length ? groups.map(g => {
+    const setCount = (g.setIds || []).length;
+    const setNames = (g.setIds || []).slice(0, 3).join('、');
+    return `
+    <div class="manage-item" onclick="editGroup(${g.id})">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:800;color:#333;display:flex;align-items:center;gap:8px">
+          📁 ${g.name}
+          <span style="font-size:11px;font-weight:700;color:#fff;background:#7c3aed;padding:2px 8px;border-radius:20px">${setCount}个词组</span>
+        </div>
+        ${setCount > 0 ? `<div style="font-size:12px;color:#aaa;margin-top:3px">${setNames}${setCount > 3 ? '…' : ''}</div>` : ''}
+      </div>
+      <div style="color:#7c3aed;font-size:14px;font-weight:700;flex-shrink:0;margin-left:10px">编辑 ›</div>
+    </div>`;
+  }).join('') : '<div style="padding:20px;color:#999;text-align:center;font-weight:600">暂无分组</div>';
+
+  // Set checkboxes for group editing
+  const setCheckboxes = sets.map((s, i) => `
+    <label style="display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer">
+      <input type="checkbox" id="gset-${i}" data-setid="${esc(s.id)}" style="width:18px;height:18px;accent-color:#7c3aed;cursor:pointer">
+      <span style="font-weight:700;font-size:15px">${s.id}</span>
+      <span style="font-size:12px;color:#bbb;margin-left:auto">${s.words.length}词</span>
+    </label>`).join('');
+
+  document.getElementById('app').innerHTML = `
+    ${tabsHtml}
+    <div class="card">
+      <h3 style="margin-top:0" id="grpTitle">新建分组</h3>
+      <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:4px">分组名称</div>
+      <input type="text" id="newGroupName" placeholder="例如：Year 2、期末复习"
+        style="width:100%;padding:13px 14px;border:2px solid #e0e0e0;border-radius:12px;margin:4px 0 14px;font-size:16px;font-family:'Nunito',sans-serif;font-weight:600;box-sizing:border-box;user-select:auto"
+        autocomplete="off" autocorrect="off" autocapitalize="off">
+      <input type="hidden" id="editingGroupId" value="">
+      <div style="font-size:12px;color:var(--text-2);font-weight:700;margin-bottom:8px">包含词组（可多选）</div>
+      <div class="card" style="padding:4px 0;margin-bottom:14px;max-height:220px;overflow-y:auto">${setCheckboxes}</div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-primary" style="flex:2;background:#7c3aed;box-shadow:0 5px 0 #5b21b6" onclick="saveGroup()">💾 保存分组</button>
+        <button class="btn btn-red" id="delGrpBtn" style="flex:1;display:none" onclick="deleteGroup()">🗑️ 删除</button>
+      </div>
+      <button id="cancelGrpBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="renderWordManager('groups')">取消编辑</button>
+    </div>
+    <h4 style="margin-left:6px;color:var(--text-2)">所有分组</h4>
+    <div class="card" style="padding:0">${listHtml}</div>
+  `;
+}
+
 function editSet(id) {
-  const tx = db.transaction('wordSets', 'readonly');
-  tx.objectStore('wordSets').get(id).onsuccess = (e) => {
-    const data = e.target.result; if (!data) return;
+  // Need to also load groups to find which group this set belongs to
+  const tx = db.transaction(['wordSets', 'groups'], 'readonly');
+  Promise.all([
+    new Promise(r => { const req = tx.objectStore('wordSets').get(id); req.onsuccess = () => r(req.result); }),
+    getAll(tx.objectStore('groups'))
+  ]).then(([data, groups]) => {
+    if (!data) return;
     document.getElementById('mgrTitle').innerText = "编辑：" + id;
     const idInput = document.getElementById('newSetId');
-    idInput.value = data.id;
-    idInput.disabled = true;
-    idInput.style.background = '#f8faff';
+    idInput.value = data.id; idInput.disabled = true; idInput.style.background = '#f8faff';
     document.getElementById('newWords').value = data.words.join('\n');
     document.getElementById('delBtn').style.display = 'block';
     document.getElementById('cancelBtn').style.display = 'block';
+    // Set group dropdown
+    const grpSelect = document.getElementById('setGroupSelect');
+    if (grpSelect) {
+      const ownerGroup = groups.find(g => (g.setIds || []).includes(id));
+      grpSelect.value = ownerGroup ? ownerGroup.id : '';
+    }
     document.getElementById('app').scrollTop = 0;
-  };
+  });
 }
 
 function saveSet() {
   const id = document.getElementById('newSetId').value.trim();
   const text = document.getElementById('newWords').value;
+  const groupId = document.getElementById('setGroupSelect').value;
   if (!id) return alert("请填写词组名称");
   if (!text.trim()) return alert("请输入单词");
   const words = text.split(/\n+/).map(w => w.trim()).filter(w => w);
-  const tx = db.transaction('wordSets', 'readwrite');
-  tx.objectStore('wordSets').put({ id, words });
-  tx.oncomplete = () => { alert("保存成功！"); renderWordManager(); syncToCloud(true); };
+
+  // First read all groups, then do one write transaction
+  const readTx = db.transaction(['wordSets', 'groups'], 'readonly');
+  getAll(readTx.objectStore('groups')).then(groups => {
+    const writeTx = db.transaction(['wordSets', 'groups'], 'readwrite');
+    writeTx.objectStore('wordSets').put({ id, words });
+    const grpStore = writeTx.objectStore('groups');
+    groups.forEach(g => {
+      const newSetIds = (g.setIds || []).filter(sid => sid !== id);
+      if (groupId && String(g.id) === String(groupId)) newSetIds.push(id);
+      grpStore.put({ ...g, setIds: newSetIds });
+    });
+    writeTx.oncomplete = () => { renderWordManager('sets'); syncToCloud(true); };
+  });
 }
 
 function deleteSet() {
   const id = document.getElementById('newSetId').value.trim();
   if (!confirm(`确认删除「${id}」？`)) return;
-  const tx = db.transaction('wordSets', 'readwrite');
-  tx.objectStore('wordSets').delete(id);
-  tx.oncomplete = () => { alert("已删除"); renderWordManager(); syncToCloud(true); };
+  const readTx = db.transaction('groups', 'readonly');
+  getAll(readTx.objectStore('groups')).then(groups => {
+    const writeTx = db.transaction(['wordSets', 'groups'], 'readwrite');
+    writeTx.objectStore('wordSets').delete(id);
+    const grpStore = writeTx.objectStore('groups');
+    groups.forEach(g => {
+      const newSetIds = (g.setIds || []).filter(sid => sid !== id);
+      grpStore.put({ ...g, setIds: newSetIds });
+    });
+    writeTx.oncomplete = () => { renderWordManager('sets'); syncToCloud(true); };
+  });
+}
+
+function editGroup(gid) {
+  const tx = db.transaction('groups', 'readonly');
+  tx.objectStore('groups').get(gid).onsuccess = (e) => {
+    const g = e.target.result; if (!g) return;
+    document.getElementById('grpTitle').innerText = "编辑分组：" + g.name;
+    document.getElementById('newGroupName').value = g.name;
+    document.getElementById('editingGroupId').value = gid;
+    document.getElementById('delGrpBtn').style.display = 'block';
+    document.getElementById('cancelGrpBtn').style.display = 'block';
+    // Check boxes
+    document.querySelectorAll('[id^="gset-"]').forEach(cb => {
+      cb.checked = (g.setIds || []).includes(cb.dataset.setid);
+    });
+    document.getElementById('app').scrollTop = 0;
+  };
+}
+
+function saveGroup() {
+  const name = document.getElementById('newGroupName').value.trim();
+  const editingId = document.getElementById('editingGroupId').value;
+  if (!name) return alert("请填写分组名称");
+  const setIds = [];
+  document.querySelectorAll('[id^="gset-"]').forEach(cb => { if (cb.checked) setIds.push(cb.dataset.setid); });
+
+  const tx = db.transaction('groups', 'readwrite');
+  const rec = editingId ? { id: parseInt(editingId), name, setIds } : { name, setIds };
+  tx.objectStore('groups').put(rec);
+  tx.oncomplete = () => { renderWordManager('groups'); syncToCloud(true); };
+}
+
+function deleteGroup() {
+  const editingId = document.getElementById('editingGroupId').value;
+  if (!editingId || !confirm("确认删除此分组？（词组不会被删除）")) return;
+  const tx = db.transaction('groups', 'readwrite');
+  tx.objectStore('groups').delete(parseInt(editingId));
+  tx.oncomplete = () => { renderWordManager('groups'); syncToCloud(true); };
 }
 
 /* ==================== RECORDS ==================== */
@@ -1144,13 +1325,16 @@ function renderRecords() {
     let rockHtml = ''; for (let i = 0; i < rockets; i++) rockHtml += '🚀 ';
     let starHtml = ''; for (let i = 0; i < 10; i++) starHtml += i < currentStars ? '⭐ ' : '<span style="opacity:0.2">⭐</span> ';
 
-    let histHtml = logs.length === 0 ? '<div style="text-align:center;padding:24px;color:#999;font-weight:600">暂无记录</div>' : '';
+    let histHtml = !logs.length ? '<div style="text-align:center;padding:24px;color:#999;font-weight:600">暂无记录</div>' : '';
     logs.forEach((log, idx) => {
       const wordsHtml = (log.words || []).map(w => `<span class="detail-tag">${w}</span>`).join('');
-      histHtml += `<div class="history-item"><div class="history-header" onclick="toggleHistory(${idx})">
-        <div><div style="font-weight:800">${log.date}</div><div style="font-size:13px;color:var(--text-2);font-weight:600">完成 ${log.count} 个单词 <span style="font-size:10px">▼</span></div></div>
-        <div style="font-weight:800;color:#f59e0b;font-size:18px">⭐ +${log.count}</div>
-      </div><div class="history-details" id="hist-detail-${idx}">${wordsHtml || '<span style="font-size:12px;color:#ccc">无详细记录</span>'}</div></div>`;
+      histHtml += `<div class="history-item">
+        <div class="history-header" onclick="toggleHistory(${idx})">
+          <div><div style="font-weight:800">${log.date}</div><div style="font-size:13px;color:var(--text-2);font-weight:600">掌握 ${log.count} 个单词 <span style="font-size:10px">▼</span></div></div>
+          <div style="font-weight:800;color:#f59e0b;font-size:18px">⭐ +${log.count}</div>
+        </div>
+        <div class="history-details" id="hist-detail-${idx}">${wordsHtml || '<span style="font-size:12px;color:#ccc">无详细记录</span>'}</div>
+      </div>`;
     });
     const wallHtml = Array.from(allWords).sort().map(w => `<div class="wall-item">${w}</div>`).join('');
 
@@ -1168,15 +1352,19 @@ function renderRecords() {
         </div>
       </div>
       <div class="card"><h3 style="margin:0 0 10px 0">单词墙 (${allWords.size})</h3><div class="word-wall">${wallHtml || '<span style="color:#999;font-size:13px;font-weight:600">还没有掌握单词哦</span>'}</div></div>
-      <h3 style="margin-left:6px">练习足迹</h3>
-      ${histHtml}
+      <h3 style="margin-left:6px">练习足迹</h3>${histHtml}
     `;
   });
 }
 
-function toggleHistory(idx) { const el = document.getElementById(`hist-detail-${idx}`); if (el) el.classList.toggle('show'); }
+function toggleHistory(idx) {
+  const el = document.getElementById(`hist-detail-${idx}`);
+  if (el) el.classList.toggle('show');
+}
 
 /* ==================== UTILS ==================== */
+function esc(str) { return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+
 function shuffleArr(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -1194,7 +1382,7 @@ function speak(text) {
   if (pref) u.voice = pref;
   speechSynthesis.speak(u);
 }
-speechSynthesis.onvoiceschanged = () => { };
+speechSynthesis.onvoiceschanged = () => {};
 
 function playSuccessTone() {
   try {
@@ -1207,39 +1395,44 @@ function playSuccessTone() {
     gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.55);
     osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + 0.55);
-  } catch (e) { }
+  } catch (e) {}
 }
-
-function addToWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').put({ word: word, lastWrong: new Date().toISOString() }); }
-function removeFromWrongBank(word) { const tx = db.transaction('wrongBank', 'readwrite'); tx.objectStore('wrongBank').delete(word); }
 
 function exportAllData() {
-  const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readonly');
-  Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))])
-    .then(([sets, wrongs, logs]) => {
-      const data = { wordSets: sets, wrongBank: wrongs, practiceLogs: logs, exportDate: new Date().toISOString() };
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-      a.download = `romeo_backup_${new Date().toISOString().slice(0, 10)}.json`;
-      document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    });
+  const tx = db.transaction(['wordSets', 'groups', 'wrongBank', 'practiceLogs'], 'readonly');
+  Promise.all([
+    getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
+    getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
+  ]).then(([sets, groups, wrongs, logs]) => {
+    const data = { wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs, exportDate: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `romeo_backup_${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  });
 }
 
-function importData(inputElement) {
-  const file = inputElement.files[0]; if (!file) return;
-  if (!confirm("⚠️ 警告：覆盖现有数据？")) { inputElement.value = ''; return; }
+function importData(inputEl) {
+  const file = inputEl.files[0]; if (!file) return;
+  if (!confirm("⚠️ 覆盖现有数据？")) { inputEl.value = ''; return; }
   const reader = new FileReader();
   reader.onload = (e) => {
     try {
       const data = JSON.parse(e.target.result);
       if (!data.wordSets) throw new Error();
-      const tx = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
-      ['wordSets', 'wrongBank', 'practiceLogs'].forEach(s => tx.objectStore(s).clear());
+      const tx = db.transaction(['wordSets', 'groups', 'wrongBank', 'practiceLogs'], 'readwrite');
+      ['wordSets', 'groups', 'wrongBank', 'practiceLogs'].forEach(s => tx.objectStore(s).clear());
       (data.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
-      (data.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(w));
+      (data.groups || []).forEach(g => tx.objectStore('groups').put(g));
+      (data.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put({
+        word: w.word,
+        lastPractice: w.lastPractice || w.lastWrong || new Date().toISOString(),
+        correctCount: w.correctCount || 0,
+        wrongCount: w.wrongCount || (w.lastWrong ? 1 : 0)
+      }));
       (data.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
-      tx.oncomplete = () => { alert("恢复成功！"); renderHome(); inputElement.value = ''; syncToCloud(true); };
-    } catch (err) { alert("文件格式错误"); inputElement.value = ''; }
+      tx.oncomplete = () => { alert("导入成功！"); renderHome(); inputEl.value = ''; syncToCloud(true); };
+    } catch (err) { alert("文件格式错误"); inputEl.value = ''; }
   };
   reader.readAsText(file);
 }
