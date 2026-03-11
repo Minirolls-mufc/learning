@@ -169,6 +169,29 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 }
 
 
+
+/* ═══════════════════════════════════
+   GROUP FILTER TABS — shared across manage / gpick / practice
+═══════════════════════════════════ */
+.grp-tabs-wrap{
+  flex-shrink:0;
+  background:var(--paper);border-bottom:2px solid var(--border);
+  padding:0 12px;
+  display:flex;align-items:center;gap:0;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.grp-tabs-wrap::-webkit-scrollbar{height:3px}
+.grp-tab{
+  flex-shrink:0;
+  padding:10px 14px;font-size:.76rem;font-weight:700;
+  color:var(--muted);border-bottom:2.5px solid transparent;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  background:none;border-top:none;border-left:none;border-right:none;
+  font-family:inherit;
+}
+.grp-tab:hover{color:var(--ink2)}
+.grp-tab.active{color:var(--o1);border-bottom-color:var(--o1);}
+
 /* ═══════════════════════════════════
    GROUP PICKER
 ═══════════════════════════════════ */
@@ -404,7 +427,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 /* ═══════════════════════════════════
    MANAGE
 ═══════════════════════════════════ */
-#page-manage{background:var(--bg)}
+#page-manage{background:var(--bg);display:flex;flex-direction:column}
 .manage-body{flex:1;overflow-y:auto;padding:12px 14px 28px}
 .wm-group{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 6px rgba(255,107,0,.04)}
 .wm-gh{display:flex;align-items:center;gap:7px;padding:10px 13px;border-bottom:1.5px solid var(--border);background:var(--bg)}
@@ -582,6 +605,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
       <button class="tb-btn" onclick="showPage('home');renderHome()">← 首页</button>
     </div>
   </div>
+  <div class="grp-tabs-wrap" id="gpick-tabs"></div>
   <div class="gpick-body"><div class="gpick-grid" id="gpick-grid"></div></div>
 </div>
 
@@ -647,6 +671,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
       <div class="tb-title" id="prac-step2-title">选择分组</div>
       <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">← 返回</button></div>
     </div>
+    <div class="grp-tabs-wrap" id="prac-grp-tabs"></div>
     <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
     <div class="prac-grp-footer">
       <button class="btn btn-ghost" onclick="generateWorksheet()" id="btn-gen-sheet">📄 生成练习纸</button>
@@ -699,6 +724,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
       <button class="tb-btn" onclick="showPage('home');renderHome()">← 首页</button>
     </div>
   </div>
+  <div class="grp-tabs-wrap" id="manage-tabs"></div>
   <div class="manage-body" id="manage-body"></div>
 </div>
 
@@ -857,12 +883,29 @@ function goStudy(){showPage('gpick');renderGpick();}
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    GROUP PICKER
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+let gpickActiveGid='_all';
+
+function renderGpickTabs(){
+  const wrap=document.getElementById('gpick-tabs');if(!wrap)return;
+  wrap.innerHTML='';
+  const tabs=[{id:'_all',name:'全部'},...store.groups.map(g=>({id:g.id,name:g.name}))];
+  tabs.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='grp-tab'+(t.id===gpickActiveGid?' active':'');
+    btn.textContent=t.name;
+    btn.onclick=()=>{gpickActiveGid=t.id;renderGpick();};
+    wrap.appendChild(btn);
+  });
+}
+
 function renderGpick(){
+  renderGpickTabs();
   const grid=document.getElementById('gpick-grid');grid.innerHTML='';
   if(!store.groups.length){
     grid.innerHTML='<div class="gpick-empty">📚 暂无分组<br><small style="color:var(--muted)">请先在字词管理新建</small></div>';return;
   }
-  store.groups.forEach(g=>{
+  const groups=gpickActiveGid==='_all'?store.groups:store.groups.filter(g=>g.id===gpickActiveGid);
+  groups.forEach(g=>{
     const card=document.createElement('div');card.className='gpick-card';
     card.onclick=()=>startStudy(g.id);
     const ch=g.entries.filter(e=>e.type==='char').length,wd=g.entries.filter(e=>e.type==='word').length;
@@ -870,7 +913,8 @@ function renderGpick(){
       <div class="gpick-meta">${ch?ch+'字 ':''}${wd?wd+'词':''}${!g.entries.length?'暂无内容':''}</div>`;
     grid.appendChild(card);
   });
-  if(store.ach.mistakes.length){
+  // Show mistakes card only in 全部 tab
+  if(gpickActiveGid==='_all'&&store.ach.mistakes.length){
     const card=document.createElement('div');card.className='gpick-card';
     card.style.cssText='border-color:#fecaca';
     card.onclick=()=>{showPage('achieve');renderAchieve();};
@@ -1095,18 +1139,36 @@ function selectPracMode(m){
   document.getElementById('pmc-simple').classList.toggle('active',m==='simple');
   document.getElementById('pmc-standard').classList.toggle('active',m==='standard');
 }
+let pracTabActiveGid='_all';
+
+function renderPracGrpTabs(){
+  const wrap=document.getElementById('prac-grp-tabs');if(!wrap)return;
+  wrap.innerHTML='';
+  const tabs=[{id:'_all',name:'全部'},...store.groups.map(g=>({id:g.id,name:g.name}))];
+  tabs.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='grp-tab'+(t.id===pracTabActiveGid?' active':'');
+    btn.textContent=t.name;
+    btn.onclick=()=>{pracTabActiveGid=t.id;renderPracGrpPicker();};
+    wrap.appendChild(btn);
+  });
+}
+
 function renderPracGrpPicker(){
+  renderPracGrpTabs();
   const g=document.getElementById('prac-grp-grid');g.innerHTML='';
   document.getElementById('prac-step2-title').textContent=`选分组 · ${P.mode==='simple'?'简单':'标准'}`;
   if(!store.groups.length){g.innerHTML='<div class="gpick-empty">暂无分组</div>';return;}
   if(!P.groupId)P.groupId=store.groups[0].id;
-  store.groups.forEach(grp=>{
+  const groups=pracTabActiveGid==='_all'?store.groups:store.groups.filter(gr=>gr.id===pracTabActiveGid);
+  groups.forEach(grp=>{
     const card=document.createElement('div');card.className='gpick-card'+(grp.id===P.groupId?' selected':'');
     card.innerHTML=`<div class="gpick-card-top"><span class="gpick-name">${grp.name}</span><span class="gpick-arrow">›</span></div>
       <div class="gpick-meta">${grp.entries.length}条</div>`;
     card.onclick=()=>{P.groupId=grp.id;renderPracGrpPicker();};g.appendChild(card);
   });
-  if(store.ach.mistakes.length){
+  // Mistakes card only in 全部 tab
+  if(pracTabActiveGid==='_all'&&store.ach.mistakes.length){
     const card=document.createElement('div');card.className='gpick-card'+(P.groupId==='_mistakes'?' selected':'');
     card.style.borderColor='#fecaca';
     card.innerHTML=`<div class="gpick-card-top"><span class="gpick-name" style="color:#ef4444">❌ 错词本</span><span class="gpick-arrow">›</span></div>
@@ -1449,7 +1511,23 @@ function renderAchieve(){
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    MANAGE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+let manageActiveGid='_all'; // '_all' means show all groups
+
+function renderManageTabs(){
+  const wrap=document.getElementById('manage-tabs');if(!wrap)return;
+  wrap.innerHTML='';
+  const tabs=[{id:'_all',name:'全部'},...store.groups.map(g=>({id:g.id,name:g.name}))];
+  tabs.forEach(t=>{
+    const btn=document.createElement('button');
+    btn.className='grp-tab'+(t.id===manageActiveGid?' active':'');
+    btn.textContent=t.name;
+    btn.onclick=()=>{manageActiveGid=t.id;renderManage();};
+    wrap.appendChild(btn);
+  });
+}
+
 function renderManage(){
+  renderManageTabs();
   const body=document.getElementById('manage-body');body.innerHTML='';
   if(!store.groups.length){
     body.innerHTML=`<div style="text-align:center;padding:36px;color:var(--muted)">
@@ -1457,7 +1535,10 @@ function renderManage(){
       <div style="margin-top:8px;font-weight:700">暂无分组</div>
       <div style="font-size:.72rem;margin-top:5px">点右上角「＋分组」</div></div>`;return;
   }
-  store.groups.forEach(g=>{
+  // If the active group was deleted, fall back to _all
+  if(manageActiveGid!=='_all'&&!store.groups.find(g=>g.id===manageActiveGid)) manageActiveGid='_all';
+  const groups=manageActiveGid==='_all'?store.groups:store.groups.filter(g=>g.id===manageActiveGid);
+  groups.forEach(g=>{
     const card=document.createElement('div');card.className='wm-group';
     card.innerHTML=`<div class="wm-gh"><span class="wm-gname">${g.name}</span><span class="wm-gcnt">${g.entries.length}条</span>
       <div class="wm-ga">
