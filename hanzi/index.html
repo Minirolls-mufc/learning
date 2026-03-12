@@ -25,222 +25,165 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 @keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
 @keyframes pop{0%{transform:scale(.7);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
-
-/* ════════════════════ TOPBAR ════════════════════ */
-.topbar{flex-shrink:0;height:52px;display:flex;align-items:center;padding:0 12px;gap:10px;background:var(--paper);border-bottom:2px solid var(--border);box-shadow:0 2px 10px rgba(255,107,0,.07);z-index:10;}
-.tb-brand{display:flex;align-items:baseline;gap:5px;flex-shrink:0;font-family:'ZCOOL XiaoWei',cursive;}
-.tb-brand-romeo{font-size:.95rem;font-weight:600;letter-spacing:.5px;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.tb-brand-sub{font-size:.72rem;color:var(--muted);letter-spacing:1px;font-weight:600;}
-.tb-title{flex:1;text-align:center;font-family:'ZCOOL XiaoWei',cursive;font-size:.95rem;font-weight:600;letter-spacing:2px;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+/* ═══════════════════════════════════
+   TOPBAR — unified across ALL pages
+═══════════════════════════════════ */
+.topbar{
+  flex-shrink:0;height:52px;display:flex;align-items:center;
+  padding:0 12px;gap:10px;
+  background:var(--paper);border-bottom:2px solid var(--border);
+  box-shadow:0 2px 10px rgba(255,107,0,.07);z-index:10;
+}
+/* Left: brand wordmark */
+.tb-brand{
+  display:flex;align-items:baseline;gap:5px;flex-shrink:0;
+  font-family:'ZCOOL XiaoWei',cursive;
+}
+.tb-brand-romeo{
+  font-size:.95rem;font-weight:600;letter-spacing:.5px;
+  background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.tb-brand-sub{
+  font-size:.72rem;color:var(--muted);letter-spacing:1px;font-weight:600;
+}
+/* Center: page title */
+.tb-title{
+  flex:1;text-align:center;
+  font-family:'ZCOOL XiaoWei',cursive;font-size:.95rem;font-weight:600;letter-spacing:2px;
+  background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+/* Right: actions */
 .tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:30px;padding:0 11px;border-radius:99px;border:1.5px solid var(--border);background:var(--paper);font-family:inherit;font-size:.72rem;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+/* Back / home button — pill style */
+.tb-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:4px;
+  height:30px;padding:0 11px;border-radius:99px;
+  border:1.5px solid var(--border);background:var(--paper);
+  font-family:inherit;font-size:.72rem;font-weight:700;color:var(--ink2);
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
 .tb-btn:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
-.tb-icon{width:30px;height:30px;border-radius:99px;border:1.5px solid var(--border);background:var(--paper);display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;transition:all .15s;color:var(--ink2);}
-
-/* ════════════════════ BUTTONS ════════════════════ */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:9px 18px;border-radius:12px;border:1.5px solid transparent;font-family:inherit;font-size:.84rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;line-height:1;text-align:center;}
+/* Small icon-only button */
+.tb-icon{
+  width:30px;height:30px;border-radius:99px;border:1.5px solid var(--border);
+  background:var(--paper);display:inline-flex;align-items:center;justify-content:center;
+  font-size:.85rem;cursor:pointer;transition:all .15s;color:var(--ink2);
+}
+.tb-icon:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
+/* ═══════════════════════════════════
+   BUTTONS
+═══════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;
+  gap:5px;padding:9px 18px;
+  border-radius:12px;border:1.5px solid transparent;
+  font-family:inherit;font-size:.84rem;font-weight:700;
+  cursor:pointer;transition:all .15s;
+  white-space:nowrap;line-height:1;text-align:center;
+}
 .btn:active{transform:scale(.95)}
-.btn-primary{background:var(--grad-btn);color:#fff;box-shadow:0 3px 10px rgba(255,107,0,.28);}
-.btn-ghost{background:var(--paper);color:var(--ink2);border-color:var(--border);}
-.btn.toggled{background:var(--grad-btn)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 3px 10px rgba(255,107,0,.4)!important;}
-
-/* ════════════════════ HOME ════════════════════ */
+.btn-primary{
+  background:var(--grad-btn);color:#fff;
+  box-shadow:0 3px 10px rgba(255,107,0,.28);
+}
+.btn-primary:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 5px 16px rgba(255,107,0,.38)}
+.btn-ghost{
+  background:var(--paper);color:var(--ink2);
+  border-color:var(--border);
+}
+.btn-ghost:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
+.btn-danger{background:#fff1f2;color:#ef4444;border-color:#fecaca}
+.btn-danger:hover{background:#fee2e2}
+.btn-gold{background:var(--grad-gold);color:#fff;box-shadow:0 3px 10px rgba(245,158,11,.3)}
+.btn-sm{padding:6px 13px;font-size:.76rem;border-radius:9px}
+.btn-icon{padding:0;width:34px;height:34px;border-radius:10px}
+.btn.toggled{
+  background:var(--grad-btn)!important;color:#fff!important;
+  border-color:transparent!important;box-shadow:0 3px 10px rgba(255,107,0,.4)!important;
+}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-thumb{background:linear-gradient(var(--o2),var(--o3));border-radius:4px}
+/* ═══════════════════════════════════
+   HOME
+═══════════════════════════════════ */
 #page-home{background:var(--bg)}
-.home-topbar{flex-shrink:0;height:56px;display:flex;align-items:center;padding:0 16px;background:var(--paper);border-bottom:2px solid var(--border);box-shadow:0 2px 10px rgba(255,107,0,.07);}
+/* Home topbar — brand only, no back button */
+.home-topbar{
+  flex-shrink:0;height:56px;display:flex;align-items:center;
+  padding:0 16px;background:var(--paper);
+  border-bottom:2px solid var(--border);
+  box-shadow:0 2px 10px rgba(255,107,0,.07);
+}
 .home-brand{display:flex;align-items:center;gap:11px}
-.home-brand-icon{width:36px;height:36px;border-radius:10px;background:var(--grad-btn);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:#fff;box-shadow:0 3px 10px rgba(255,107,0,.35);font-family:'ZCOOL XiaoWei',cursive;}
-.home-brand-title{font-family:'ZCOOL XiaoWei',cursive;font-size:1.05rem;font-weight:700;letter-spacing:1px;color:var(--ink);}
+.home-brand-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--grad-btn);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:1.1rem;color:#fff;
+  box-shadow:0 3px 10px rgba(255,107,0,.35);
+  font-family:'ZCOOL XiaoWei',cursive;
+}
+.home-brand-title{
+  font-family:'ZCOOL XiaoWei',cursive;font-size:1.05rem;font-weight:700;
+  letter-spacing:1px;color:var(--ink);
+}
 .home-brand-sub{font-size:.63rem;color:var(--muted);letter-spacing:.5px;margin-top:1px}
 .home-body{flex:1;overflow-y:auto;padding:16px 14px 24px}
+.sec-label{
+  font-size:.62rem;letter-spacing:3px;color:var(--muted);
+  margin-bottom:9px;font-weight:700;text-transform:uppercase;
+}
+/* Home cloud sync section */
+.home-sync-section{
+  background:var(--paper);border:1.5px solid var(--border);border-radius:14px;
+  padding:14px 14px 10px;margin-top:4px;
+  box-shadow:0 2px 7px rgba(255,107,0,.04);
+}
+/* 2×2 nav grid — color-coded cards */
 .nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.nav-card{background:var(--paper);border:2px solid var(--border);border-radius:18px;padding:22px 14px 18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:7px;min-height:112px;box-shadow:0 3px 10px rgba(0,0,0,.05);position:relative;overflow:hidden;}
+.nav-card{
+  background:var(--paper);border:2px solid var(--border);border-radius:18px;
+  padding:22px 14px 18px;cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:7px;min-height:112px;
+  box-shadow:0 3px 10px rgba(0,0,0,.05);position:relative;overflow:hidden;
+}
 .nav-card.card-learn{border-color:#b3caff;background:linear-gradient(145deg,#f0f4ff 0%,var(--paper) 65%)}
 .nav-card.card-practice{border-color:#fde68a;background:linear-gradient(145deg,#fffbea 0%,var(--paper) 65%)}
 .nav-card.card-achieve{border-color:#a7f3c8;background:linear-gradient(145deg,#f0fdf6 0%,var(--paper) 65%)}
 .nav-card.card-manage{border-color:#d8b4fe;background:linear-gradient(145deg,#f5f0ff 0%,var(--paper) 65%)}
 .nav-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.1)}
+.nav-card:active{transform:scale(.97)}
 .nav-icon{font-size:1.9rem;line-height:1}
 .nav-name{font-weight:900;font-size:.9rem;color:var(--ink)}
 .nav-desc{font-size:.65rem;color:var(--muted);line-height:1.4}
-.home-sync-section{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:14px 14px 10px;margin-top:4px;box-shadow:0 2px 7px rgba(255,107,0,.04);}
-.sync-btns{display:flex;gap:8px;flex-wrap:wrap}
-.sync-btn{flex:1;min-width:80px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--paper);font-family:inherit;font-size:.76rem;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;}
-.sync-btn.primary{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(255,107,0,.28)}
-
-/* ════════════════════ OTHERS (Styles preserved) ════════════════════ */
-.grp-tabs-wrap{flex-shrink:0;background:var(--paper);border-bottom:2px solid var(--border);padding:0 12px;display:flex;align-items:center;overflow-x:auto;-webkit-overflow-scrolling:touch;}
-.grp-tab{flex-shrink:0;padding:10px 14px;font-size:.76rem;font-weight:700;color:var(--muted);border-bottom:2.5px solid transparent;cursor:pointer;background:none;border:none;font-family:inherit;}
+.nav-badge{
+  position:absolute;top:8px;right:8px;
+  background:var(--o4);color:var(--ink);
+  font-size:.52rem;font-weight:900;padding:2px 6px;border-radius:99px;
+}
+/* ═══════════════════════════════════
+   GROUP FILTER TABS — shared across manage / gpick / practice
+═══════════════════════════════════ */
+.grp-tabs-wrap{
+  flex-shrink:0;
+  background:var(--paper);border-bottom:2px solid var(--border);
+  padding:0 12px;
+  display:flex;align-items:center;gap:0;
+  overflow-x:auto;-webkit-overflow-scrolling:touch;
+}
+.grp-tabs-wrap::-webkit-scrollbar{height:3px}
+.grp-tab{
+  flex-shrink:0;
+  padding:10px 14px;font-size:.76rem;font-weight:700;
+  color:var(--muted);border-bottom:2.5px solid transparent;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  background:none;border-top:none;border-left:none;border-right:none;
+  font-family:inherit;
+}
+.grp-tab:hover{color:var(--ink2)}
 .grp-tab.active{color:var(--o1);border-bottom-color:var(--o1);}
-.gpick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
-.gpick-card{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:20px 15px 16px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 2px 7px rgba(255,107,0,.05);}
-.gpick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-hero);}
-.tzg-box{position:relative;background:#fff;border:2px solid var(--o3);border-radius:8px;overflow:hidden;width:220px;height:220px;box-shadow:0 4px 14px rgba(255,107,0,.1);}
-.ach-stat{flex:1;background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;display:flex;flex-direction:column;align-items:center;}
-.ach-stat-val{font-size:1.45rem;font-weight:900;color:var(--o1);}
-.ach-streak-bar{background:var(--grad-btn);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:14px;color:#fff;box-shadow:0 4px 14px rgba(255,107,0,.28);}
-.ach-rocket-track{height:18px;background:#f5ede4;border-radius:99px;overflow:hidden;position:relative;}
-.ach-rocket-fill{height:100%;border-radius:99px;background:var(--grad-btn);transition:width .7s;}
-.ach-star{font-size:1.6rem;opacity:.2;transition:all .3s;}
-.ach-star.earned{opacity:1;animation:pop .4s ease;}
-.ach-badge{background:var(--paper);border:1.5px solid var(--border);border-radius:13px;padding:13px 8px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;transition:all .2s;}
-.ach-badge.earned{border-color:var(--o3);box-shadow:0 4px 14px rgba(255,107,0,.14);background:linear-gradient(135deg,#fff8f0,#fff5ec);}
-.wm-group{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;}
-.wm-gh{display:flex;align-items:center;gap:7px;padding:10px 13px;border-bottom:1.5px solid var(--border);background:var(--bg);}
-.wm-entries{padding:9px 12px;display:flex;flex-wrap:wrap;gap:6px;}
-.wm-entry{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer;}
-.manage-inner-tabs{flex-shrink:0;display:flex;gap:4px;padding:8px 14px;background:var(--paper);border-bottom:1.5px solid var(--border);}
-.mit-btn{flex:1;padding:9px 6px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);font-weight:800;cursor:pointer;color:var(--muted);}
-.mit-btn.active{background:var(--grad-btn);color:#fff;border-color:transparent;}
-.wm-grp-edit-panel{background:var(--paper);border:1.5px solid var(--o2);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 4px 16px rgba(255,107,0,.12);}
-.wm-grp-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;margin-bottom:8px;cursor:pointer;}
-.finput{border:1.5px solid var(--border);border-radius:9px;padding:8px 11px;font-size:.84rem;font-family:inherit;background:var(--bg);outline:none;width:100%;}
-.spin{display:inline-block;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-</style>
-</head>
-<body>
-
-<!-- ════════════════════ HOME ════════════════════ -->
-<div id="page-home" class="page active">
-  <div class="home-topbar">
-    <div class="home-brand">
-      <div class="home-brand-icon">R</div>
-      <div class="home-brand-text">
-        <div class="home-brand-title">Romeo 汉字加油站</div>
-        <div class="home-brand-sub" style="font-size:.63rem;color:var(--muted);letter-spacing:.5px;margin-top:1px">小学汉字学习</div>
-      </div>
-    </div>
-  </div>
-  <div class="home-body">
-    <div class="nav-grid">
-      <div class="nav-card card-learn" onclick="goStudy()">
-        <span class="nav-icon">📖</span>
-        <span class="nav-name">学 习</span>
-        <span class="nav-desc">笔顺动画·彩色笔划</span>
-      </div>
-      <div class="nav-card card-practice" onclick="showPage('practice');pracGoStep(1)">
-        <span class="nav-icon">✏️</span>
-        <span class="nav-name">练 习</span>
-        <span class="nav-desc">默写检测·两种模式</span>
-      </div>
-      <div class="nav-card card-achieve" onclick="showPage('achieve');renderAchieve()">
-        <span class="nav-icon">🏆</span>
-        <span class="nav-name">成 就</span>
-        <span class="nav-desc">星星·火箭·徽章</span>
-      </div>
-      <div class="nav-card card-manage" onclick="showPage('manage');renderManage()">
-        <span class="nav-icon">📂</span>
-        <span class="nav-name">字词管理</span>
-        <span class="nav-desc">词组·大分组·编辑</span>
-      </div>
-    </div>
-    <div class="home-sync-section">
-      <div style="font-size:.6rem;letter-spacing:3px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:10px;">☁ Cloud Sync</div>
-      <div class="sync-btns">
-        <button class="sync-btn primary" id="sync-upload-btn" onclick="cloudUpload()">☁ 上传同步</button>
-        <button class="sync-btn" id="sync-restore-btn" onclick="cloudRestore()">🔽 恢复数据</button>
-        <button class="sync-btn" onclick="exportLocal()">📤 导出</button>
-        <button class="sync-btn" onclick="importLocal()">📥 导入</button>
-      </div>
-      <div class="sync-status" id="sync-status" style="font-size:.7rem;color:var(--muted);margin-top:8px;min-height:1.1em;"></div>
-    </div>
-    <input type="file" id="import-file-input" accept=".json" style="display:none" onchange="onImportFile(event)">
-  </div>
-</div>
-
-<!-- ════════════════════ 其余页面 HTML (完全按 11:28AM 版本保持) ════════════════════ -->
-<div id="page-gpick" class="page">
-  <div class="topbar"><div class="tb-brand"><span class="tb-brand-romeo">Romeo</span></div><div class="tb-title">选择分组</div><div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div></div>
-  <div class="grp-tabs-wrap" id="gpick-tabs"></div>
-  <div class="home-body"><div class="gpick-grid" id="gpick-grid"></div></div>
-</div>
-
-<div id="page-study" class="page">
-  <div class="topbar"><div class="tb-brand"><span class="tb-brand-romeo">Romeo</span></div><div class="tb-title" id="study-group-name">学 习</div><div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div></div>
-  <div class="study-body">
-    <div class="entry-nav left" style="position:absolute;top:50%;left:4px;transform:translateY(-50%);z-index:5"><button class="nav-arrow" id="btn-prev-entry" onclick="goPrevEntry()">‹</button></div>
-    <div class="study-center">
-      <div class="entry-label" id="entry-label" style="font-size:.72rem;color:var(--muted);font-weight:700;text-align:center">1 / 1</div>
-      <div class="tzg-row" id="tzg-row"></div>
-      <div class="study-quiz-msg" id="study-quiz-msg"></div>
-    </div>
-    <div class="entry-nav right" style="position:absolute;top:50%;right:4px;transform:translateY(-50%);z-index:5"><button class="nav-arrow" id="btn-next-entry" onclick="goNextEntry()">›</button></div>
-  </div>
-  <div class="study-actions"><button class="btn btn-ghost btn-sm" id="btn-follow" onclick="toggleFollow()">🖊 跟写</button><button class="btn btn-ghost btn-sm" id="btn-cover" onclick="toggleCover()">👁 遮盖</button><button class="btn btn-ghost btn-sm" onclick="resetAll()">↺ 重置</button></div>
-</div>
-
-<!-- 练习页面结构保持 -->
-<div id="page-practice" class="page">
-  <div id="prac-step1" class="prac-step active">
-    <div class="topbar"><div class="tb-brand"><span class="tb-brand-romeo">Romeo</span></div><div class="tb-title">选择模式</div><div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div></div>
-    <div class="prac-sel-body">
-      <div class="prac-modes"><div class="prac-mode-card active" id="pmc-simple" onclick="selectPracMode('simple')"><span class="pm-icon">🌟</span><span class="pm-name">简单模式</span></div><div class="prac-mode-card" id="pmc-standard" onclick="selectPracMode('standard')"><span class="pm-icon">🎯</span><span class="pm-name">标准模式</span></div></div>
-      <button class="btn btn-primary" style="margin-top:20px" onclick="pracGoStep(2)">选择分组 →</button>
-    </div>
-  </div>
-  <div id="prac-step2" class="prac-step"><div class="topbar"><div class="tb-title" id="prac-step2-title">选择分组</div><div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">← 返回</button></div></div><div class="grp-tabs-wrap" id="prac-grp-tabs"></div><div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div><div class="prac-grp-footer"><button class="btn btn-primary" onclick="startPractice()">✏️ 在线练习 →</button></div></div>
-  <div id="prac-step3" class="prac-step"><div class="topbar"><div class="tb-title" id="prac-quiz-title">练 习</div><div class="tb-right"><button class="tb-btn" onclick="pracGoStep(2)">← 返回</button></div></div><div class="prac-quiz-body"><div class="prac-progress" id="prac-progress"></div><div class="prac-chars-row" id="prac-chars-row"></div><div class="prac-msg" id="prac-msg"></div></div></div>
-</div>
-
-<div id="page-achieve" class="page">
-  <div class="topbar"><div class="tb-brand"><span class="tb-brand-romeo">Romeo</span></div><div class="tb-title">成 就</div><div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div></div>
-  <div class="ach-body" id="ach-body"></div>
-</div>
-
-<div id="page-manage" class="page">
-  <div class="topbar"><div class="tb-brand"><span class="tb-brand-romeo">Romeo</span></div><div class="tb-title">字词管理</div><div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div></div>
-  <div class="manage-inner-tabs" id="manage-inner-tabs"></div>
-  <div class="manage-body" id="manage-body"></div>
-</div>
-
-<!-- Modal 入口 -->
-<div class="modal-overlay" id="modal-entry"><div class="modal"><div class="mhdr"><div class="mtitle" id="mentitle">添加字/词</div><button class="mclose" onclick="closeModal('modal-entry')">✕</button></div><div class="mbody"><input class="finput" id="m-hanzi" placeholder="汉字"><input class="finput" id="m-pinyin" style="margin-top:10px" placeholder="拼音"></div><div class="mfooter"><button class="btn btn-primary btn-sm" onclick="saveEntry()">保存</button><button class="btn btn-ghost btn-sm" onclick="closeModal('modal-entry')">取消</button></div></div></div>
-
-<script>
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   JS 逻辑 (100% 还原 11:28AM 原始逻辑，仅删除成就页底部的词表)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-const STROKE_PAL=['#f43f5e','#fb923c','#fbbf24','#22c55e','#14b8a6','#3b82f6','#8b5cf6'];
-const HW_TF='scale(1,-1) translate(0,-900)';
-const OUTLINE_COLOR='#e5d4c0';
-
-const DEFAULT_STORE={
-  groups:[{id:'g1',name:'一年级·基础字',entries:[{type:'char',hanzi:'山',pinyin:'shān',mode:'simple',redRange:''}]}],
-  superGroups:[{id:'sg1',name:'一年级上册',groupIds:['g1']}],
-  ach:{ learnedChars:[], mistakes:[], totalCorrect:0, sessions:0, streak:0, lastDate:null }
-};
-let store=JSON.parse(JSON.stringify(DEFAULT_STORE));
-
-function saveStore(){try{localStorage.setItem('romeo_hxkt_v1',JSON.stringify(store));}catch(e){}}
-function loadStore(){
-  try{
-    const raw=localStorage.getItem('romeo_hxkt_v1');
-    if(raw){
-      const parsed=JSON.parse(raw);
-      store.groups=parsed.groups||store.groups;
-      store.superGroups=parsed.superGroups||store.superGroups||[];
-      store.ach=Object.assign({},DEFAULT_STORE.ach,parsed.ach||{});
-    }
-  }catch(e){}
-}
-loadStore();
-
-function showPage(id){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(id==='home') renderHome();
-}
-function renderHome(){ /* 首页现在只有 4个卡片和同步，逻辑保持干净 */ }
-function goStudy(){showPage('gpick');renderGpick();}
-
-/* ── ACHIEVEMENT 渲染 (重点：删除了底部的 已学字词 和 错词本 列表) ── */
-function addSec(parent,title,mb){const h=document.createElement('div');h.className='sec-label';h.style.cssText=`margin-top:${mb||14}px;margin-bottom:8px;font-size:.62rem;letter-spacing:3px;font-weight:700;text-transform:uppercase;color:var(--muted)`;h.textContent=title;parent.appendChild(h);}
-
-function renderAchieve(){
-  const ac=store.ach; const body=document.getElementById('ach-body'); body.innerHTML='';
-  const learned=ac.learnedChars.length; const totalCorrect=ac.totalCorrect;
-  
-  // 1. Stats row
-  const sumDiv=document.createElement('div');sumDiv.style.cssText='display:flex;gap:8px;margin-bottom:14px';
-  [{icon:'📝',val:learned,label:'已掌握字'},{icon:'✅',val:totalCorrect,label:'累计答对'},{icon:'🔥',val:ac.streak,label:'连击天数'}].forEach(s=>{
-    sumDiv.innerHTML+=`<div class="ach-stat"><div style="font-size:1.5rem">${s.icon}</
+/* ═══════════════════════════════════
+   GROUP PICKER
+═══════════════════════════════════ */
+.gpick-body{flex:1;overflow
