@@ -144,26 +144,26 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   box-shadow:0 2px 7px rgba(255,107,0,.04);
 }
 
-/* 2×2 nav grid — white cards, all equal */
+/* 2×2 nav grid — color-coded cards */
 .nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
 .nav-card{
-  background:var(--paper);border:1.5px solid var(--border);border-radius:16px;
-  padding:18px 12px 16px;cursor:pointer;transition:all .2s;
+  background:var(--paper);border:2px solid var(--border);border-radius:18px;
+  padding:22px 14px 18px;cursor:pointer;transition:all .2s;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;gap:6px;min-height:104px;
-  box-shadow:0 2px 8px rgba(255,107,0,.05);position:relative;overflow:hidden;
+  text-align:center;gap:7px;min-height:112px;
+  box-shadow:0 3px 10px rgba(0,0,0,.05);position:relative;overflow:hidden;
 }
-.nav-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  border-radius:16px 16px 0 0;background:var(--grad-hero);
-}
-.nav-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,107,0,.12)}
+.nav-card.card-learn{border-color:#b3caff;background:linear-gradient(145deg,#f0f4ff 0%,var(--paper) 65%)}
+.nav-card.card-practice{border-color:#fde68a;background:linear-gradient(145deg,#fffbea 0%,var(--paper) 65%)}
+.nav-card.card-achieve{border-color:#a7f3c8;background:linear-gradient(145deg,#f0fdf6 0%,var(--paper) 65%)}
+.nav-card.card-manage{border-color:#d8b4fe;background:linear-gradient(145deg,#f5f0ff 0%,var(--paper) 65%)}
+.nav-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(0,0,0,.1)}
 .nav-card:active{transform:scale(.97)}
-.nav-icon{font-size:1.65rem;line-height:1}
-.nav-name{font-weight:900;font-size:.88rem;color:var(--ink)}
-.nav-desc{font-size:.66rem;color:var(--muted);line-height:1.35}
+.nav-icon{font-size:1.9rem;line-height:1}
+.nav-name{font-weight:900;font-size:.9rem;color:var(--ink)}
+.nav-desc{font-size:.65rem;color:var(--muted);line-height:1.4}
 .nav-badge{
-  position:absolute;top:7px;right:7px;
+  position:absolute;top:8px;right:8px;
   background:var(--o4);color:var(--ink);
   font-size:.52rem;font-weight:900;padding:2px 6px;border-radius:99px;
 }
@@ -591,26 +591,26 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   </div>
   <div class="home-body">
     <div class="nav-grid">
-      <div class="nav-card" onclick="goStudy()">
+      <div class="nav-card card-learn" onclick="goStudy()">
         <span class="nav-icon">📖</span>
         <span class="nav-name">学 习</span>
         <span class="nav-desc">笔顺动画·彩色笔划</span>
         <div class="nav-badge">推荐</div>
       </div>
-      <div class="nav-card" onclick="showPage('practice');pracGoStep(1)">
+      <div class="nav-card card-practice" onclick="showPage('practice');pracGoStep(1)">
         <span class="nav-icon">✏️</span>
         <span class="nav-name">练 习</span>
         <span class="nav-desc">默写检测·两种模式</span>
       </div>
-      <div class="nav-card" onclick="showPage('achieve');renderAchieve()">
+      <div class="nav-card card-achieve" onclick="showPage('achieve');renderAchieve()">
         <span class="nav-icon">🏆</span>
         <span class="nav-name">成 就</span>
         <span class="nav-desc">星星·火箭·徽章</span>
       </div>
-      <div class="nav-card" onclick="showPage('manage');renderManage()">
-        <span class="nav-icon">📚</span>
+      <div class="nav-card card-manage" onclick="showPage('manage');renderManage()">
+        <span class="nav-icon">📂</span>
         <span class="nav-name">字词管理</span>
-        <span class="nav-desc">添加分组·管理字词</span>
+        <span class="nav-desc">词组·大分组·编辑</span>
       </div>
     </div>
     <div class="home-sync-section">
@@ -828,6 +828,11 @@ const DEFAULT_STORE={
       {type:'word',hanzi:'明天',pinyin:'míng tiān',charCfg:[{mode:'complex',redRange:'1-4'},{mode:'simple',redRange:''}]},
     ]}
   ],
+  // 大分组：把多个练习分组归类，方便筛选
+  // {id, name, groupIds:[...]}
+  superGroups:[
+    {id:'sg1',name:'一年级上册',groupIds:['g1','g2']}
+  ],
   ach:{
     learnedChars:[],   // {ch, pinyin, ts}
     mistakes:[],       // {ch, pinyin, count, ts}
@@ -851,6 +856,7 @@ function loadStore(){
     if(raw){
       const parsed=JSON.parse(raw);
       store.groups=parsed.groups||store.groups;
+      store.superGroups=parsed.superGroups||store.superGroups||[];
       // merge ach carefully
       store.ach=Object.assign({},DEFAULT_STORE.ach,parsed.ach||{});
     }
@@ -911,7 +917,8 @@ let gpickActiveGid='_all';
 function renderGpickTabs(){
   const wrap=document.getElementById('gpick-tabs');if(!wrap)return;
   wrap.innerHTML='';
-  const tabs=[{id:'_all',name:'全部'},...store.groups.map(g=>({id:g.id,name:g.name}))];
+  // Tabs: 全部 + each superGroup
+  const tabs=[{id:'_all',name:'全部'},...(store.superGroups||[]).map(sg=>({id:sg.id,name:sg.name}))];
   tabs.forEach(t=>{
     const btn=document.createElement('button');
     btn.className='grp-tab'+(t.id===gpickActiveGid?' active':'');
@@ -927,7 +934,14 @@ function renderGpick(){
   if(!store.groups.length){
     grid.innerHTML='<div class="gpick-empty">📚 暂无分组<br><small style="color:var(--muted)">请先在字词管理新建</small></div>';return;
   }
-  const groups=gpickActiveGid==='_all'?store.groups:store.groups.filter(g=>g.id===gpickActiveGid);
+  let groups;
+  if(gpickActiveGid==='_all'){
+    groups=store.groups;
+  } else {
+    const sg=(store.superGroups||[]).find(x=>x.id===gpickActiveGid);
+    const ids=sg?sg.groupIds||[]:[];
+    groups=store.groups.filter(g=>ids.includes(g.id));
+  }
   groups.forEach(g=>{
     const card=document.createElement('div');card.className='gpick-card';
     card.onclick=()=>startStudy(g.id);
@@ -1167,7 +1181,7 @@ let pracTabActiveGid='_all';
 function renderPracGrpTabs(){
   const wrap=document.getElementById('prac-grp-tabs');if(!wrap)return;
   wrap.innerHTML='';
-  const tabs=[{id:'_all',name:'全部'},...store.groups.map(g=>({id:g.id,name:g.name}))];
+  const tabs=[{id:'_all',name:'全部'},...(store.superGroups||[]).map(sg=>({id:sg.id,name:sg.name}))];
   tabs.forEach(t=>{
     const btn=document.createElement('button');
     btn.className='grp-tab'+(t.id===pracTabActiveGid?' active':'');
@@ -1183,7 +1197,14 @@ function renderPracGrpPicker(){
   document.getElementById('prac-step2-title').textContent=`选分组 · ${P.mode==='simple'?'简单':'标准'}`;
   if(!store.groups.length){g.innerHTML='<div class="gpick-empty">暂无分组</div>';return;}
   if(!P.groupId)P.groupId=store.groups[0].id;
-  const groups=pracTabActiveGid==='_all'?store.groups:store.groups.filter(gr=>gr.id===pracTabActiveGid);
+  let groups;
+  if(pracTabActiveGid==='_all'){
+    groups=store.groups;
+  } else {
+    const sg=(store.superGroups||[]).find(x=>x.id===pracTabActiveGid);
+    const ids=sg?sg.groupIds||[]:[];
+    groups=store.groups.filter(gr=>ids.includes(gr.id));
+  }
   groups.forEach(grp=>{
     const card=document.createElement('div');card.className='gpick-card'+(grp.id===P.groupId?' selected':'');
     card.innerHTML=`<div class="gpick-card-top"><span class="gpick-name">${grp.name}</span><span class="gpick-arrow">›</span></div>
@@ -1584,107 +1605,183 @@ function renderManageEntries(){
   });
 }
 
-/* ── Tab 2: 分组管理 ── */
-let editingGroupId=null; // null = creating new
+/* ── Tab 2: 分组管理 ──
+   两级结构：
+   · 练习分组 (store.groups) — 包含字词
+   · 大分组 (store.superGroups) — 把多个练习分组归类，用于筛选
+── */
+let editingGroupId=null;
+let editingSgId=null;
 
 function renderManageGroups(){
   const body=document.getElementById('manage-body');body.innerHTML='';
 
-  /* ── New/Edit form panel ── */
-  const panel=document.createElement('div');panel.className='wm-grp-edit-panel';
-  panel.id='grp-edit-panel';
-  panel.innerHTML=`
-    <div class="wm-grp-edit-title" id="grp-edit-title">＋ 新建分组</div>
+  /* ═══ SECTION A: 练习分组 ═══ */
+  const secA=document.createElement('div');
+  secA.style.cssText='font-size:.63rem;font-weight:900;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;padding-left:2px';
+  secA.textContent='▸ 练习分组';
+  body.appendChild(secA);
+
+  const panelA=document.createElement('div');panelA.className='wm-grp-edit-panel';panelA.id='grp-edit-panel';
+  panelA.innerHTML=`
+    <div class="wm-grp-edit-title" id="grp-edit-title">＋ 新建练习分组</div>
     <div style="display:flex;gap:8px;align-items:center">
-      <input class="finput" id="grp-name-input" placeholder="输入分组名称，如：一年级上册"
-        style="flex:1" oninput="" />
+      <input class="finput" id="grp-name-input" placeholder="分组名，如：第一单元" style="flex:1"/>
       <button class="btn btn-primary btn-sm" onclick="saveGroupInline()" style="flex-shrink:0;white-space:nowrap">保存</button>
       <button class="btn btn-ghost btn-sm" id="grp-cancel-btn" onclick="cancelGroupEdit()" style="display:none;flex-shrink:0">取消</button>
     </div>
-    <div style="display:flex;gap:8px;margin-top:8px" id="grp-delete-row" style="display:none">
-      <button class="btn btn-danger btn-sm" id="grp-del-btn" onclick="deleteGroupInline()" style="display:none">🗑 删除该分组（字词保留）</button>
-    </div>`;
-  body.appendChild(panel);
-
-  /* ── Group list ── */
-  const listTitle=document.createElement('div');
-  listTitle.style.cssText='font-size:.72rem;font-weight:800;color:var(--muted);letter-spacing:.5px;margin:14px 0 8px 2px';
-  listTitle.textContent='所有分组';
-  body.appendChild(listTitle);
+    <button class="btn btn-danger btn-sm" id="grp-del-btn" onclick="deleteGroupInline()" style="display:none;margin-top:8px;width:100%">🗑 删除该练习分组（含字词）</button>`;
+  body.appendChild(panelA);
 
   if(!store.groups.length){
-    const empty=document.createElement('div');
-    empty.style.cssText='text-align:center;padding:24px;color:var(--muted);font-size:.78rem';
-    empty.textContent='暂无分组，在上方输入名称新建';
-    body.appendChild(empty);return;
+    const e2=document.createElement('div');e2.style.cssText='text-align:center;padding:14px;color:var(--muted);font-size:.78rem;margin-bottom:14px';e2.textContent='暂无练习分组';body.appendChild(e2);
+  } else {
+    store.groups.forEach(g=>{
+      const item=document.createElement('div');item.className='wm-grp-item';
+      const ch=g.entries.filter(e=>e.type==='char').length;
+      const wd=g.entries.filter(e=>e.type==='word').length;
+      const meta=[ch?ch+'字':'',wd?wd+'词':''].filter(Boolean).join(' · ')||'暂无字词';
+      const sgName=(store.superGroups||[]).find(sg=>(sg.groupIds||[]).includes(g.id))?.name||'';
+      item.innerHTML=`<span class="wm-grp-icon">📋</span>
+        <div class="wm-grp-info">
+          <div class="wm-grp-name">${g.name}${sgName?` <span style="font-size:.56rem;font-weight:700;color:#7c3aed;background:#f0e8ff;padding:1px 6px;border-radius:99px">📁${sgName}</span>`:''}</div>
+          <div class="wm-grp-meta">${meta}</div>
+        </div>
+        <span class="wm-grp-arrow">›</span>`;
+      item.onclick=()=>startEditGroupInline(g.id);
+      body.appendChild(item);
+    });
   }
 
-  store.groups.forEach(g=>{
-    const item=document.createElement('div');item.className='wm-grp-item';
-    const ch=g.entries.filter(e=>e.type==='char').length;
-    const wd=g.entries.filter(e=>e.type==='word').length;
-    const meta=[ch?ch+'个字':'',wd?wd+'个词':''].filter(Boolean).join(' · ')||'暂无字词';
-    item.innerHTML=`<span class="wm-grp-icon">📁</span>
-      <div class="wm-grp-info">
-        <div class="wm-grp-name">${g.name}</div>
-        <div class="wm-grp-meta">${meta}</div>
-      </div>
-      <span class="wm-grp-arrow">›</span>`;
-    item.onclick=()=>startEditGroupInline(g.id);
-    body.appendChild(item);
-  });
+  /* ═══ SECTION B: 大分组 ═══ */
+  const secB=document.createElement('div');
+  secB.style.cssText='font-size:.63rem;font-weight:900;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin:20px 0 8px;padding-left:2px';
+  secB.textContent='▸ 大分组（归类整理练习分组）';
+  body.appendChild(secB);
+
+  const grpCheckboxes=store.groups.length
+    ? store.groups.map((g,i)=>
+        `<label style="display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--border);cursor:pointer">
+          <input type="checkbox" id="sgchk-${i}" data-gid="${g.id}"
+            style="width:18px;height:18px;accent-color:var(--o1);cursor:pointer;flex-shrink:0">
+          <span style="font-weight:700;font-size:.84rem;flex:1">${g.name}</span>
+          <span style="font-size:.63rem;color:var(--muted)">${g.entries.length}条</span>
+        </label>`
+      ).join('')
+    : '<div style="padding:14px;text-align:center;color:var(--muted);font-size:.78rem">先新建练习分组</div>';
+
+  const panelB=document.createElement('div');panelB.className='wm-grp-edit-panel';panelB.id='sg-edit-panel';
+  panelB.innerHTML=`
+    <div class="wm-grp-edit-title" id="sg-edit-title">＋ 新建大分组</div>
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+      <input class="finput" id="sg-name-input" placeholder="大分组名，如：一年级上册" style="flex:1"/>
+      <button class="btn btn-primary btn-sm" onclick="saveSgInline()" style="flex-shrink:0;white-space:nowrap">保存</button>
+      <button class="btn btn-ghost btn-sm" id="sg-cancel-btn" onclick="cancelSgEdit()" style="display:none;flex-shrink:0">取消</button>
+    </div>
+    <div style="font-size:.68rem;font-weight:800;color:var(--ink2);margin-bottom:6px">包含的练习分组（可多选）</div>
+    <div style="background:var(--bg);border:1.5px solid var(--border);border-radius:10px;max-height:180px;overflow-y:auto;margin-bottom:8px">${grpCheckboxes}</div>
+    <button class="btn btn-danger btn-sm" id="sg-del-btn" onclick="deleteSgInline()" style="display:none;width:100%">🗑 删除大分组（练习分组不受影响）</button>`;
+  body.appendChild(panelB);
+
+  const sgs=store.superGroups||[];
+  if(!sgs.length){
+    const e3=document.createElement('div');e3.style.cssText='text-align:center;padding:14px;color:var(--muted);font-size:.78rem';e3.textContent='暂无大分组';body.appendChild(e3);
+  } else {
+    sgs.forEach(sg=>{
+      const item=document.createElement('div');item.className='wm-grp-item';
+      const gNames=(sg.groupIds||[]).map(gid=>store.groups.find(g=>g.id===gid)?.name).filter(Boolean);
+      const preview=gNames.slice(0,3).join('、')+(gNames.length>3?'…':'');
+      item.innerHTML=`<span class="wm-grp-icon">📁</span>
+        <div class="wm-grp-info">
+          <div class="wm-grp-name">${sg.name} <span style="font-size:.6rem;font-weight:700;color:#fff;background:#7c3aed;padding:1px 7px;border-radius:99px">${gNames.length}个练习组</span></div>
+          <div class="wm-grp-meta">${preview||'暂无'}</div>
+        </div>
+        <span class="wm-grp-arrow">›</span>`;
+      item.onclick=()=>startEditSgInline(sg.id);
+      body.appendChild(item);
+    });
+  }
 }
 
+/* ── 练习分组 CRUD ── */
 function startEditGroupInline(gid){
   editingGroupId=gid;
   const g=store.groups.find(x=>x.id===gid);if(!g)return;
-  const input=document.getElementById('grp-name-input');
-  const title=document.getElementById('grp-edit-title');
-  const cancelBtn=document.getElementById('grp-cancel-btn');
-  const delBtn=document.getElementById('grp-del-btn');
-  if(!input)return;
-  input.value=g.name;
-  title.textContent='✏️ 编辑分组';
-  if(cancelBtn)cancelBtn.style.display='';
-  if(delBtn)delBtn.style.display='';
-  input.focus();
-  // scroll to top
-  const body=document.getElementById('manage-body');if(body)body.scrollTop=0;
+  document.getElementById('grp-name-input').value=g.name;
+  document.getElementById('grp-edit-title').textContent='✏️ 编辑练习分组：'+g.name;
+  document.getElementById('grp-cancel-btn').style.display='';
+  document.getElementById('grp-del-btn').style.display='';
+  document.getElementById('grp-edit-panel').scrollIntoView({behavior:'smooth',block:'start'});
 }
-
 function cancelGroupEdit(){
   editingGroupId=null;
-  const input=document.getElementById('grp-name-input');
-  const title=document.getElementById('grp-edit-title');
-  const cancelBtn=document.getElementById('grp-cancel-btn');
-  const delBtn=document.getElementById('grp-del-btn');
-  if(input)input.value='';
-  if(title)title.textContent='＋ 新建分组';
-  if(cancelBtn)cancelBtn.style.display='none';
-  if(delBtn)delBtn.style.display='none';
+  const i=document.getElementById('grp-name-input');if(i)i.value='';
+  document.getElementById('grp-edit-title').textContent='＋ 新建练习分组';
+  document.getElementById('grp-cancel-btn').style.display='none';
+  document.getElementById('grp-del-btn').style.display='none';
 }
-
 function saveGroupInline(){
   const name=(document.getElementById('grp-name-input')||{}).value?.trim();
   if(!name){alert('请输入分组名称');return;}
   if(editingGroupId){
-    const g=store.groups.find(x=>x.id===editingGroupId);
-    if(g)g.name=name;
+    const g=store.groups.find(x=>x.id===editingGroupId);if(g)g.name=name;
   } else {
     store.groups.push({id:'g'+Date.now(),name,entries:[]});
   }
   editingGroupId=null;
   saveStore();scheduleAutoSync();renderManage();renderHome();
 }
-
 function deleteGroupInline(){
   if(!editingGroupId)return;
-  const g=store.groups.find(x=>x.id===editingGroupId);
-  if(!g)return;
-  if(!confirm(`删除分组「${g.name}」？
-该分组内的 ${g.entries.length} 条字词也会一并删除。`))return;
+  const g=store.groups.find(x=>x.id===editingGroupId);if(!g)return;
+  if(!confirm('删除练习分组「'+g.name+'」？\n包含的 '+g.entries.length+' 条字词也会一并删除。'))return;
   store.groups=store.groups.filter(x=>x.id!==editingGroupId);
+  (store.superGroups||[]).forEach(sg=>{sg.groupIds=(sg.groupIds||[]).filter(id=>id!==editingGroupId);});
   editingGroupId=null;
+  saveStore();scheduleAutoSync();renderManage();renderHome();
+}
+
+/* ── 大分组 CRUD ── */
+function startEditSgInline(sgid){
+  editingSgId=sgid;
+  if(!store.superGroups)store.superGroups=[];
+  const sg=store.superGroups.find(x=>x.id===sgid);if(!sg)return;
+  document.getElementById('sg-name-input').value=sg.name;
+  document.getElementById('sg-edit-title').textContent='✏️ 编辑大分组：'+sg.name;
+  document.getElementById('sg-cancel-btn').style.display='';
+  document.getElementById('sg-del-btn').style.display='';
+  document.querySelectorAll('[id^="sgchk-"]').forEach(cb=>{cb.checked=(sg.groupIds||[]).includes(cb.dataset.gid);});
+  document.getElementById('sg-edit-panel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function cancelSgEdit(){
+  editingSgId=null;
+  const i=document.getElementById('sg-name-input');if(i)i.value='';
+  document.getElementById('sg-edit-title').textContent='＋ 新建大分组';
+  document.getElementById('sg-cancel-btn').style.display='none';
+  document.getElementById('sg-del-btn').style.display='none';
+  document.querySelectorAll('[id^="sgchk-"]').forEach(cb=>cb.checked=false);
+}
+function saveSgInline(){
+  const name=(document.getElementById('sg-name-input')||{}).value?.trim();
+  if(!name){alert('请输入大分组名称');return;}
+  const groupIds=[];
+  document.querySelectorAll('[id^="sgchk-"]').forEach(cb=>{if(cb.checked)groupIds.push(cb.dataset.gid);});
+  if(!store.superGroups)store.superGroups=[];
+  if(editingSgId){
+    const sg=store.superGroups.find(x=>x.id===editingSgId);
+    if(sg){sg.name=name;sg.groupIds=groupIds;}
+  } else {
+    store.superGroups.push({id:'sg'+Date.now(),name,groupIds});
+  }
+  editingSgId=null;
+  saveStore();scheduleAutoSync();renderManage();renderHome();
+}
+function deleteSgInline(){
+  if(!editingSgId)return;
+  const sg=(store.superGroups||[]).find(x=>x.id===editingSgId);if(!sg)return;
+  if(!confirm('删除大分组「'+sg.name+'」？\n练习分组和字词不受影响。'))return;
+  store.superGroups=store.superGroups.filter(x=>x.id!==editingSgId);
+  editingSgId=null;
   saveStore();scheduleAutoSync();renderManage();renderHome();
 }
 
@@ -1896,6 +1993,7 @@ function setSyncBtnsDisabled(v){
 function cloudPayload(){
   return {
     groups:store.groups,          // 字词管理：字、拼音、笔划规则
+    superGroups:store.superGroups||[],  // 大分组（把多个练习组归类）
     ach:store.ach,                // 成就：已学字、错词、答对次数、连击
     _ts:Date.now(),
     _ver:'romeo_v1'
@@ -1942,6 +2040,7 @@ async function cloudRestore(){
     const payload=data.record||data;
     if(!payload.groups&&!payload.ach)throw new Error('云端数据格式不正确');
     if(payload.groups)store.groups=payload.groups;
+    if(payload.superGroups)store.superGroups=payload.superGroups;
     if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);
     saveStore();
     renderHome();
@@ -1979,6 +2078,7 @@ function onImportFile(ev){
       if(!payload.groups&&!payload.ach)throw new Error('文件格式不正确');
       if(!confirm('导入将覆盖本地数据，确定吗？'))return;
       if(payload.groups)store.groups=payload.groups;
+      if(payload.superGroups)store.superGroups=payload.superGroups;
       if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);
       saveStore();
       renderHome();
