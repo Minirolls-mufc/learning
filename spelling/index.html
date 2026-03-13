@@ -667,18 +667,14 @@ function renderTargetSelection(mode) {
       const netSign = net >= 0 ? '+' : '';
       const lp = w.lastPractice ? new Date(w.lastPractice).toLocaleDateString('zh-CN', {month:'numeric',day:'numeric'}) : '—';
       const setId = cleanToSet[cleanKey] || '';
-      return `<label style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer">
-        <input type="checkbox" id="tchk-${i}" checked style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
-        <div style="flex:1;min-width:0">
-          <div style="font-family:'Literata',Georgia,serif;font-size:19px;color:#1a1a2e;line-height:1.2">${clean}</div>
-          ${setId ? `<div style="font-size:11px;color:#aaa;font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${setId}</div>` : ''}
-        </div>
-        <div style="display:grid;grid-template-columns:36px 36px 36px 36px;gap:4px;flex-shrink:0;align-items:center;text-align:center">
-          <span class="stat-badge stat-correct" style="justify-content:center">✓${w.correctCount||0}</span>
-          <span class="stat-badge stat-wrong" style="justify-content:center">✗${w.wrongCount||0}</span>
-          <span class="stat-badge ${netClass}" style="justify-content:center">${netSign}${net}</span>
-          <span style="font-size:11px;color:#bbb;font-weight:600;white-space:nowrap">${lp}</span>
-        </div>
+      return `<label style="display:grid;grid-template-columns:20px 1fr 80px 36px 36px 36px 34px;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer">
+        <input type="checkbox" id="tchk-${i}" checked style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer">
+        <span style="font-family:'Literata',Georgia,serif;font-size:19px;color:#1a1a2e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${clean}</span>
+        <span style="font-size:11px;color:#bbb;font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:2px">${setId}</span>
+        <span class="stat-badge stat-correct" style="justify-content:center">✓${w.correctCount||0}</span>
+        <span class="stat-badge stat-wrong" style="justify-content:center">✗${w.wrongCount||0}</span>
+        <span class="stat-badge ${netClass}" style="justify-content:center">${netSign}${net}</span>
+        <span style="font-size:11px;color:#bbb;font-weight:600;text-align:right;white-space:nowrap">${lp}</span>
       </label>`;
     }).join('');
 
