@@ -632,11 +632,13 @@ function renderTargetSelection(mode) {
       return;
     }
 
-    // Build cleanWord → rawWord map from all wordSets
-    // Key: lowercase no-slash version, Value: original raw word with slashes
+    // Build cleanWord → rawWord map AND cleanWord → setId map
     const cleanToRaw = {};
+    const cleanToSet = {};
     sets.forEach(s => s.words.forEach(w => {
-      cleanToRaw[w.replace(/\//g, '').toLowerCase()] = w;
+      const k = w.replace(/\//g, '').toLowerCase();
+      cleanToRaw[k] = w;
+      cleanToSet[k] = s.id;
     }));
 
     // Sort: net score asc, then lastPractice asc
@@ -651,29 +653,32 @@ function renderTargetSelection(mode) {
     const desc = mode === 'learn' ? '按掌握程度排序，全选或选择要复习的词' : '按掌握程度排序，全选或选择要练习的词';
     const startFn = mode === 'learn' ? `startTargetLearn` : `startTargetPractice`;
 
-    // Store resolved raw words (with slashes) for passing to learn/practice
-    // Use cleanWord as display key, raw word for actual learning
     const resolvedWords = bank.map(w => {
       const cleanKey = w.word.replace(/\//g, '').toLowerCase();
-      return cleanToRaw[cleanKey] || w.word; // fallback to stored word if not found
+      return cleanToRaw[cleanKey] || w.word;
     });
     const wordsJson = JSON.stringify(resolvedWords).replace(/"/g, '&quot;');
 
     let listHtml = bank.map((w, i) => {
       const clean = w.word.replace(/\//g, '');
+      const cleanKey = clean.toLowerCase();
       const net = (w.correctCount || 0) - (w.wrongCount || 0);
       const netClass = net >= 0 ? 'stat-net-pos' : 'stat-net-neg';
       const netSign = net >= 0 ? '+' : '';
       const lp = w.lastPractice ? new Date(w.lastPractice).toLocaleDateString('zh-CN', {month:'numeric',day:'numeric'}) : '—';
-      return `<label style="display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer">
+      const setId = cleanToSet[cleanKey] || '';
+      return `<label style="display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer">
         <input type="checkbox" id="tchk-${i}" checked style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
-        <span style="font-family:'Literata',Georgia,serif;font-size:20px;color:#1a1a2e;flex:1;min-width:0">${clean}</span>
-        <span style="display:flex;gap:5px;flex-shrink:0;align-items:center">
-          <span class="stat-badge stat-correct">✓${w.correctCount||0}</span>
-          <span class="stat-badge stat-wrong">✗${w.wrongCount||0}</span>
-          <span class="stat-badge ${netClass}">${netSign}${net}</span>
-          <span style="font-size:11px;color:#bbb;font-weight:600">${lp}</span>
-        </span>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Literata',Georgia,serif;font-size:19px;color:#1a1a2e;line-height:1.2">${clean}</div>
+          ${setId ? `<div style="font-size:11px;color:#aaa;font-weight:600;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${setId}</div>` : ''}
+        </div>
+        <div style="display:grid;grid-template-columns:36px 36px 36px 36px;gap:4px;flex-shrink:0;align-items:center;text-align:center">
+          <span class="stat-badge stat-correct" style="justify-content:center">✓${w.correctCount||0}</span>
+          <span class="stat-badge stat-wrong" style="justify-content:center">✗${w.wrongCount||0}</span>
+          <span class="stat-badge ${netClass}" style="justify-content:center">${netSign}${net}</span>
+          <span style="font-size:11px;color:#bbb;font-weight:600;white-space:nowrap">${lp}</span>
+        </div>
       </label>`;
     }).join('');
 
