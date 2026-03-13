@@ -617,8 +617,12 @@ function renderTargetSelection(mode) {
   const backFn = `renderSetSelection('${mode}')`;
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="${backFn}">‹ 返回</button>`;
 
-  const tx = db.transaction('wrongBank', 'readonly');
-  getAll(tx.objectStore('wrongBank')).then(bank => {
+  // Read both wrongBank and wordSets together
+  const tx = db.transaction(['wrongBank', 'wordSets'], 'readonly');
+  Promise.all([
+    getAll(tx.objectStore('wrongBank')),
+    getAll(tx.objectStore('wordSets'))
+  ]).then(([bank, sets]) => {
     if (bank.length === 0) {
       document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:40px;color:#999">
         <div style="font-size:48px;margin-bottom:12px">🎉</div>
@@ -628,7 +632,14 @@ function renderTargetSelection(mode) {
       return;
     }
 
-    // Sort: net score (correct - wrong) asc, then lastPractice asc (oldest first = needs most review)
+    // Build cleanWord → rawWord map from all wordSets
+    // Key: lowercase no-slash version, Value: original raw word with slashes
+    const cleanToRaw = {};
+    sets.forEach(s => s.words.forEach(w => {
+      cleanToRaw[w.replace(/\//g, '').toLowerCase()] = w;
+    }));
+
+    // Sort: net score asc, then lastPractice asc
     bank.sort((a, b) => {
       const netA = (a.correctCount || 0) - (a.wrongCount || 0);
       const netB = (b.correctCount || 0) - (b.wrongCount || 0);
@@ -639,7 +650,14 @@ function renderTargetSelection(mode) {
     const title = mode === 'learn' ? '🎯 针对复习' : '🎯 针对练习';
     const desc = mode === 'learn' ? '按掌握程度排序，全选或选择要复习的词' : '按掌握程度排序，全选或选择要练习的词';
     const startFn = mode === 'learn' ? `startTargetLearn` : `startTargetPractice`;
-    const wordsJson = JSON.stringify(bank.map(w => w.word)).replace(/"/g, '&quot;');
+
+    // Store resolved raw words (with slashes) for passing to learn/practice
+    // Use cleanWord as display key, raw word for actual learning
+    const resolvedWords = bank.map(w => {
+      const cleanKey = w.word.replace(/\//g, '').toLowerCase();
+      return cleanToRaw[cleanKey] || w.word; // fallback to stored word if not found
+    });
+    const wordsJson = JSON.stringify(resolvedWords).replace(/"/g, '&quot;');
 
     let listHtml = bank.map((w, i) => {
       const clean = w.word.replace(/\//g, '');
@@ -1104,37 +1122,38 @@ function resetNormal(btn, mode) {
 function skipNormal(mode) { currentIndex++; loadPracticeWord(mode); }
 
 /* ==================== WRONG BANK RECORD KEEPING ==================== */
-// isWrongOnly: true = only increment wrongCount (for normal mode on first wrong answer)
-// isCorrect: true = no wrong happened, add correctCount
+// wrongBank key is always cleanWord (lowercase, no slashes)
+// isWrongOnly: only increment wrongCount (normal mode first wrong answer)
+// isCorrect: no wrong this session, add correctCount
 function recordWordResult(rawWord, isCorrect, isWrongOnly) {
-  const word = rawWord; // keep raw word as key
+  const cleanKey = rawWord.replace(/\//g, '').toLowerCase();
   const now = new Date().toISOString();
   const tx = db.transaction('wrongBank', 'readwrite');
   const store = tx.objectStore('wrongBank');
-  const req = store.get(word);
+  const req = store.get(cleanKey);
   req.onsuccess = (e) => {
-    const existing = e.target.result || { word, lastPractice: now, correctCount: 0, wrongCount: 0 };
+    const existing = e.target.result || { word: cleanKey, lastPractice: now, correctCount: 0, wrongCount: 0 };
     existing.lastPractice = now;
     if (isWrongOnly) {
       existing.wrongCount = (existing.wrongCount || 0) + 1;
     } else if (isCorrect) {
       existing.correctCount = (existing.correctCount || 0) + 1;
     } else {
-      // Had wrong earlier in session, then got correct → add wrong + don't add correct
       existing.wrongCount = (existing.wrongCount || 0) + 1;
     }
     store.put(existing);
   };
 }
 
-// For easy mode: record wrong when first wrong tap occurs (called once per word per session)
+// For easy mode: record wrong once per word per session
 function recordEasyWrong(rawWord) {
+  const cleanKey = rawWord.replace(/\//g, '').toLowerCase();
   const now = new Date().toISOString();
   const tx = db.transaction('wrongBank', 'readwrite');
   const store = tx.objectStore('wrongBank');
-  const req = store.get(rawWord);
+  const req = store.get(cleanKey);
   req.onsuccess = (e) => {
-    const existing = e.target.result || { word: rawWord, lastPractice: now, correctCount: 0, wrongCount: 0 };
+    const existing = e.target.result || { word: cleanKey, lastPractice: now, correctCount: 0, wrongCount: 0 };
     existing.lastPractice = now;
     existing.wrongCount = (existing.wrongCount || 0) + 1;
     store.put(existing);
