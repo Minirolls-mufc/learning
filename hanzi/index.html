@@ -295,11 +295,61 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .sync-status.ok{color:var(--green)}.sync-status.err{color:var(--red)}.sync-status.ing{color:var(--o1)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spin{display:inline-block;animation:spin .8s linear infinite}
+/* Floating sync toast */
+#sync-toast{
+  position:fixed;bottom:22px;right:18px;z-index:999;
+  display:none;align-items:center;gap:8px;
+  padding:9px 18px 9px 14px;border-radius:99px;
+  font-family:'Noto Sans SC',sans-serif;font-size:.8rem;font-weight:700;
+  box-shadow:0 4px 18px rgba(0,0,0,.2);pointer-events:none;
+  transition:opacity .4s ease;
+}
+#sync-toast.show{display:inline-flex}
+#sync-toast.ing{background:#fff5ec;color:var(--o1);border:1.5px solid var(--o3);}
+#sync-toast.ok{background:#22c55e;color:#fff;border:1.5px solid #16a34a;}
+#sync-toast.err{background:#ef4444;color:#fff;border:1.5px solid #dc2626;}
+@keyframes fadeOutToast{0%{opacity:1}60%{opacity:1}100%{opacity:0}}
+#sync-toast.fade-out{animation:fadeOutToast 2.5s ease forwards}
+
+/* ── LOADING SCREEN ── */
+#loading-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:#f0f4f8;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;
+  transition:opacity .5s ease;
+}
+#loading-screen.fade-out{opacity:0;pointer-events:none;}
+.ls-icon{
+  width:110px;height:110px;border-radius:28px;
+  background:linear-gradient(160deg,#ffd60a 0%,#f5b800 100%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'ZCOOL XiaoWei',cursive;font-size:58px;font-weight:900;color:#2d2d2d;
+  box-shadow:0 10px 0 #c9960a,0 14px 28px rgba(0,0,0,.18);
+  margin-bottom:32px;
+  animation:lsBounce 1s ease-in-out infinite alternate;
+}
+@keyframes lsBounce{
+  from{transform:translateY(0);box-shadow:0 10px 0 #c9960a,0 14px 28px rgba(0,0,0,.18);}
+  to{transform:translateY(-8px);box-shadow:0 18px 0 #c9960a,0 22px 36px rgba(0,0,0,.15);}
+}
+.ls-title{font-family:'ZCOOL XiaoWei',cursive;font-size:1.7rem;font-weight:900;color:#1a1a2e;letter-spacing:1px;margin-bottom:10px;}
+.ls-status{font-size:.88rem;color:#6b7280;font-weight:600;letter-spacing:.3px;min-height:1.3em;}
 
 /* ── WORKSHEET ── */
 </style>
 </head>
 <body>
+
+<!-- Loading screen -->
+<div id="loading-screen">
+  <div class="ls-icon">汉</div>
+  <div class="ls-title">Romeo 汉字加油站</div>
+  <div class="ls-status" id="ls-status">正在从云端同步数据…</div>
+</div>
+
+<!-- Floating sync toast -->
+<div id="sync-toast"><span class="toast-icon" id="toast-icon"></span><span id="toast-msg"></span></div>
 
 <!-- HOME -->
 <div id="page-home" class="page active">
@@ -560,7 +610,7 @@ const DEFAULT_STORE={
 };
 let store=JSON.parse(JSON.stringify(DEFAULT_STORE));
 
-function saveStore(){try{localStorage.setItem('romeo_hxkt_v1',JSON.stringify(store));}catch(e){}}
+function saveStore(){store._ts=store._ts||0;try{localStorage.setItem('romeo_hxkt_v1',JSON.stringify(store));}catch(e){}}
 let _autoSyncTimer=null;
 function scheduleAutoSync(){clearTimeout(_autoSyncTimer);_autoSyncTimer=setTimeout(()=>cloudUpload(true),4000);}
 function loadStore(){
@@ -571,13 +621,14 @@ function loadStore(){
       store.groups=p.groups||store.groups;
       store.superGroups=p.superGroups||[];
       store.ach=Object.assign({},DEFAULT_STORE.ach,p.ach||{});
+      store._ts=p._ts||0;
     }
   }catch(e){}
 }
 loadStore();
 
 /* achieve helpers */
-function achRecordLearned(ch,py){if(!store.ach.learnedChars.find(x=>x.ch===ch)){store.ach.learnedChars.push({ch,pinyin:py||'',ts:Date.now()});saveStore();}}
+function achRecordLearned(ch,py){if(!store.ach.learnedChars.find(x=>x.ch===ch)){store.ach.learnedChars.push({ch,pinyin:py||'',ts:Date.now()});saveStore();scheduleAutoSync();}}
 function achRecordMistake(ch,py){const ex=store.ach.mistakes.find(x=>x.ch===ch);if(ex){ex.count++;ex.ts=Date.now();}else store.ach.mistakes.push({ch,pinyin:py||'',count:1,ts:Date.now()});saveStore();}
 function achRecordCorrect(){store.ach.totalCorrect++;const today=new Date().toDateString();if(store.ach.lastDate!==today){const yest=new Date(Date.now()-86400000).toDateString();store.ach.streak=(store.ach.lastDate===yest)?store.ach.streak+1:1;store.ach.lastDate=today;}saveStore();}
 
@@ -1053,30 +1104,139 @@ async function generateWorksheet(){
 function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const isErr=P.groupId==='_mistakes';const grpName=isErr?'错词本':(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name;const a=document.createElement('a');a.download=`${grpName}_${P.mode==='simple'?'简单':'标准'}_练习纸.png`;a.href=canvas.toDataURL('image/png');a.click();}
 
 /* ━━━━━ CLOUD SYNC ━━━━━ */
-function setSyncStatus(msg,cls){const el=document.getElementById('sync-status');if(!el)return;el.innerHTML=msg;el.className='sync-status'+(cls?' '+cls:'');}
-function setSyncBtnsDisabled(v){['sync-upload-btn','sync-restore-btn','sync-export-btn','sync-import-btn'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=v;});}
-function cloudPayload(){return{groups:store.groups,superGroups:store.superGroups,ach:store.ach,_ts:Date.now(),_ver:'romeo_v1'};}
-async function cloudUpload(silent=false){
-  if(!silent){setSyncStatus('<span class="spin">⏳</span> 上传中…','ing');setSyncBtnsDisabled(true);}
-  try{const res=await fetch(`${CLOUD_BASE}/${CLOUD_BIN_ID}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':CLOUD_API_KEY,'X-Bin-Versioning':'false'},body:JSON.stringify(cloudPayload())});if(!res.ok)throw new Error(`HTTP ${res.status}`);const now=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});setSyncStatus(`✅ 已同步到云端 ${now}`,'ok');}catch(e){if(!silent)setSyncStatus(`❌ 上传失败：${e.message}`,'err');}finally{if(!silent)setSyncBtnsDisabled(false);}
+let _toastTimer=null;
+function showToast(msg,cls,autoDismiss=true){
+  const t=document.getElementById('sync-toast');
+  const ic=document.getElementById('toast-icon');
+  const tm=document.getElementById('toast-msg');
+  if(!t)return;
+  t.className='show '+cls;
+  ic.textContent=cls==='ok'?'✅':cls==='err'?'❌':'☁️';
+  tm.textContent=msg;
+  clearTimeout(_toastTimer);
+  t.classList.remove('fade-out');
+  if(autoDismiss){_toastTimer=setTimeout(()=>{t.classList.add('fade-out');setTimeout(()=>{t.className='';},2500);},2200);}
 }
+// Also update the in-page sync-status text (home page section)
+function setSyncStatus(msg,cls){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  el.innerHTML=msg;
+  el.className='sync-status'+(cls?' '+cls:'');
+}
+function setSyncBtnsDisabled(v){
+  ['sync-upload-btn','sync-restore-btn','sync-export-btn','sync-import-btn'].forEach(id=>{const b=document.getElementById(id);if(b)b.disabled=v;});
+}
+function cloudPayload(){
+  return{groups:store.groups,superGroups:store.superGroups,ach:store.ach,_ts:Date.now(),_ver:'romeo_v1'};
+}
+
+/* Upload local → cloud */
+async function cloudUpload(silent=false){
+  if(!silent){showToast('同步中…','ing',false);setSyncStatus('<span class="spin">☁️</span> 上传中…','ing');setSyncBtnsDisabled(true);}
+  try{
+    const res=await fetch(`${CLOUD_BASE}/${CLOUD_BIN_ID}`,{method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':CLOUD_API_KEY,'X-Bin-Versioning':'false'},
+      body:JSON.stringify(cloudPayload())});
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const now=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    showToast('已同步','ok');
+    setSyncStatus(`✅ 已同步到云端 ${now}`,'ok');
+  }catch(e){
+    if(!silent){showToast('同步失败','err',false);setSyncStatus(`❌ 上传失败：${e.message}`,'err');}
+  }finally{if(!silent)setSyncBtnsDisabled(false);}
+}
+
+/* Fetch cloud payload (shared helper) */
+async function fetchCloudPayload(){
+  const res=await fetch(`${CLOUD_BASE}/${CLOUD_BIN_ID}/latest`,{
+    headers:{'X-Master-Key':CLOUD_API_KEY,'X-Bin-Meta':'false'}});
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);
+  const data=await res.json();
+  return data.record||data;
+}
+
+/* Apply cloud payload to store */
+function applyCloudPayload(payload){
+  if(payload.groups)store.groups=payload.groups;
+  if(payload.superGroups)store.superGroups=payload.superGroups||[];
+  if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);
+}
+
+/* On page load: pull from cloud (cloud always wins), show loading screen */
+function hideLoadingScreen(){
+  const el=document.getElementById('loading-screen');
+  if(!el)return;
+  el.classList.add('fade-out');
+  setTimeout(()=>{el.style.display='none';},520);
+}
+function setLsStatus(msg){
+  const el=document.getElementById('ls-status');
+  if(el)el.textContent=msg;
+}
+async function autoSyncOnLoad(){
+  try{
+    const payload=await fetchCloudPayload();
+    if(!payload.groups&&!payload.ach)throw new Error('empty');
+    applyCloudPayload(payload);
+    store._ts=payload._ts||Date.now();
+    saveStore();
+    setLsStatus('✅ 同步完成');
+    showToast('已从云端同步','ok');
+    setSyncStatus('✅ 已从云端同步','ok');
+  }catch(e){
+    setLsStatus('⚠️ 无法连接云端，使用本地数据');
+    showToast('离线模式，使用本地数据','err');
+    setSyncStatus('⚠️ 无法连接云端，使用本地数据','err');
+    await new Promise(r=>setTimeout(r,900)); // brief pause so user sees the message
+  }
+  hideLoadingScreen();
+  renderHome();
+}
+
+/* Manual restore: always pulls from cloud, with confirm */
 async function cloudRestore(){
   if(!confirm('从云端恢复会覆盖当前本地数据，确定吗？'))return;
-  setSyncStatus('<span class="spin">⏳</span> 读取云端…','ing');setSyncBtnsDisabled(true);
-  try{const res=await fetch(`${CLOUD_BASE}/${CLOUD_BIN_ID}/latest`,{headers:{'X-Master-Key':CLOUD_API_KEY,'X-Bin-Meta':'false'}});if(!res.ok)throw new Error(`HTTP ${res.status}`);const data=await res.json();const payload=data.record||data;
+  showToast('同步中…','ing',false);setSyncStatus('<span class="spin">☁️</span> 读取云端…','ing');setSyncBtnsDisabled(true);
+  try{
+    const payload=await fetchCloudPayload();
     if(!payload.groups&&!payload.ach)throw new Error('云端数据格式不正确');
-    if(payload.groups)store.groups=payload.groups;
-    if(payload.superGroups)store.superGroups=payload.superGroups||[];
-    if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);
-    saveStore();renderHome();
-    const now=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});setSyncStatus(`✅ 恢复成功 ${now}，共${store.groups.length}个分组`,'ok');
-  }catch(e){setSyncStatus(`❌ 恢复失败：${e.message}`,'err');}finally{setSyncBtnsDisabled(false);}
+    applyCloudPayload(payload);store._ts=payload._ts||Date.now();saveStore();renderHome();
+    const now=new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    showToast('已同步','ok');
+    setSyncStatus(`✅ 恢复成功 ${now}，共${store.groups.length}个分组`,'ok');
+  }catch(e){
+    showToast('同步失败','err',false);setSyncStatus(`❌ 恢复失败：${e.message}`,'err');
+  }finally{setSyncBtnsDisabled(false);}
 }
-function exportLocal(){const blob=new Blob([JSON.stringify(cloudPayload(),null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);const d=new Date().toISOString().slice(0,10);a.download=`romeo_backup_${d}.json`;a.click();setSyncStatus('✅ 已导出到本地文件','ok');}
-function importLocal(){document.getElementById('import-file-input').click();}
-function onImportFile(ev){const file=ev.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=e=>{try{const payload=JSON.parse(e.target.result);if(!payload.groups&&!payload.ach)throw new Error('文件格式不正确');if(!confirm('导入将覆盖本地数据，确定吗？'))return;if(payload.groups)store.groups=payload.groups;if(payload.superGroups)store.superGroups=payload.superGroups||[];if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);saveStore();renderHome();setSyncStatus(`✅ 导入成功，共${store.groups.length}个分组`,'ok');}catch(err){setSyncStatus(`❌ 导入失败：${err.message}`,'err');}ev.target.value='';};reader.readAsText(file);}
 
-renderHome();
+function exportLocal(){
+  const blob=new Blob([JSON.stringify(cloudPayload(),null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  const d=new Date().toISOString().slice(0,10);a.download=`romeo_backup_${d}.json`;a.click();
+  setSyncStatus('✅ 已导出到本地文件','ok');
+}
+function importLocal(){document.getElementById('import-file-input').click();}
+function onImportFile(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const payload=JSON.parse(e.target.result);
+      if(!payload.groups&&!payload.ach)throw new Error('文件格式不正确');
+      if(!confirm('导入将覆盖本地数据，确定吗？'))return;
+      applyCloudPayload(payload);store._ts=payload._ts||Date.now();
+      saveStore();renderHome();
+      setSyncStatus(`✅ 导入成功，共${store.groups.length}个分组`,'ok');
+      cloudUpload(true); // push imported data to cloud
+    }catch(err){setSyncStatus(`❌ 导入失败：${err.message}`,'err');}
+    ev.target.value='';
+  };
+  reader.readAsText(file);
+}
+
+// On load: sync from cloud (cloud always wins), show loading screen
+autoSyncOnLoad();
 </script>
 </body>
 </html>
