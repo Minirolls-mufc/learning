@@ -68,15 +68,29 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .home-body{flex:1;overflow-y:auto;padding:16px 14px 24px}
 .sec-label{font-size:.62rem;letter-spacing:3px;color:var(--muted);margin-bottom:9px;font-weight:700;text-transform:uppercase;}
 .home-sync-section{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:14px 14px 10px;margin-top:4px;box-shadow:0 2px 7px rgba(255,107,0,.04);}
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.nav-card{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:18px 12px 16px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:6px;min-height:104px;box-shadow:0 2px 8px rgba(255,107,0,.05);position:relative;overflow:hidden;}
-.nav-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:var(--grad-hero);}
-.nav-card:hover{transform:translateY(-2px);box-shadow:0 8px 22px rgba(255,107,0,.12)}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.nav-card{
+  background:var(--paper);border:2px solid var(--border);border-radius:20px;
+  padding:28px 16px 24px;cursor:pointer;transition:all .2s;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;gap:10px;min-height:140px;
+  box-shadow:0 2px 12px rgba(255,107,0,.06);position:relative;overflow:hidden;
+}
+.nav-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;border-radius:20px 20px 0 0;background:var(--grad-hero);}
+.nav-card:nth-child(1){border-color:#c7daff;background:linear-gradient(160deg,#f0f5ff 0%,#fff 70%)}
+.nav-card:nth-child(1)::before{background:linear-gradient(90deg,#4f7ef8,#7c3aed)}
+.nav-card:nth-child(2){border-color:#fde68a;background:linear-gradient(160deg,#fffbea 0%,#fff 70%)}
+.nav-card:nth-child(2)::before{background:linear-gradient(90deg,#f59e0b,#fb923c)}
+.nav-card:nth-child(3){border-color:#a7f3d0;background:linear-gradient(160deg,#f0fdf6 0%,#fff 70%)}
+.nav-card:nth-child(3)::before{background:linear-gradient(90deg,#22c55e,#14b8a6)}
+.nav-card:nth-child(4){border-color:#ddd6fe;background:linear-gradient(160deg,#faf5ff 0%,#fff 70%)}
+.nav-card:nth-child(4)::before{background:linear-gradient(90deg,#8b5cf6,#ec4899)}
+.nav-card:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.1)}
 .nav-card:active{transform:scale(.97)}
-.nav-icon{font-size:1.65rem;line-height:1}
-.nav-name{font-weight:900;font-size:.88rem;color:var(--ink)}
-.nav-desc{font-size:.66rem;color:var(--muted);line-height:1.35}
-.nav-badge{position:absolute;top:7px;right:7px;background:var(--o4);color:var(--ink);font-size:.52rem;font-weight:900;padding:2px 6px;border-radius:99px;}
+.nav-icon{font-size:2.2rem;line-height:1}
+.nav-name{font-weight:900;font-size:1rem;color:var(--ink)}
+.nav-desc{font-size:.72rem;color:var(--muted);line-height:1.45}
+.nav-badge{position:absolute;top:9px;right:9px;background:var(--o4);color:var(--ink);font-size:.55rem;font-weight:900;padding:2px 7px;border-radius:99px;}
 
 /* ── SUPER GROUP TAB BAR (shared between gpick / prac-grp) ── */
 .sg-tabbar{
@@ -364,37 +378,37 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 
 <!-- PRACTICE -->
 <div id="page-practice" class="page">
-  <!-- Step 1 -->
+  <!-- Step 1: Group picker -->
   <div id="prac-step1" class="prac-step active">
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
-      <div class="tb-title">选择模式</div>
-      <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div>
-    </div>
-    <div class="prac-sel-body">
-      <div class="prac-modes">
-        <div class="prac-mode-card active" id="pmc-simple" onclick="selectPracMode('simple')">
-          <span class="pm-icon">🌟</span><span class="pm-name">简单模式</span><span class="pm-desc">结构字展示一个部件<br>补写出另一半</span>
-        </div>
-        <div class="prac-mode-card" id="pmc-standard" onclick="selectPracMode('standard')">
-          <span class="pm-icon">🎯</span><span class="pm-name">标准模式</span><span class="pm-desc">只显示拼音<br>完整默写整个字</span>
-        </div>
-      </div>
-      <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="pracGoStep(2)">选择分组 →</button>
-    </div>
-  </div>
-  <!-- Step 2 -->
-  <div id="prac-step2" class="prac-step">
-    <div class="topbar">
-      <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
-      <div class="tb-title" id="prac-step2-title">选择分组</div>
-      <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">← 返回</button></div>
+      <div class="tb-title">选择分组</div>
+      <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">&#8592; 首页</button></div>
     </div>
     <div class="sg-tabbar" id="prac-tabbar"></div>
     <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
     <div class="prac-grp-footer">
-      <button class="btn btn-ghost" onclick="generateWorksheet()" id="btn-gen-sheet">📄 生成练习纸</button>
-      <button class="btn btn-primary" onclick="startPractice()">✏️ 在线练习 →</button>
+      <button class="btn btn-ghost" onclick="generateWorksheet()" id="btn-gen-sheet">&#128196; 生成练习纸</button>
+      <button class="btn btn-primary" onclick="pracGoStep(2)">选择模式 &#8594;</button>
+    </div>
+  </div>
+  <!-- Step 2: Mode selector -->
+  <div id="prac-step2" class="prac-step">
+    <div class="topbar">
+      <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
+      <div class="tb-title">选择模式</div>
+      <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">&#8592; 返回</button></div>
+    </div>
+    <div class="prac-sel-body">
+      <div class="prac-modes">
+        <div class="prac-mode-card active" id="pmc-simple" onclick="selectPracMode('simple')">
+          <span class="pm-icon">&#127775;</span><span class="pm-name">简单模式</span><span class="pm-desc">结构字展示一个部件<br>补写出另一半</span>
+        </div>
+        <div class="prac-mode-card" id="pmc-standard" onclick="selectPracMode('standard')">
+          <span class="pm-icon">&#127919;</span><span class="pm-name">标准模式</span><span class="pm-desc">只显示拼音<br>完整默写整个字</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="startPractice()">&#9999; 开始练习 &#8594;</button>
     </div>
   </div>
   <!-- Step 3 -->
@@ -756,7 +770,7 @@ let P={mode:'simple',groupId:null,queue:[],idx:0,chars:[]};
 function pracGoStep(n){
   document.querySelectorAll('.prac-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('prac-step'+n).classList.add('active');
-  if(n===2){if(!P.groupId&&store.groups.length)P.groupId=store.groups[0].id;renderGpick('prac');}
+  if(n===1){if(!P.groupId&&store.groups.length)P.groupId=store.groups[0].id;renderGpick('prac');}
 }
 function selectPracMode(m){P.mode=m;document.getElementById('pmc-simple').classList.toggle('active',m==='simple');document.getElementById('pmc-standard').classList.toggle('active',m==='standard');}
 function startPractice(){
@@ -830,7 +844,7 @@ function pracGoPrev(){if(P.idx<=0)return;killPracWriters();P.idx--;loadPracEntry
 function pracGoNext(){if(P.idx>=P.queue.length-1)return;killPracWriters();P.idx++;loadPracEntry();}
 function pracSkip(){pracGoNext();}
 function pracRestart(){killPracWriters();P.idx=0;for(let i=P.queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[P.queue[i],P.queue[j]]=[P.queue[j],P.queue[i]];}loadPracEntry();}
-function exitPractice(){killPracWriters();pracGoStep(2);}
+function exitPractice(){killPracWriters();pracGoStep(1);}
 function killPracWriters(){(P.chars||[]).forEach(cs=>{if(cs.hwWriter){try{cs.hwWriter.cancelAnimation();cs.hwWriter.cancelQuiz();}catch(e){}cs.hwWriter=null;}});}
 function setPracSt(ci,msg,cls){const el=document.getElementById(`ps-${ci}`);if(!el)return;el.textContent=msg;el.className='prac-char-status'+(cls?' '+cls:'');}
 
@@ -971,7 +985,7 @@ function deleteSuperGroup(){if(!confirm('确定删除该超级分组？（分组
 function autoPinyin(s){if(window.pinyinPro){try{return pinyinPro.pinyin(s,{toneType:'symbol',type:'string'});}catch(e){}}return '';}
 
 /* ━━━━━ WORKSHEET ━━━━━ */
-const WS={W:1240,H:1754,MX:72,MY:80,TITLE_H:68,INFO_H:66,ROW_GAP:28,CELL:108,CELL_GAP:8,GROUP_GAP:28,PINYIN_H:30};
+const WS={W:1240,H:1754,MX:72,MY:80,TITLE_H:68,INFO_H:66,ROW_GAP:36,CELL:120,CELL_GAP:10,GROUP_GAP:32,PINYIN_H:34};
 async function generateWorksheet(){
   const isErr=P.groupId==='_mistakes';let entries=[];
   if(isErr){entries=store.ach.mistakes.map(m=>({type:'char',hanzi:m.ch,pinyin:m.pinyin,mode:'simple',redRange:''}));}
@@ -985,12 +999,54 @@ async function generateWorksheet(){
   canvas.width=WS.W;canvas.height=WS.H;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,WS.W,WS.H);
   ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${grpName} · ${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`,WS.W/2,WS.MY+46);
   const iy=WS.MY+WS.TITLE_H+28;ctx.font=`22px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='left';ctx.fillStyle='#222';ctx.fillText('姓名：',WS.MX+20,iy);ctx.strokeStyle='#444';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(WS.MX+95,iy+3);ctx.lineTo(WS.MX+310,iy+3);ctx.stroke();ctx.fillText('班级：',WS.W/2+30,iy);ctx.beginPath();ctx.moveTo(WS.W/2+105,iy+3);ctx.lineTo(WS.W-WS.MX-20,iy+3);ctx.stroke();
-  const CELL=WS.CELL,PINY=WS.PINYIN_H;let curX=WS.MX,curY=WS.MY+WS.TITLE_H+WS.INFO_H+20;
+  const CELL=WS.CELL,PINY=WS.PINYIN_H;
+  // Stroke padding: same as HanziWriter's default padding ratio (~12%)
+  const STROKE_PAD=Math.round(CELL*0.1);
+  let curX=WS.MX,curY=WS.MY+WS.TITLE_H+WS.INFO_H+24;
   function needsNewRow(w){return curX+w>WS.W-WS.MX;}function newRow(){curX=WS.MX;curY+=PINY+CELL+WS.ROW_GAP;}
-  function drawTzg(x,y,sz){ctx.save();ctx.strokeStyle='#2d2d2d';ctx.lineWidth=1.6;ctx.strokeRect(x,y,sz,sz);ctx.setLineDash([5,4]);ctx.strokeStyle='#b0b0b0';ctx.lineWidth=0.9;ctx.beginPath();ctx.moveTo(x+sz/2,y);ctx.lineTo(x+sz/2,y+sz);ctx.stroke();ctx.beginPath();ctx.moveTo(x,y+sz/2);ctx.lineTo(x+sz,y+sz/2);ctx.stroke();ctx.strokeStyle='#d0d0d0';ctx.lineWidth=0.6;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+sz,y+sz);ctx.stroke();ctx.beginPath();ctx.moveTo(x+sz,y);ctx.lineTo(x,y+sz);ctx.stroke();ctx.restore();}
-  function drawStroke(pathD,color,cx,cy,sz){const sc=sz/900;ctx.save();ctx.translate(cx,cy+sz);ctx.scale(sc,-sc);ctx.fillStyle=color;try{ctx.fill(new Path2D(pathD));}catch(e){}ctx.restore();}
-  function drawPy(txt,x,y,totalW){ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`19px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(txt,x+totalW/2,y+20);ctx.restore();}
-  for(const entry of entryItems){const n=entry.chars.length;const wordW=n*CELL+(n-1)*WS.CELL_GAP;if(needsNewRow(wordW))newRow();if(curY+PINY+CELL>WS.H-WS.MY-20)break;drawPy(entry.pinyins.join('  '),curX,curY,wordW);entry.chars.forEach((ci2,ci)=>{const cx=curX+ci*(CELL+WS.CELL_GAP);const cy=curY+PINY;drawTzg(cx,cy,CELL);if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);const redIdx=[],blueIdx=[];for(let k=1;k<=ns;k++){(rs.has(k)?redIdx:blueIdx).push(k-1);}const showRed=blueIdx.length===0||(redIdx.length>0&&Math.random()<.5);const shown=showRed?redIdx:blueIdx;const col=showRed?'#dc2626':'#1d4ed8';shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL));}});curX+=wordW+WS.GROUP_GAP;}
+  function drawTzg(x,y,sz){
+    ctx.save();ctx.strokeStyle='#2d2d2d';ctx.lineWidth=1.6;ctx.strokeRect(x,y,sz,sz);
+    ctx.setLineDash([5,4]);ctx.strokeStyle='#b0b0b0';ctx.lineWidth=0.9;
+    ctx.beginPath();ctx.moveTo(x+sz/2,y);ctx.lineTo(x+sz/2,y+sz);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x,y+sz/2);ctx.lineTo(x+sz,y+sz/2);ctx.stroke();
+    ctx.strokeStyle='#d0d0d0';ctx.lineWidth=0.6;
+    ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+sz,y+sz);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(x+sz,y);ctx.lineTo(x,y+sz);ctx.stroke();
+    ctx.restore();
+  }
+  // Draw stroke with padding so character doesn't touch cell edges
+  function drawStroke(pathD,color,cx,cy,sz,pad){
+    const inner=sz-pad*2;const sc=inner/900;
+    ctx.save();ctx.translate(cx+pad,cy+sz-pad);ctx.scale(sc,-sc);
+    ctx.fillStyle=color;try{ctx.fill(new Path2D(pathD));}catch(e){}ctx.restore();
+  }
+  // Draw pinyin centered above each individual cell
+  function drawCellPy(txt,cx,cy,cellSz){
+    ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`18px 'Noto Sans SC',Arial,sans-serif`;
+    ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+22);ctx.restore();
+  }
+  for(const entry of entryItems){
+    const n=entry.chars.length;const wordW=n*CELL+(n-1)*WS.CELL_GAP;
+    if(needsNewRow(wordW))newRow();if(curY+PINY+CELL>WS.H-WS.MY-20)break;
+    // Draw per-char pinyin centered over each cell
+    entry.chars.forEach((ci2,ci)=>{
+      const cx=curX+ci*(CELL+WS.CELL_GAP);
+      const cy=curY;
+      drawCellPy(ci2.pinyin||'',cx,cy,CELL);
+    });
+    entry.chars.forEach((ci2,ci)=>{
+      const cx=curX+ci*(CELL+WS.CELL_GAP);const cy=curY+PINY;
+      drawTzg(cx,cy,CELL);
+      if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
+        const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);
+        const redIdx=[],blueIdx=[];for(let k=1;k<=ns;k++){(rs.has(k)?redIdx:blueIdx).push(k-1);}
+        const showRed=blueIdx.length===0||(redIdx.length>0&&Math.random()<.5);
+        const shown=showRed?redIdx:blueIdx;const col=showRed?'#dc2626':'#1d4ed8';
+        shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL,STROKE_PAD));
+      }
+    });
+    curX+=wordW+WS.GROUP_GAP;
+  }
   ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,WS.H-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
 }
