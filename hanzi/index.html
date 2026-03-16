@@ -433,7 +433,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
       <div class="tb-title">选择分组</div>
-      <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">&#8592; 首页</button></div>
+      <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
     </div>
     <div class="sg-tabbar" id="prac-tabbar"></div>
     <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
@@ -447,7 +447,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
       <div class="tb-title">选择模式</div>
-      <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">&#8592; 返回</button></div>
+      <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">← 返回</button></div>
     </div>
     <div class="prac-sel-body">
       <div class="prac-modes">
@@ -500,13 +500,13 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
     <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
     <div class="tb-title">字词管理</div>
     <div class="tb-right" id="manage-tb-right">
-      <button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button>
+      <button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button>
       <button class="tb-btn" onclick="showPage('home')">🏠 首页</button>
     </div>
   </div>
   <div class="manage-tabs">
-    <button class="manage-tab active" id="mtab-groups" onclick="switchManageTab('groups')">📝 分组管理</button>
-    <button class="manage-tab" id="mtab-sg" onclick="switchManageTab('sg')">🗂 分类管理</button>
+    <button class="manage-tab active" id="mtab-groups" onclick="switchManageTab('groups')">📝 字词管理</button>
+    <button class="manage-tab" id="mtab-sg" onclick="switchManageTab('sg')">🗂 分组管理</button>
   </div>
   <div class="manage-body" id="manage-body"></div>
 </div>
@@ -536,8 +536,8 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 <!-- MODAL: group -->
 <div class="modal-overlay" id="modal-group">
   <div class="modal">
-    <div class="mhdr"><div class="mtitle" id="mgtitle">新建分组</div><button class="mclose" onclick="closeModal('modal-group')">✕</button></div>
-    <div class="mbody"><div class="frow"><div class="flabel">分组名称</div><input class="finput" id="mg-name" placeholder="如：一年级上册第一单元"></div></div>
+    <div class="mhdr"><div class="mtitle" id="mgtitle">新建词组</div><button class="mclose" onclick="closeModal('modal-group')">✕</button></div>
+    <div class="mbody"><div class="frow"><div class="flabel">分组名称</div><input class="finput" id="mg-name" placeholder="如：第一单元、Unit 1"></div></div>
     <div class="mfooter">
       <button class="btn btn-danger btn-sm" id="mg-del" onclick="deleteGroup()" style="display:none;margin-right:auto">🗑 删除</button>
       <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-group')">取消</button>
@@ -549,9 +549,9 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 <!-- MODAL: supergroup -->
 <div class="modal-overlay" id="modal-sg">
   <div class="modal">
-    <div class="mhdr"><div class="mtitle" id="sgtitle">新建超级分组</div><button class="mclose" onclick="closeModal('modal-sg')">✕</button></div>
+    <div class="mhdr"><div class="mtitle" id="sgtitle">新建分组</div><button class="mclose" onclick="closeModal('modal-sg')">✕</button></div>
     <div class="mbody">
-      <div class="frow"><div class="flabel">名称（如：一年级、Year 3）</div><input class="finput" id="sg-name" placeholder="如：一年级"></div>
+      <div class="frow"><div class="flabel">名称（如：一年级、Year 3）</div><input class="finput" id="sg-name" placeholder="如：一年级、Year 3"></div>
       <div class="frow">
         <div class="flabel">包含哪些分组</div>
         <div class="sg-grp-list" id="sg-grp-checklist"></div>
@@ -937,9 +937,9 @@ function switchManageTab(t){
   // Update right button
   const rightEl=document.getElementById('manage-tb-right');
   if(t==='groups'){
-    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
+    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   } else {
-    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSuperGroup()">＋ 超级分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
+    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSuperGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   }
   renderManageBody();
 }
@@ -949,7 +949,7 @@ function renderManage(){
   document.getElementById('mtab-groups').classList.add('active');
   document.getElementById('mtab-sg').classList.remove('active');
   const rightEl=document.getElementById('manage-tb-right');
-  rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
+  rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   renderManageBody();
 }
 function renderManageBody(){
@@ -1005,8 +1005,8 @@ function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim()
 function deleteEntry(){if(!confirm('删除？'))return;const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;g.entries.splice(ms.entryIdx,1);saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
 
 /* ━━━━━ MODAL: group ━━━━━ */
-function openAddGroup(){ms.editGroupId=null;document.getElementById('mgtitle').textContent='新建分组';document.getElementById('mg-name').value='';document.getElementById('mg-del').style.display='none';openModal('modal-group');}
-function openEditGroup(gid){const g=store.groups.find(x=>x.id===gid);if(!g)return;ms.editGroupId=gid;document.getElementById('mgtitle').textContent='编辑分组';document.getElementById('mg-name').value=g.name;document.getElementById('mg-del').style.display='inline-flex';openModal('modal-group');}
+function openAddGroup(){ms.editGroupId=null;document.getElementById('mgtitle').textContent='新建词组';document.getElementById('mg-name').value='';document.getElementById('mg-del').style.display='none';openModal('modal-group');}
+function openEditGroup(gid){const g=store.groups.find(x=>x.id===gid);if(!g)return;ms.editGroupId=gid;document.getElementById('mgtitle').textContent='编辑词组';document.getElementById('mg-name').value=g.name;document.getElementById('mg-del').style.display='inline-flex';openModal('modal-group');}
 function saveGroup(){const name=document.getElementById('mg-name').value.trim();if(!name){alert('请输入名称');return;}if(ms.editGroupId){const g=store.groups.find(x=>x.id===ms.editGroupId);if(g)g.name=name;}else store.groups.push({id:'g'+Date.now(),name,entries:[]});saveStore();scheduleAutoSync();closeModal('modal-group');renderManageBody();}
 function deleteGroup(){if(!confirm('确定删除整个分组？'))return;const gid=ms.editGroupId;store.groups=store.groups.filter(x=>x.id!==gid);store.superGroups.forEach(sg=>{sg.groupIds=(sg.groupIds||[]).filter(id=>id!==gid);});saveStore();scheduleAutoSync();closeModal('modal-group');renderManageBody();}
 
@@ -1021,8 +1021,8 @@ function buildSgChecklist(selectedIds){
     list.appendChild(item);
   });
 }
-function openAddSuperGroup(){ms.editSgId=null;document.getElementById('sgtitle').textContent='新建超级分组';document.getElementById('sg-name').value='';document.getElementById('sg-del').style.display='none';buildSgChecklist([]);openModal('modal-sg');}
-function openEditSuperGroup(sgid){const sg=store.superGroups.find(x=>x.id===sgid);if(!sg)return;ms.editSgId=sgid;document.getElementById('sgtitle').textContent='编辑超级分组';document.getElementById('sg-name').value=sg.name;document.getElementById('sg-del').style.display='inline-flex';buildSgChecklist(sg.groupIds||[]);openModal('modal-sg');}
+function openAddSuperGroup(){ms.editSgId=null;document.getElementById('sgtitle').textContent='新建分组';document.getElementById('sg-name').value='';document.getElementById('sg-del').style.display='none';buildSgChecklist([]);openModal('modal-sg');}
+function openEditSuperGroup(sgid){const sg=store.superGroups.find(x=>x.id===sgid);if(!sg)return;ms.editSgId=sgid;document.getElementById('sgtitle').textContent='编辑分组';document.getElementById('sg-name').value=sg.name;document.getElementById('sg-del').style.display='inline-flex';buildSgChecklist(sg.groupIds||[]);openModal('modal-sg');}
 function saveSuperGroup(){
   const name=document.getElementById('sg-name').value.trim();if(!name){alert('请输入名称');return;}
   const groupIds=Array.from(document.querySelectorAll('#sg-grp-checklist input[type=checkbox]:checked')).map(cb=>cb.value);
