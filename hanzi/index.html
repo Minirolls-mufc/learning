@@ -37,8 +37,8 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .tb-brand-sub{font-size:.72rem;color:var(--muted);letter-spacing:1px;font-weight:600;}
 .tb-title{flex:1;text-align:center;font-family:'ZCOOL XiaoWei',cursive;font-size:.95rem;font-weight:600;letter-spacing:2px;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
-.tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:4px;height:30px;padding:0 11px;border-radius:99px;border:1.5px solid var(--border);background:var(--paper);font-family:inherit;font-size:.72rem;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;white-space:nowrap;}
-.tb-btn:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
+.tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:36px;padding:0 16px;border-radius:12px;border:none;background:#f1f3f5;font-family:inherit;font-size:.8rem;font-weight:700;color:#4b5563;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.tb-btn:hover{background:#e5e7eb;color:var(--ink)}
 .tb-icon{width:30px;height:30px;border-radius:99px;border:1.5px solid var(--border);background:var(--paper);display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;transition:all .15s;color:var(--ink2);}
 .tb-icon:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
 
@@ -286,9 +286,9 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .sync-section{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;margin:12px 14px 0;padding:14px 16px;box-shadow:0 2px 7px rgba(255,107,0,.05);}
 .sync-label{font-size:.6rem;letter-spacing:3px;font-weight:700;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
 .sync-btns{display:flex;gap:8px;flex-wrap:wrap}
-.sync-btn{flex:1;min-width:80px;display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--paper);font-family:inherit;font-size:.76rem;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;white-space:nowrap;}
+.sync-btn{flex:1;min-width:80px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:14px 12px;border-radius:12px;border:1.5px solid var(--border);background:var(--paper);font-family:inherit;font-size:.82rem;font-weight:700;color:var(--ink2);cursor:pointer;transition:all .15s;white-space:nowrap;}
 .sync-btn:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
-.sync-btn.primary{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(255,107,0,.28)}
+.sync-btn.primary{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(255,107,0,.32)}
 .sync-btn.primary:hover{filter:brightness(1.08)}
 .sync-btn:disabled{opacity:.45;cursor:not-allowed;pointer-events:none}
 .sync-status{font-size:.7rem;color:var(--muted);margin-top:8px;min-height:1.1em;display:flex;align-items:center;gap:5px;}
@@ -322,16 +322,16 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 #loading-screen.fade-out{opacity:0;pointer-events:none;}
 .ls-icon{
   width:110px;height:110px;border-radius:28px;
-  background:linear-gradient(160deg,#ffd60a 0%,#f5b800 100%);
+  background:linear-gradient(160deg,#ff8c38 0%,#ff6b00 100%);
   display:flex;align-items:center;justify-content:center;
-  font-family:'ZCOOL XiaoWei',cursive;font-size:58px;font-weight:900;color:#2d2d2d;
-  box-shadow:0 10px 0 #c9960a,0 14px 28px rgba(0,0,0,.18);
+  font-family:'ZCOOL XiaoWei',cursive;font-size:58px;font-weight:900;color:#fff;
+  box-shadow:0 10px 0 #cc5500,0 14px 28px rgba(255,107,0,.3);
   margin-bottom:32px;
   animation:lsBounce 1s ease-in-out infinite alternate;
 }
 @keyframes lsBounce{
-  from{transform:translateY(0);box-shadow:0 10px 0 #c9960a,0 14px 28px rgba(0,0,0,.18);}
-  to{transform:translateY(-8px);box-shadow:0 18px 0 #c9960a,0 22px 36px rgba(0,0,0,.15);}
+  from{transform:translateY(0);box-shadow:0 10px 0 #cc5500,0 14px 28px rgba(255,107,0,.3);}
+  to{transform:translateY(-8px);box-shadow:0 18px 0 #cc5500,0 22px 36px rgba(255,107,0,.2);}
 }
 .ls-title{font-family:'ZCOOL XiaoWei',cursive;font-size:1.7rem;font-weight:900;color:#1a1a2e;letter-spacing:1px;margin-bottom:10px;}
 .ls-status{font-size:.88rem;color:#6b7280;font-weight:600;letter-spacing:.3px;min-height:1.3em;}
@@ -397,7 +397,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   <div class="topbar">
     <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
     <div class="tb-title">选择分组</div>
-    <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div>
+    <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
   </div>
   <div class="sg-tabbar" id="gpick-tabbar"></div>
   <div class="gpick-body"><div class="gpick-grid" id="gpick-grid"></div></div>
@@ -408,7 +408,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   <div class="topbar">
     <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
     <div class="tb-title" id="study-group-name">学 习</div>
-    <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div>
+    <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
   </div>
   <div class="study-body">
     <div class="entry-nav left"><button class="nav-arrow" id="btn-prev-entry" onclick="goPrevEntry()">‹</button></div>
@@ -489,7 +489,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
   <div class="topbar">
     <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
     <div class="tb-title">成 就</div>
-    <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">← 首页</button></div>
+    <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
   </div>
   <div class="ach-body" id="ach-body"></div>
 </div>
@@ -501,12 +501,12 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
     <div class="tb-title">字词管理</div>
     <div class="tb-right" id="manage-tb-right">
       <button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button>
-      <button class="tb-btn" onclick="showPage('home')">← 首页</button>
+      <button class="tb-btn" onclick="showPage('home')">🏠 首页</button>
     </div>
   </div>
   <div class="manage-tabs">
-    <button class="manage-tab active" id="mtab-groups" onclick="switchManageTab('groups')">📝 字词分组</button>
-    <button class="manage-tab" id="mtab-sg" onclick="switchManageTab('sg')">🗂 超级分组</button>
+    <button class="manage-tab active" id="mtab-groups" onclick="switchManageTab('groups')">📝 分组管理</button>
+    <button class="manage-tab" id="mtab-sg" onclick="switchManageTab('sg')">🗂 分类管理</button>
   </div>
   <div class="manage-body" id="manage-body"></div>
 </div>
@@ -937,9 +937,9 @@ function switchManageTab(t){
   // Update right button
   const rightEl=document.getElementById('manage-tb-right');
   if(t==='groups'){
-    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">← 首页</button>';
+    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   } else {
-    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSuperGroup()">＋ 超级分组</button><button class="tb-btn" onclick="showPage(\'home\')">← 首页</button>';
+    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSuperGroup()">＋ 超级分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   }
   renderManageBody();
 }
@@ -949,7 +949,7 @@ function renderManage(){
   document.getElementById('mtab-groups').classList.add('active');
   document.getElementById('mtab-sg').classList.remove('active');
   const rightEl=document.getElementById('manage-tb-right');
-  rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">← 首页</button>';
+  rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   renderManageBody();
 }
 function renderManageBody(){
