@@ -6,11 +6,11 @@
 <title>Romeo 汉字课堂</title>
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.24.2/dist/index.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@400;500;700;900&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --ink:#3d1c02;--ink2:#7c3a0e;--muted:#b07040;--border:#fdd9b5;
-  --bg:#fff8f0;--paper:#ffffff;
+  --bg:#fdf6ee;--paper:#ffffff;--surface:#fff;
   --o1:#ff6b00;--o2:#ff8c38;--o3:#ffb366;--o4:#ffd199;
   --red:#ef4444;--blue:#3b82f6;--green:#22c55e;--gold:#f59e0b;
   --grad-hero:linear-gradient(135deg,#ff6b00 0%,#ff9a3c 100%);
@@ -19,7 +19,7 @@
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
+body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink);display:flex;flex-direction:column}
 .page{display:none;flex-direction:column;height:100%;overflow:hidden;animation:fadeUp .22s ease both}
 .page.active{display:flex}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -65,10 +65,10 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .home-brand-icon{width:36px;height:36px;border-radius:10px;background:var(--grad-btn);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:1.1rem;color:#fff;box-shadow:0 3px 10px rgba(255,107,0,.35);font-family:'ZCOOL XiaoWei',cursive;}
 .home-brand-title{font-family:'ZCOOL XiaoWei',cursive;font-size:1.05rem;font-weight:700;letter-spacing:1px;color:var(--ink);}
 .home-brand-sub{font-size:.63rem;color:var(--muted);letter-spacing:.5px;margin-top:1px}
-.home-body{flex:1;overflow-y:auto;padding:16px 14px 24px}
+.home-body{flex:1;overflow-y:auto;padding:20px 16px 32px}
 .sec-label{font-size:.62rem;letter-spacing:3px;color:var(--muted);margin-bottom:9px;font-weight:700;text-transform:uppercase;}
 .home-sync-section{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:14px 14px 10px;margin-top:4px;box-shadow:0 2px 7px rgba(255,107,0,.04);}
-.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.nav-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
 .nav-card{
   background:var(--paper);border:2px solid var(--border);border-radius:20px;
   padding:28px 16px 24px;cursor:pointer;transition:all .2s;
@@ -109,9 +109,9 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .sg-tab:hover:not(.active){color:var(--ink2);background:rgba(255,107,0,.04);}
 
 /* ── GROUP PICKER ── */
-.gpick-body{flex:1;overflow-y:auto;padding:16px 14px 28px}
-.gpick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
-.gpick-card{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;padding:20px 15px 16px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:8px;box-shadow:0 2px 7px rgba(255,107,0,.05);position:relative;overflow:hidden;}
+.gpick-body{flex:1;overflow-y:auto;padding:20px 16px 32px}
+.gpick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.gpick-card{background:var(--paper);border:1.5px solid var(--border);border-radius:18px;padding:22px 18px 18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:10px;box-shadow:0 3px 12px rgba(255,107,0,.07);position:relative;overflow:hidden;}
 .gpick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-hero);border-radius:16px 16px 0 0}
 .gpick-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(255,107,0,.13)}
 .gpick-card:active{transform:scale(.97)}
@@ -158,7 +158,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 .prac-mode-card .pm-name{font-weight:900;font-size:.95rem;color:var(--ink);display:block}
 .prac-mode-card .pm-desc{font-size:.7rem;color:var(--muted);line-height:1.5;margin-top:5px;display:block}
 .prac-mode-card.active .pm-name{color:var(--o1)}
-.prac-grp-body{flex:1;overflow-y:auto;padding:16px 14px 80px}
+.prac-grp-body{flex:1;overflow-y:auto;padding:20px 16px 80px}
 .prac-grp-footer{flex-shrink:0;padding:10px 14px;background:var(--paper);border-top:1.5px solid var(--border);display:flex;justify-content:center;gap:10px;}
 .prac-quiz-body{flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 58px;gap:8px;position:relative;}
 .prac-chars-row{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
@@ -179,7 +179,7 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 
 /* ── ACHIEVE ── */
 #page-achieve{background:var(--bg)}
-.ach-body{flex:1;overflow-y:auto;padding:14px 14px 28px}
+.ach-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
 .ach-summary{display:flex;gap:8px;margin-bottom:14px}
 .ach-stat{flex:1;background:var(--paper);border:1.5px solid var(--border);border-radius:14px;padding:14px 10px;text-align:center;box-shadow:0 2px 7px rgba(255,107,0,.05);display:flex;flex-direction:column;align-items:center;gap:3px;}
 .ach-stat-icon{font-size:1.5rem}
@@ -218,14 +218,14 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 
 /* ── MANAGE ── */
 #page-manage{background:var(--bg)}
-.manage-body{flex:1;overflow-y:auto;padding:12px 14px 28px}
+.manage-body{flex:1;overflow-y:auto;padding:16px 16px 32px}
 /* Manage tab bar */
 .manage-tabs{display:flex;gap:0;flex-shrink:0;padding:0 14px;background:var(--paper);border-bottom:2px solid var(--border);}
 .manage-tab{padding:11px 18px;border:none;border-bottom:2.5px solid transparent;background:transparent;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;margin-bottom:-2px;}
 .manage-tab.active{color:var(--o1);border-bottom-color:var(--o1);}
 .manage-tab:hover:not(.active){color:var(--ink2)}
 /* Group cards in manage */
-.wm-group{background:var(--paper);border:1.5px solid var(--border);border-radius:14px;margin-bottom:10px;overflow:hidden;box-shadow:0 2px 6px rgba(255,107,0,.04)}
+.wm-group{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;box-shadow:0 3px 12px rgba(255,107,0,.06)}
 .wm-gh{display:flex;align-items:center;gap:7px;padding:10px 13px;border-bottom:1.5px solid var(--border);background:var(--bg)}
 .wm-gname{flex:1;font-weight:900;font-size:.86rem;color:var(--ink)}
 .wm-gcnt{font-size:.64rem;color:var(--muted);background:var(--border);padding:2px 7px;border-radius:99px}
@@ -537,7 +537,10 @@ body{font-family:'Noto Sans SC',sans-serif;background:var(--bg);color:var(--ink)
 <div class="modal-overlay" id="modal-group">
   <div class="modal">
     <div class="mhdr"><div class="mtitle" id="mgtitle">新建词组</div><button class="mclose" onclick="closeModal('modal-group')">✕</button></div>
-    <div class="mbody"><div class="frow"><div class="flabel">分组名称</div><input class="finput" id="mg-name" placeholder="如：第一单元、Unit 1"></div></div>
+    <div class="mbody">
+      <div class="frow"><div class="flabel">词组名称（可修改）</div><input class="finput" id="mg-name" placeholder="如：第一单元、Unit 1"></div>
+      <div class="frow" id="mg-id-row" style="display:none"><div class="flabel">词组 ID（唯一标识，修改后原 ID 失效）</div><input class="finput" id="mg-id" placeholder="留空保持不变"></div>
+    </div>
     <div class="mfooter">
       <button class="btn btn-danger btn-sm" id="mg-del" onclick="deleteGroup()" style="display:none;margin-right:auto">🗑 删除</button>
       <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-group')">取消</button>
@@ -1005,9 +1008,49 @@ function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim()
 function deleteEntry(){if(!confirm('删除？'))return;const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;g.entries.splice(ms.entryIdx,1);saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
 
 /* ━━━━━ MODAL: group ━━━━━ */
-function openAddGroup(){ms.editGroupId=null;document.getElementById('mgtitle').textContent='新建词组';document.getElementById('mg-name').value='';document.getElementById('mg-del').style.display='none';openModal('modal-group');}
-function openEditGroup(gid){const g=store.groups.find(x=>x.id===gid);if(!g)return;ms.editGroupId=gid;document.getElementById('mgtitle').textContent='编辑词组';document.getElementById('mg-name').value=g.name;document.getElementById('mg-del').style.display='inline-flex';openModal('modal-group');}
-function saveGroup(){const name=document.getElementById('mg-name').value.trim();if(!name){alert('请输入名称');return;}if(ms.editGroupId){const g=store.groups.find(x=>x.id===ms.editGroupId);if(g)g.name=name;}else store.groups.push({id:'g'+Date.now(),name,entries:[]});saveStore();scheduleAutoSync();closeModal('modal-group');renderManageBody();}
+function openAddGroup(){
+  ms.editGroupId=null;
+  document.getElementById('mgtitle').textContent='新建词组';
+  document.getElementById('mg-name').value='';
+  document.getElementById('mg-del').style.display='none';
+  document.getElementById('mg-id-row').style.display='none';
+  openModal('modal-group');
+}
+function openEditGroup(gid){
+  const g=store.groups.find(x=>x.id===gid);if(!g)return;
+  ms.editGroupId=gid;
+  document.getElementById('mgtitle').textContent='编辑词组';
+  document.getElementById('mg-name').value=g.name;
+  document.getElementById('mg-del').style.display='inline-flex';
+  document.getElementById('mg-id-row').style.display='flex';
+  document.getElementById('mg-id').value='';
+  document.getElementById('mg-id').placeholder=`当前ID: ${gid}（留空不修改）`;
+  openModal('modal-group');
+}
+function saveGroup(){
+  const name=document.getElementById('mg-name').value.trim();
+  if(!name){alert('请输入名称');return;}
+  if(ms.editGroupId){
+    const g=store.groups.find(x=>x.id===ms.editGroupId);
+    if(!g)return;
+    g.name=name;
+    // Handle ID rename
+    const newId=document.getElementById('mg-id').value.trim();
+    if(newId&&newId!==ms.editGroupId){
+      if(store.groups.find(x=>x.id===newId)){alert('该ID已存在，请换一个');return;}
+      const oldId=ms.editGroupId;
+      g.id=newId;
+      // Update superGroups references
+      store.superGroups.forEach(sg=>{
+        const idx=(sg.groupIds||[]).indexOf(oldId);
+        if(idx>=0)sg.groupIds[idx]=newId;
+      });
+    }
+  }else{
+    store.groups.push({id:'g'+Date.now(),name,entries:[]});
+  }
+  saveStore();scheduleAutoSync();closeModal('modal-group');renderManageBody();
+}
 function deleteGroup(){if(!confirm('确定删除整个分组？'))return;const gid=ms.editGroupId;store.groups=store.groups.filter(x=>x.id!==gid);store.superGroups.forEach(sg=>{sg.groupIds=(sg.groupIds||[]).filter(id=>id!==gid);});saveStore();scheduleAutoSync();closeModal('modal-group');renderManageBody();}
 
 /* ━━━━━ MODAL: supergroup ━━━━━ */
