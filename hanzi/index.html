@@ -1238,28 +1238,28 @@ async function generateWorksheet(){
   const contentHeight=WS.H-WS.MY-20-contentTop;
   const contentWidth=WS.W-WS.MX*2;
   const TARGET_COLS=10;
-  function layoutFor(cell){
-    const cellGap=Math.max(6,Math.round(cell*0.08));
-    const groupGap=Math.max(cellGap,Math.round(WS.GROUP_GAP*(cell/WS.CELL)));
+  const BASE_GAP=6;
+  function calcCell(gap){
+    return Math.floor((contentWidth-(TARGET_COLS-1)*gap)/TARGET_COLS);
+  }
+  function layoutFor(cell,gap){
+    const cellGap=gap;
     const rowGap=Math.round(WS.ROW_GAP*(cell/WS.CELL));
     const piny=Math.round(WS.PINYIN_H*(cell/WS.CELL));
-    const cols=TARGET_COLS;
-    const capacityW=cols*cell+(cols-1)*cellGap;
-    if(capacityW>contentWidth)return {cell,cellGap,groupGap,rowGap,piny,rows:999,totalH:999,fit:false,cols};
-    let rows=1;let rowW=0;
+    let rows=1;let rowSlots=0;
     entryItems.forEach(entry=>{
-      const wordW=entry.chars.length*cell+(entry.chars.length-1)*cellGap;
-      const need=wordW+(rowW>0?groupGap:0);
-      if(rowW+need>contentWidth){rows++;rowW=wordW;}
-      else rowW+=need;
+      const slots=entry.chars.length;
+      if(rowSlots+slots>TARGET_COLS){rows++;rowSlots=slots;}
+      else rowSlots+=slots;
     });
     const totalH=rows*(cell+piny)+ (rows-1)*rowGap;
-    return {cell,cellGap,groupGap,rowGap,piny,rows,totalH,fit:totalH<=contentHeight,cols};
+    return {cell,cellGap,rowGap,piny,rows,totalH,fit:totalH<=contentHeight};
   }
-  let layout=layoutFor(WS.CELL);
+  let cell=calcCell(BASE_GAP);
+  let layout=layoutFor(cell,BASE_GAP);
   if(!layout.fit){
-    for(let c=WS.CELL-5;c>=70;c-=5){
-      const cand=layoutFor(c);
+    for(let c=cell-5;c>=60;c-=5){
+      const cand=layoutFor(c,BASE_GAP);
       if(cand.fit){layout=cand;break;}
       layout=cand;
     }
@@ -1267,15 +1267,15 @@ async function generateWorksheet(){
   if(!layout.fit){
     const squeeze=Math.min(0.95,contentHeight/layout.totalH);
     const squeezedCell=Math.max(60,Math.floor(layout.cell*squeeze));
-    layout=layoutFor(squeezedCell);
+    layout=layoutFor(squeezedCell,BASE_GAP);
   }
 
   const CELL=layout.cell,PINY=layout.piny;
-  const CELL_GAP=layout.cellGap,GROUP_GAP=layout.groupGap,ROW_GAP=layout.rowGap;
+  const CELL_GAP=layout.cellGap,ROW_GAP=layout.rowGap;
   const STROKE_PAD=Math.round(CELL*0.1);
   let curX=WS.MX,curY=contentTop;
-  function needsNewRow(w){return curX+w>WS.W-WS.MX;}
-  function newRow(){curX=WS.MX;curY+=PINY+CELL+ROW_GAP;}
+  let rowSlots=0;
+  function newRow(){curX=WS.MX;curY+=PINY+CELL+ROW_GAP;rowSlots=0;}
   function drawTzg(x,y,sz){
     ctx.save();ctx.strokeStyle='#2d2d2d';ctx.lineWidth=1.6;ctx.strokeRect(x,y,sz,sz);
     ctx.setLineDash([5,4]);ctx.strokeStyle='#b0b0b0';ctx.lineWidth=0.9;
@@ -1298,8 +1298,9 @@ async function generateWorksheet(){
     ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+pyOffset);ctx.restore();
   }
   for(const entry of entryItems){
-    const n=entry.chars.length;const wordW=n*CELL+(n-1)*CELL_GAP;
-    if(needsNewRow(wordW))newRow();if(curY+PINY+CELL>WS.H-WS.MY-20)break;
+    const n=entry.chars.length;
+    if(rowSlots+n>TARGET_COLS)newRow();
+    if(curY+PINY+CELL>WS.H-WS.MY-20)break;
     entry.chars.forEach((ci2,ci)=>{
       const cx=curX+ci*(CELL+CELL_GAP);
       const cy=curY;
@@ -1316,7 +1317,8 @@ async function generateWorksheet(){
         shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL,STROKE_PAD));
       }
     });
-    curX+=wordW+GROUP_GAP;
+    curX+=n*CELL+(n-1)*CELL_GAP+CELL_GAP;
+    rowSlots+=n;
   }
   ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,WS.H-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
