@@ -662,6 +662,31 @@ function getCharDef(ch){
 function setCharDef(ch,cfg){
   store.charDefs[ch]={mode:cfg.mode||'simple',redRange:cfg.redRange||''};
 }
+function normalizeCharCfg(cfg){
+  return {mode:(cfg&&cfg.mode)||'simple',redRange:(cfg&&cfg.redRange)||''};
+}
+function propagateCharCfg(ch,cfg){
+  const norm=normalizeCharCfg(cfg);
+  setCharDef(ch,norm);
+  store.groups.forEach(g=>{
+    g.entries.forEach(e=>{
+      if(e.type==='char'&&e.hanzi===ch){
+        e.mode=norm.mode;
+        e.redRange=norm.redRange;
+      }else if(e.type==='word'&&e.hanzi){
+        const chars=[...e.hanzi];
+        if(!e.charCfg)e.charCfg=[];
+        chars.forEach((c,i)=>{
+          if(c===ch){
+            e.charCfg[i]=normalizeCharCfg(norm);
+          }else if(!e.charCfg[i]){
+            e.charCfg[i]=normalizeCharCfg(getCharDef(c));
+          }
+        });
+      }
+    });
+  });
+}
 
 /* achieve helpers */
 function achRecordLearned(ch,py){if(!store.ach.learnedChars.find(x=>x.ch===ch)){store.ach.learnedChars.push({ch,pinyin:py||'',ts:Date.now()});saveStore();scheduleAutoSync();}}
@@ -1020,7 +1045,7 @@ function onHanziInput(){if(ms.entryType==='word'){const h=document.getElementByI
 function buildWccTable(hanzi,existing){const tbl=document.getElementById('wcc-table');tbl.innerHTML='';[...hanzi].forEach((ch,i)=>{const cfg=(existing||[])[i]||getCharDef(ch);const row=document.createElement('div');row.className='wcc-row';row.innerHTML=`<span class="wcc-ch">${ch}</span><div class="wcc-tabs"><button class="wcc-tab ${cfg.mode==='simple'?'active':''}" onclick="setWccMode(${i},'simple')">🎨 七彩</button><button class="wcc-tab ${cfg.mode==='complex'?'active':''}" onclick="setWccMode(${i},'complex')">🧩 红蓝</button></div><input class="wcc-range ${cfg.mode==='complex'?'show':''}" id="wcc-range-${i}" placeholder="红色笔画如1-3" value="${cfg.redRange||''}">`;tbl.appendChild(row);});}
 function setWccMode(i,m){const rows=document.getElementById('wcc-table').querySelectorAll('.wcc-row');if(!rows[i])return;rows[i].querySelectorAll('.wcc-tab').forEach(t=>t.classList.remove('active'));rows[i].querySelectorAll('.wcc-tab')[m==='complex'?1:0].classList.add('active');const ri=rows[i].querySelector('.wcc-range');if(ri)ri.classList.toggle('show',m==='complex');}
 function getWccConfig(){return Array.from(document.getElementById('wcc-table').querySelectorAll('.wcc-row')).map(row=>{const active=row.querySelector('.wcc-tab.active');const mode=active&&active.textContent.includes('红蓝')?'complex':'simple';return{mode,redRange:(row.querySelector('.wcc-range')||{}).value||''};});}
-function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim();if(!hanzi){alert('请输入汉字');return;}let pinyin=document.getElementById('m-pinyin').value.trim();if(!pinyin)pinyin=autoPinyin(hanzi);const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;let obj;if(ms.entryType==='char'){const cfg={mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};obj={type:'char',hanzi,pinyin,mode:cfg.mode,redRange:cfg.redRange};setCharDef(hanzi,cfg);}else{const cfgs=getWccConfig();obj={type:'word',hanzi,pinyin,charCfg:cfgs};[...hanzi].forEach((ch,i)=>setCharDef(ch,cfgs[i]||getCharDef(ch)));}if(ms.entryIdx===null)g.entries.push(obj);else g.entries[ms.entryIdx]=obj;saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
+function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim();if(!hanzi){alert('请输入汉字');return;}let pinyin=document.getElementById('m-pinyin').value.trim();if(!pinyin)pinyin=autoPinyin(hanzi);const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;let obj;if(ms.entryType==='char'){const cfg={mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};obj={type:'char',hanzi,pinyin,mode:cfg.mode,redRange:cfg.redRange};propagateCharCfg(hanzi,cfg);}else{const cfgs=getWccConfig();obj={type:'word',hanzi,pinyin,charCfg:cfgs};[...hanzi].forEach((ch,i)=>propagateCharCfg(ch,cfgs[i]||getCharDef(ch)));}if(ms.entryIdx===null)g.entries.push(obj);else g.entries[ms.entryIdx]=obj;saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
 function deleteEntry(){if(!confirm('删除？'))return;const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;g.entries.splice(ms.entryIdx,1);saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
 
 /* ━━━━━ MODAL: group ━━━━━ */
