@@ -241,9 +241,15 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .wm-gcnt{font-size:.64rem;color:var(--muted);background:var(--border);padding:2px 7px;border-radius:99px}
 .wm-ga{display:flex;gap:4px}
 .wm-entries{padding:9px 12px;display:flex;flex-wrap:wrap;gap:6px}
-.wm-entry{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;cursor:grab;transition:all .15s;}
+.wm-entry{position:relative;display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;cursor:grab;transition:all .15s;}
 .wm-entry:hover{border-color:var(--o2);background:#fff5ec;transform:translateY(-1px)}
 .wm-entry.dragging{opacity:.5;transform:scale(.98)}
+.wm-entry.drop-before::before,
+.wm-entry.drop-after::after{
+  content:'';position:absolute;top:-6px;bottom:-6px;width:3px;border-radius:2px;background:var(--o1);
+}
+.wm-entry.drop-before::before{left:-7px;}
+.wm-entry.drop-after::after{right:-7px;}
 .wm-ehanzi{font-family:'Ma Shan Zheng',cursive;font-size:1.2rem;line-height:1}
 .wm-epy{font-size:.58rem;color:var(--muted)}
 .wm-add{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;font-size:1.1rem;color:var(--muted);transition:all .15s;background:transparent;}
@@ -1039,7 +1045,35 @@ function renderManageSG(){
 
 function setupEntryDnD(){
   document.querySelectorAll('.wm-entries').forEach(list=>{
-    list.ondragover=e=>{e.preventDefault();};
+    const clearDrops=()=>{
+      list.querySelectorAll('.wm-entry').forEach(c=>c.classList.remove('drop-before','drop-after'));
+      delete list.dataset.dropIdx;
+      delete list.dataset.dropPos;
+    };
+    list.ondragover=e=>{
+      e.preventDefault();
+      const cards=Array.from(list.querySelectorAll('.wm-entry')).filter(c=>!c.classList.contains('dragging'));
+      if(!cards.length){clearDrops();return;}
+      let rowCards=cards.filter(c=>e.clientY>=c.getBoundingClientRect().top&&e.clientY<=c.getBoundingClientRect().bottom);
+      if(!rowCards.length){
+        rowCards=cards.sort((a,b)=>Math.abs(e.clientY-(a.getBoundingClientRect().top+a.getBoundingClientRect().height/2))-
+          Math.abs(e.clientY-(b.getBoundingClientRect().top+b.getBoundingClientRect().height/2))).slice(0,3);
+      }
+      let target=rowCards[0];
+      let bestDist=Infinity;
+      rowCards.forEach(c=>{
+        const r=c.getBoundingClientRect();
+        const d=Math.abs(e.clientX-(r.left+r.width/2));
+        if(d<bestDist){bestDist=d;target=c;}
+      });
+      if(!target){clearDrops();return;}
+      const r=target.getBoundingClientRect();
+      const pos=e.clientX<r.left+r.width/2?'before':'after';
+      clearDrops();
+      target.classList.add(pos==='before'?'drop-before':'drop-after');
+      list.dataset.dropIdx=target.dataset.idx;
+      list.dataset.dropPos=pos;
+    };
     list.ondrop=e=>{
       e.preventDefault();
       const srcIdx=parseInt(e.dataTransfer.getData('text/plain'),10);
@@ -1047,9 +1081,10 @@ function setupEntryDnD(){
       if(Number.isNaN(srcIdx)||!gid)return;
       const listEl=e.currentTarget;
       if(!listEl||listEl.id!=='wme-'+gid)return;
-      const cards=Array.from(listEl.querySelectorAll('.wm-entry'));
-      const after=cards.find(c=>e.clientY<=c.getBoundingClientRect().top+c.getBoundingClientRect().height/2);
-      const destIdx=after?parseInt(after.dataset.idx,10):cards.length;
+      const dropIdx=parseInt(listEl.dataset.dropIdx||'',10);
+      const dropPos=listEl.dataset.dropPos||'after';
+      const destIdx=Number.isNaN(dropIdx)?listEl.querySelectorAll('.wm-entry').length:dropIdx+(dropPos==='after'?1:0);
+      clearDrops();
       if(Number.isNaN(destIdx))return;
       const g=store.groups.find(x=>x.id===gid);if(!g)return;
       if(srcIdx===destIdx||srcIdx===destIdx-1){return;}
@@ -1065,7 +1100,7 @@ function setupEntryDnD(){
         e.dataTransfer.setData('text/plain',card.dataset.idx);
         e.dataTransfer.setData('text/gid',card.dataset.gid);
       };
-      card.ondragend=()=>{card.classList.remove('dragging');};
+      card.ondragend=()=>{card.classList.remove('dragging');clearDrops();};
     });
   });
 }
