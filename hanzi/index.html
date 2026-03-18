@@ -1235,9 +1235,8 @@ async function generateWorksheet(){
   for(const entry of entries){const chars=[...entry.hanzi];const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');const dataArr=await Promise.all(chars.map(ch=>fetchChar(ch)));entryItems.push({pinyins,chars:chars.map((ch,ci)=>({ch,pinyin:pinyins[ci]||'',cfg:resolveCfgForChar(entry,ci,ch),data:dataArr[ci]}))});}
   canvas.width=WS.W;canvas.height=WS.H;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,WS.W,WS.H);
   ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${grpName} · ${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`,WS.W/2,WS.MY+46);
-  const iy=WS.MY+WS.TITLE_H+28;ctx.font=`22px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='left';ctx.fillStyle='#222';ctx.fillText('姓名：',WS.MX+20,iy);ctx.strokeStyle='#444';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(WS.MX+95,iy+3);ctx.lineTo(WS.MX+310,iy+3);ctx.stroke();ctx.fillText('班级：',WS.W/2+30,iy);ctx.beginPath();ctx.moveTo(WS.W/2+105,iy+3);ctx.lineTo(WS.W-WS.MX-20,iy+3);ctx.stroke();
 
-  const contentTop=WS.MY+WS.TITLE_H+WS.INFO_H+24;
+  const contentTop=WS.MY+WS.TITLE_H+20;
   const contentHeight=WS.H-WS.MY-20-contentTop;
   const contentWidth=WS.W-WS.MX*2;
   const TARGET_COLS=10;
@@ -1297,8 +1296,8 @@ async function generateWorksheet(){
     ctx.fillStyle=color;try{ctx.fill(new Path2D(pathD));}catch(e){}ctx.restore();
   }
   function drawCellPy(txt,cx,cy,cellSz){
-    const pyFont=Math.max(14,Math.round(18*(CELL/WS.CELL)));
-    const pyOffset=Math.min(PINY-6,Math.max(16,Math.round(22*(CELL/WS.CELL))));
+    const pyFont=Math.max(16,Math.round(20*(CELL/WS.CELL)));
+    const pyOffset=Math.min(PINY-6,Math.max(18,Math.round(24*(CELL/WS.CELL))));
     ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`${pyFont}px 'Noto Sans SC',Arial,sans-serif`;
     ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+pyOffset);ctx.restore();
   }
