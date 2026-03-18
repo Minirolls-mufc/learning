@@ -1224,11 +1224,16 @@ async function generateWorksheet(){
   }
   let layout=layoutFor(WS.CELL);
   if(!layout.fit){
-    for(let c=WS.CELL-5;c>=120;c-=5){
+    for(let c=WS.CELL-5;c>=90;c-=5){
       const cand=layoutFor(c);
       if(cand.fit){layout=cand;break;}
       layout=cand;
     }
+  }
+  if(!layout.fit){
+    const squeeze=Math.min(0.95,contentHeight/layout.totalH);
+    const squeezedCell=Math.max(80,Math.floor(layout.cell*squeeze));
+    layout=layoutFor(squeezedCell);
   }
 
   const CELL=layout.cell,PINY=layout.piny;
@@ -1253,9 +1258,10 @@ async function generateWorksheet(){
     ctx.fillStyle=color;try{ctx.fill(new Path2D(pathD));}catch(e){}ctx.restore();
   }
   function drawCellPy(txt,cx,cy,cellSz){
-    const pyFont=Math.max(16,Math.round(18*(CELL/WS.CELL)));
+    const pyFont=Math.max(14,Math.round(18*(CELL/WS.CELL)));
+    const pyOffset=Math.min(PINY-6,Math.max(16,Math.round(22*(CELL/WS.CELL))));
     ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`${pyFont}px 'Noto Sans SC',Arial,sans-serif`;
-    ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+22);ctx.restore();
+    ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+pyOffset);ctx.restore();
   }
   for(const entry of entryItems){
     const n=entry.chars.length;const wordW=n*CELL+(n-1)*CELL_GAP;
