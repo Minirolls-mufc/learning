@@ -451,7 +451,6 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
     <div class="sg-tabbar" id="prac-tabbar"></div>
     <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
     <div class="prac-grp-footer">
-      <button class="btn btn-ghost" onclick="generateWorksheet()" id="btn-gen-sheet">📄 生成练习纸</button>
       <button class="btn btn-primary" onclick="pracGoStep(2)">选择模式 →</button>
     </div>
   </div>
@@ -470,7 +469,10 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
           <span class="pm-icon">🎯</span><span class="pm-name">标准模式</span><span class="pm-desc">只显示拼音<br>完整默写整个字</span>
         </div>
       </div>
-      <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="startPractice()">开始练习 →</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+        <button class="btn btn-ghost" onclick="generateWorksheet()">📄 生成练习纸</button>
+        <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="startPractice()">开始练习 →</button>
+      </div>
     </div>
   </div>
   <div id="prac-step3" class="prac-step">
@@ -1201,10 +1203,40 @@ async function generateWorksheet(){
   canvas.width=WS.W;canvas.height=WS.H;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,WS.W,WS.H);
   ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${grpName} · ${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`,WS.W/2,WS.MY+46);
   const iy=WS.MY+WS.TITLE_H+28;ctx.font=`22px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='left';ctx.fillStyle='#222';ctx.fillText('姓名：',WS.MX+20,iy);ctx.strokeStyle='#444';ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(WS.MX+95,iy+3);ctx.lineTo(WS.MX+310,iy+3);ctx.stroke();ctx.fillText('班级：',WS.W/2+30,iy);ctx.beginPath();ctx.moveTo(WS.W/2+105,iy+3);ctx.lineTo(WS.W-WS.MX-20,iy+3);ctx.stroke();
-  const CELL=WS.CELL,PINY=WS.PINYIN_H;
+
+  const contentTop=WS.MY+WS.TITLE_H+WS.INFO_H+24;
+  const contentHeight=WS.H-WS.MY-20-contentTop;
+  const contentWidth=WS.W-WS.MX*2;
+  function layoutFor(cell){
+    const cellGap=Math.round(WS.CELL_GAP*(cell/WS.CELL));
+    const groupGap=Math.round(WS.GROUP_GAP*(cell/WS.CELL));
+    const rowGap=Math.round(WS.ROW_GAP*(cell/WS.CELL));
+    const piny=Math.round(WS.PINYIN_H*(cell/WS.CELL));
+    let rows=1;let rowW=0;
+    entryItems.forEach(entry=>{
+      const wordW=entry.chars.length*cell+(entry.chars.length-1)*cellGap;
+      const need=wordW+(rowW>0?groupGap:0);
+      if(rowW+need>contentWidth){rows++;rowW=wordW;}
+      else rowW+=need;
+    });
+    const totalH=rows*(cell+piny)+ (rows-1)*rowGap;
+    return {cell,cellGap,groupGap,rowGap,piny,rows,totalH,fit:totalH<=contentHeight};
+  }
+  let layout=layoutFor(WS.CELL);
+  if(!layout.fit){
+    for(let c=WS.CELL-5;c>=120;c-=5){
+      const cand=layoutFor(c);
+      if(cand.fit){layout=cand;break;}
+      layout=cand;
+    }
+  }
+
+  const CELL=layout.cell,PINY=layout.piny;
+  const CELL_GAP=layout.cellGap,GROUP_GAP=layout.groupGap,ROW_GAP=layout.rowGap;
   const STROKE_PAD=Math.round(CELL*0.1);
-  let curX=WS.MX,curY=WS.MY+WS.TITLE_H+WS.INFO_H+24;
-  function needsNewRow(w){return curX+w>WS.W-WS.MX;}function newRow(){curX=WS.MX;curY+=PINY+CELL+WS.ROW_GAP;}
+  let curX=WS.MX,curY=contentTop;
+  function needsNewRow(w){return curX+w>WS.W-WS.MX;}
+  function newRow(){curX=WS.MX;curY+=PINY+CELL+ROW_GAP;}
   function drawTzg(x,y,sz){
     ctx.save();ctx.strokeStyle='#2d2d2d';ctx.lineWidth=1.6;ctx.strokeRect(x,y,sz,sz);
     ctx.setLineDash([5,4]);ctx.strokeStyle='#b0b0b0';ctx.lineWidth=0.9;
@@ -1221,19 +1253,20 @@ async function generateWorksheet(){
     ctx.fillStyle=color;try{ctx.fill(new Path2D(pathD));}catch(e){}ctx.restore();
   }
   function drawCellPy(txt,cx,cy,cellSz){
-    ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`18px 'Noto Sans SC',Arial,sans-serif`;
+    const pyFont=Math.max(16,Math.round(18*(CELL/WS.CELL)));
+    ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`${pyFont}px 'Noto Sans SC',Arial,sans-serif`;
     ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+22);ctx.restore();
   }
   for(const entry of entryItems){
-    const n=entry.chars.length;const wordW=n*CELL+(n-1)*WS.CELL_GAP;
+    const n=entry.chars.length;const wordW=n*CELL+(n-1)*CELL_GAP;
     if(needsNewRow(wordW))newRow();if(curY+PINY+CELL>WS.H-WS.MY-20)break;
     entry.chars.forEach((ci2,ci)=>{
-      const cx=curX+ci*(CELL+WS.CELL_GAP);
+      const cx=curX+ci*(CELL+CELL_GAP);
       const cy=curY;
       drawCellPy(ci2.pinyin||'',cx,cy,CELL);
     });
     entry.chars.forEach((ci2,ci)=>{
-      const cx=curX+ci*(CELL+WS.CELL_GAP);const cy=curY+PINY;
+      const cx=curX+ci*(CELL+CELL_GAP);const cy=curY+PINY;
       drawTzg(cx,cy,CELL);
       if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
         const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);
@@ -1243,7 +1276,7 @@ async function generateWorksheet(){
         shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL,STROKE_PAD));
       }
     });
-    curX+=wordW+WS.GROUP_GAP;
+    curX+=wordW+GROUP_GAP;
   }
   ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,WS.H-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
