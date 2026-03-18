@@ -152,10 +152,10 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 }
 .study-act-btn:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
 .study-act-btn.toggled{background:var(--grad-btn)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 3px 10px rgba(255,107,0,.4)!important;}
-.tzg-row{display:flex;gap:18px;align-items:flex-start;justify-content:center;flex-wrap:wrap}
+.tzg-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;align-items:start;justify-items:center}
 .tzg-unit{display:flex;flex-direction:column;align-items:center;gap:7px}
-.tzg-pinyin{font-size:1.5rem;font-weight:900;letter-spacing:4px;min-height:1.7em;text-align:center;line-height:1.2;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.tzg-box{position:relative;background:#fff;border:2px solid var(--o3);border-radius:8px;overflow:hidden;flex-shrink:0;width:220px;height:220px;box-shadow:0 4px 14px rgba(255,107,0,.1);}
+.tzg-pinyin{font-size:1.8rem;font-weight:900;letter-spacing:4px;min-height:1.7em;text-align:center;line-height:1.2;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.tzg-box{position:relative;background:#fff;border:2px solid var(--o3);border-radius:8px;overflow:hidden;flex-shrink:0;width:min(21vw,220px);height:min(21vw,220px);box-shadow:0 4px 14px rgba(255,107,0,.1);}
 .tzg-cover{position:absolute;inset:0;z-index:3;display:none}
 .tzg-cover.show{display:block}
 .tzg-mini-ctrl{display:flex;gap:5px;justify-content:center}
@@ -181,7 +181,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .prac-quiz-body{flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 58px;gap:8px;position:relative;}
 .prac-chars-row{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
 .prac-char-unit{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative}
-.prac-char-pinyin{font-size:1.4rem;font-weight:900;letter-spacing:4px;min-height:1.6em;text-align:center;line-height:1.2;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.prac-char-pinyin{font-size:1.7rem;font-weight:900;letter-spacing:4px;min-height:1.6em;text-align:center;line-height:1.2;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .prac-hint-badge{position:absolute;top:-8px;right:-8px;z-index:10;width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;background:var(--grad-btn);color:#fff;font-size:.68rem;font-weight:900;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,107,0,.4);transition:all .15s;}
 .prac-hint-badge:hover{transform:scale(1.2)}
 .prac-hint-badge.used{background:#e5d4c0;color:var(--muted);cursor:default;box-shadow:none}
@@ -241,8 +241,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .wm-gcnt{font-size:.64rem;color:var(--muted);background:var(--border);padding:2px 7px;border-radius:99px}
 .wm-ga{display:flex;gap:4px}
 .wm-entries{padding:9px 12px;display:flex;flex-wrap:wrap;gap:6px}
-.wm-entry{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;cursor:pointer;transition:all .15s;}
+.wm-entry{display:inline-flex;align-items:center;gap:5px;background:var(--bg);border:1.5px solid var(--border);border-radius:8px;padding:4px 8px;cursor:grab;transition:all .15s;}
 .wm-entry:hover{border-color:var(--o2);background:#fff5ec;transform:translateY(-1px)}
+.wm-entry.dragging{opacity:.5;transform:scale(.98)}
 .wm-ehanzi{font-family:'Ma Shan Zheng',cursive;font-size:1.2rem;line-height:1}
 .wm-epy{font-size:.58rem;color:var(--muted)}
 .wm-add{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1.5px dashed var(--border);border-radius:8px;cursor:pointer;font-size:1.1rem;color:var(--muted);transition:all .15s;background:transparent;}
@@ -1011,9 +1012,10 @@ function renderManageGroups(){
     card.innerHTML=`<div class="wm-gh"><span class="wm-gname">${g.name}</span>${sgTag}<span class="wm-gcnt">${g.entries.length}条</span><div class="wm-ga"><button class="btn btn-ghost btn-sm btn-icon" onclick="startStudy('${g.id}')" title="学习">📖</button><button class="btn btn-ghost btn-sm btn-icon" onclick="openEditGroup('${g.id}')" title="编辑">✏️</button></div></div><div class="wm-entries" id="wme-${g.id}"></div>`;
     body.appendChild(card);
     const el=card.querySelector(`#wme-${g.id}`);
-    g.entries.forEach((e,ei)=>{const item=document.createElement('div');item.className='wm-entry';item.onclick=()=>openEditEntry(g.id,ei);item.innerHTML=`<div><div class="wm-ehanzi">${e.hanzi}</div><div class="wm-epy">${e.pinyin||autoPinyin(e.hanzi)}</div></div>`;el.appendChild(item);});
+    g.entries.forEach((e,ei)=>{const item=document.createElement('div');item.className='wm-entry';item.draggable=true;item.dataset.idx=String(ei);item.dataset.gid=g.id;item.onclick=()=>openEditEntry(g.id,ei);item.innerHTML=`<div><div class="wm-ehanzi">${e.hanzi}</div><div class="wm-epy">${e.pinyin||autoPinyin(e.hanzi)}</div></div>`;el.appendChild(item);});
     const ab=document.createElement('button');ab.className='wm-add';ab.textContent='＋';ab.onclick=()=>openAddEntry(g.id);el.appendChild(ab);
   });
+  setupEntryDnD();
 }
 function renderManageSG(){
   const body=document.getElementById('manage-body');body.innerHTML='';
@@ -1032,6 +1034,39 @@ function renderManageSG(){
     </div>
     <div class="wm-sg-groups">${grpNames||'<span class="wm-sg-empty">暂无分组，点✏️添加</span>'}</div>`;
     body.appendChild(card);
+  });
+}
+
+function setupEntryDnD(){
+  document.querySelectorAll('.wm-entries').forEach(list=>{
+    list.ondragover=e=>{e.preventDefault();};
+    list.ondrop=e=>{
+      e.preventDefault();
+      const srcIdx=parseInt(e.dataTransfer.getData('text/plain'),10);
+      const gid=e.dataTransfer.getData('text/gid');
+      if(Number.isNaN(srcIdx)||!gid)return;
+      const listEl=e.currentTarget;
+      if(!listEl||listEl.id!=='wme-'+gid)return;
+      const cards=Array.from(listEl.querySelectorAll('.wm-entry'));
+      const after=cards.find(c=>e.clientX<=c.getBoundingClientRect().left+c.getBoundingClientRect().width/2);
+      const destIdx=after?parseInt(after.dataset.idx,10):cards.length;
+      if(Number.isNaN(destIdx))return;
+      const g=store.groups.find(x=>x.id===gid);if(!g)return;
+      if(srcIdx===destIdx||srcIdx===destIdx-1){return;}
+      const [moved]=g.entries.splice(srcIdx,1);
+      const insertAt=srcIdx<destIdx?destIdx-1:destIdx;
+      g.entries.splice(insertAt,0,moved);
+      saveStore();scheduleAutoSync();
+      renderManageGroups();
+    };
+    list.querySelectorAll('.wm-entry').forEach(card=>{
+      card.ondragstart=e=>{
+        card.classList.add('dragging');
+        e.dataTransfer.setData('text/plain',card.dataset.idx);
+        e.dataTransfer.setData('text/gid',card.dataset.gid);
+      };
+      card.ondragend=()=>{card.classList.remove('dragging');};
+    });
   });
 }
 
