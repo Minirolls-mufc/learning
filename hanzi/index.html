@@ -889,10 +889,8 @@ function pracGoStep(n){
   document.querySelectorAll('.prac-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('prac-step'+n).classList.add('active');
   if(n===1){
-    if((!P.groupIds||!P.groupIds.length)&&store.groups.length){
-      P.groupIds=[store.groups[0].id];
-      P.groupId=P.groupIds[0];
-    }
+    if(!P.groupIds)P.groupIds=[];
+    P.groupId=P.groupIds[0]||null;
     renderGpick('prac');
   }
 }
@@ -1258,11 +1256,9 @@ async function generateWorksheet(){
     const totalH=rows*(cell+piny)+ (rows-1)*rowGap;
     return {cell,cellGap,groupGap,rowGap,piny,rows,totalH,fit:totalH<=contentHeight,cols};
   }
-  const baseGap=10;
-  const baseCell=Math.min(WS.CELL,Math.floor((contentWidth-(TARGET_COLS-1)*baseGap)/TARGET_COLS));
-  let layout=layoutFor(baseCell);
+  let layout=layoutFor(WS.CELL);
   if(!layout.fit){
-    for(let c=baseCell-5;c>=80;c-=5){
+    for(let c=WS.CELL-5;c>=70;c-=5){
       const cand=layoutFor(c);
       if(cand.fit){layout=cand;break;}
       layout=cand;
@@ -1270,7 +1266,7 @@ async function generateWorksheet(){
   }
   if(!layout.fit){
     const squeeze=Math.min(0.95,contentHeight/layout.totalH);
-    const squeezedCell=Math.max(80,Math.floor(layout.cell*squeeze));
+    const squeezedCell=Math.max(60,Math.floor(layout.cell*squeeze));
     layout=layoutFor(squeezedCell);
   }
 
