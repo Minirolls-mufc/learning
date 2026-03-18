@@ -764,10 +764,17 @@ function renderGpick(containerId){
 
   visibleGroups.forEach(g=>{
     const card=document.createElement('div');card.className='gpick-card';
-    if(containerId==='prac'&&P.groupId===g.id)card.classList.add('selected');
+    if(containerId==='prac'&&P.groupIds&&P.groupIds.includes(g.id))card.classList.add('selected');
     card.onclick=()=>{
       if(containerId==='gpick'){startStudy(g.id);}
-      else{P.groupId=g.id;renderGpick('prac');}
+      else{
+        if(!P.groupIds)P.groupIds=[];
+        if(P.groupIds.includes(g.id))P.groupIds=P.groupIds.filter(id=>id!==g.id);
+        else P.groupIds.push(g.id);
+        if(!P.groupIds.length)P.groupIds=[g.id];
+        P.groupId=P.groupIds[0];
+        renderGpick('prac');
+      }
     };
     const ch=g.entries.filter(e=>e.type==='char').length,wd=g.entries.filter(e=>e.type==='word').length;
     const sgBadge=grpSgMap[g.id]?`<span class="gpick-sg-badge">${grpSgMap[g.id]}</span>`:'';
@@ -877,16 +884,29 @@ function toggleCover(){S.coverMode=!S.coverMode;S.chars.forEach((_,ci)=>{const c
 document.addEventListener('keydown',e=>{if(!document.getElementById('page-study').classList.contains('active'))return;if(document.querySelector('.modal-overlay.open'))return;if(e.key==='ArrowRight')goNextEntry();if(e.key==='ArrowLeft')goPrevEntry();});
 
 /* ━━━━━ PRACTICE ━━━━━ */
-let P={mode:'simple',groupId:null,queue:[],idx:0,chars:[]};
+let P={mode:'simple',groupId:null,groupIds:[],queue:[],idx:0,chars:[]};
 function pracGoStep(n){
   document.querySelectorAll('.prac-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('prac-step'+n).classList.add('active');
-  if(n===1){if(!P.groupId&&store.groups.length)P.groupId=store.groups[0].id;renderGpick('prac');}
+  if(n===1){
+    if((!P.groupIds||!P.groupIds.length)&&store.groups.length){
+      P.groupIds=[store.groups[0].id];
+      P.groupId=P.groupIds[0];
+    }
+    renderGpick('prac');
+  }
 }
 function selectPracMode(m){P.mode=m;document.getElementById('pmc-simple').classList.toggle('active',m==='simple');document.getElementById('pmc-standard').classList.toggle('active',m==='standard');}
 function startPractice(){
   let entries=[];
-  const grp=store.groups.find(x=>x.id===P.groupId);if(!grp||!grp.entries.length){alert('请先选择有内容的分组');return;}entries=grp.entries;
+  const ids=(P.groupIds&&P.groupIds.length)?P.groupIds:[P.groupId].filter(Boolean);
+  if(!ids.length){alert('请先选择有内容的分组');return;}
+  entries=[];
+  ids.forEach(id=>{
+    const g=store.groups.find(x=>x.id===id);
+    if(g&&g.entries&&g.entries.length)entries=entries.concat(g.entries);
+  });
+  if(!entries.length){alert('请先选择有内容的分组');return;}
   P.queue=[];
   entries.forEach(entry=>{const chars=[...entry.hanzi];const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');P.queue.push({entryHanzi:entry.hanzi,chars:chars.map((ch,ci)=>({ch,pinyin:pinyins[ci]||autoPinyin(ch),cfg:resolveCfgForChar(entry,ci,ch)}))});});
   for(let i=P.queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[P.queue[i],P.queue[j]]=[P.queue[j],P.queue[i]];}
@@ -1191,10 +1211,23 @@ function autoPinyin(s){if(window.pinyinPro){try{return pinyinPro.pinyin(s,{toneT
 
 /* ━━━━━ WORKSHEET ━━━━━ */
 const WS={W:1240,H:1754,MX:72,MY:80,TITLE_H:68,INFO_H:66,ROW_GAP:36,CELL:120,CELL_GAP:10,GROUP_GAP:32,PINYIN_H:34};
+function getSelectedPracticeEntries(){
+  const ids=(P.groupIds&&P.groupIds.length)?P.groupIds:[P.groupId].filter(Boolean);
+  let entries=[];
+  ids.forEach(id=>{
+    const g=store.groups.find(x=>x.id===id);
+    if(g&&g.entries&&g.entries.length)entries=entries.concat(g.entries);
+  });
+  return entries;
+}
+
 async function generateWorksheet(){
   let entries=[];
-  const grp2=store.groups.find(x=>x.id===P.groupId);if(!grp2||!grp2.entries.length){alert('所选分组暂无内容');return;}entries=grp2.entries;
-  const grpName=(store.groups.find(x=>x.id===P.groupId)||{name:''}).name;
+  entries=getSelectedPracticeEntries();
+  if(!entries.length){alert('所选分组暂无内容');return;}
+  const grpName=entries.length===store.groups.reduce((s,g)=>s+(g.entries?g.entries.length:0),0)
+    ?'全部'
+    :((P.groupIds&&P.groupIds.length>1)?'多分组':(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name);
   openModal('modal-worksheet');const stEl=document.getElementById('ws-status');const canvas=document.getElementById('ws-canvas');const saveBtn=document.getElementById('ws-save-btn');
   stEl.textContent='正在加载字形数据，请稍候…';stEl.style.display='block';canvas.style.display='none';saveBtn.style.display='none';
   const fetchChar=ch=>fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch)}.json`).then(r=>r.ok?r.json():null).catch(()=>null);
@@ -1207,11 +1240,15 @@ async function generateWorksheet(){
   const contentTop=WS.MY+WS.TITLE_H+WS.INFO_H+24;
   const contentHeight=WS.H-WS.MY-20-contentTop;
   const contentWidth=WS.W-WS.MX*2;
+  const TARGET_COLS=10;
   function layoutFor(cell){
-    const cellGap=Math.round(WS.CELL_GAP*(cell/WS.CELL));
-    const groupGap=Math.round(WS.GROUP_GAP*(cell/WS.CELL));
+    const cellGap=Math.max(6,Math.round(cell*0.08));
+    const groupGap=Math.max(cellGap,Math.round(WS.GROUP_GAP*(cell/WS.CELL)));
     const rowGap=Math.round(WS.ROW_GAP*(cell/WS.CELL));
     const piny=Math.round(WS.PINYIN_H*(cell/WS.CELL));
+    const cols=TARGET_COLS;
+    const capacityW=cols*cell+(cols-1)*cellGap;
+    if(capacityW>contentWidth)return {cell,cellGap,groupGap,rowGap,piny,rows:999,totalH:999,fit:false,cols};
     let rows=1;let rowW=0;
     entryItems.forEach(entry=>{
       const wordW=entry.chars.length*cell+(entry.chars.length-1)*cellGap;
@@ -1220,11 +1257,13 @@ async function generateWorksheet(){
       else rowW+=need;
     });
     const totalH=rows*(cell+piny)+ (rows-1)*rowGap;
-    return {cell,cellGap,groupGap,rowGap,piny,rows,totalH,fit:totalH<=contentHeight};
+    return {cell,cellGap,groupGap,rowGap,piny,rows,totalH,fit:totalH<=contentHeight,cols};
   }
-  let layout=layoutFor(WS.CELL);
+  const baseGap=10;
+  const baseCell=Math.min(WS.CELL,Math.floor((contentWidth-(TARGET_COLS-1)*baseGap)/TARGET_COLS));
+  let layout=layoutFor(baseCell);
   if(!layout.fit){
-    for(let c=WS.CELL-5;c>=90;c-=5){
+    for(let c=baseCell-5;c>=80;c-=5){
       const cand=layoutFor(c);
       if(cand.fit){layout=cand;break;}
       layout=cand;
@@ -1287,7 +1326,7 @@ async function generateWorksheet(){
   ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,WS.H-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
 }
-function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const grpName=(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name;const a=document.createElement('a');a.download=`${grpName}_${P.mode==='simple'?'简单':'标准'}_练习纸.png`;a.href=canvas.toDataURL('image/png');a.click();}
+function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const grpName=(P.groupIds&&P.groupIds.length>1)?'多分组':((store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name);const a=document.createElement('a');a.download=`${grpName}_${P.mode==='simple'?'简单':'标准'}_练习纸.png`;a.href=canvas.toDataURL('image/png');a.click();}
 
 /* ━━━━━ CLOUD SYNC ━━━━━ */
 let _toastTimer=null;
