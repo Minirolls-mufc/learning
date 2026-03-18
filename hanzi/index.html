@@ -939,9 +939,9 @@ function switchManageTab(t){
   document.getElementById('mtab-sg').classList.toggle('active',t==='sg');
   const rightEl=document.getElementById('manage-tb-right');
   if(t==='groups'){
-    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\\'home\\')">🏠 首页</button>';
+    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   } else {
-    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSuperGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\\'home\\')">🏠 首页</button>';
+    rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSuperGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   }
   renderManageBody();
 }
