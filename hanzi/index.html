@@ -1235,7 +1235,7 @@ async function generateWorksheet(){
   canvas.width=WS.W;canvas.height=WS.H;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,WS.W,WS.H);
   ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${grpName} · ${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`,WS.W/2,WS.MY+46);
 
-  const MX=70;
+  const MX=80;
   const contentTop=WS.MY+WS.TITLE_H+20;
   const contentHeight=WS.H-WS.MY-20-contentTop;
   const contentWidth=WS.W-MX*2;
