@@ -39,6 +39,8 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .tb-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .tb-btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;height:36px;padding:0 16px;border-radius:12px;border:none;background:#f1f3f5;font-family:inherit;font-size:.8rem;font-weight:700;color:#4b5563;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .tb-btn:hover{background:#e5e7eb;color:var(--ink)}
+.tb-btn.back{height:40px;padding:0 22px;border-radius:999px;background:#f3f4f6;color:#374151;font-size:.9rem;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+.tb-btn.back:hover{background:#e5e7eb;color:#111827}
 .tb-icon{width:30px;height:30px;border-radius:99px;border:1.5px solid var(--border);background:var(--paper);display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;transition:all .15s;color:var(--ink2);}
 .tb-icon:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
 
@@ -458,7 +460,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
       <div class="tb-title">选择模式</div>
-      <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">← 返回</button></div>
+      <div class="tb-right"><button class="tb-btn back" onclick="pracGoStep(1)">‹ 返回</button></div>
     </div>
     <div class="prac-sel-body">
       <div class="prac-modes">
@@ -479,7 +481,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
       <div class="tb-title" id="prac-quiz-title">练 习</div>
-      <div class="tb-right"><button class="tb-btn" onclick="exitPractice()">← 返回</button></div>
+      <div class="tb-right"><button class="tb-btn back" onclick="exitPractice()">‹ 返回</button></div>
     </div>
     <div class="prac-quiz-body">
       <div class="prac-nav-arrows">
@@ -771,8 +773,7 @@ function renderGpick(containerId){
         if(!P.groupIds)P.groupIds=[];
         if(P.groupIds.includes(g.id))P.groupIds=P.groupIds.filter(id=>id!==g.id);
         else P.groupIds.push(g.id);
-        if(!P.groupIds.length)P.groupIds=[g.id];
-        P.groupId=P.groupIds[0];
+        P.groupId=P.groupIds[0]||null;
         renderGpick('prac');
       }
     };
@@ -1239,7 +1240,7 @@ async function generateWorksheet(){
   const contentWidth=WS.W-WS.MX*2;
   const TARGET_COLS=10;
   const BASE_CELL_GAP=4;
-  const BASE_WORD_GAP=20;
+  const BASE_WORD_GAP=28;
   function calcCell(cellGap,wordGap){
     return Math.floor((contentWidth-(TARGET_COLS-1)*cellGap-(TARGET_COLS-1)*wordGap)/TARGET_COLS);
   }
@@ -1273,9 +1274,17 @@ async function generateWorksheet(){
   const CELL=layout.cell,PINY=layout.piny;
   const CELL_GAP=layout.cellGap,WORD_GAP_PX=layout.wordGap,ROW_GAP=layout.rowGap;
   const STROKE_PAD=Math.round(CELL*0.1);
-  let curX=WS.MX,curY=contentTop;
+  let curY=contentTop;
+  const rows=[];
   let rowSlots=0;
-  function newRow(){curX=WS.MX;curY+=PINY+CELL+ROW_GAP;rowSlots=0;}
+  let rowWidth=0;
+  let rowEntries=[];
+  function wordWidth(n){return n*CELL+(n-1)*CELL_GAP;}
+  function flushRow(){
+    if(!rowEntries.length)return;
+    rows.push({entries:rowEntries,rowWidth});
+    rowEntries=[];rowWidth=0;rowSlots=0;
+  }
   function drawTzg(x,y,sz){
     ctx.save();ctx.strokeStyle='#2d2d2d';ctx.lineWidth=1.6;ctx.strokeRect(x,y,sz,sz);
     ctx.setLineDash([5,4]);ctx.strokeStyle='#b0b0b0';ctx.lineWidth=0.9;
@@ -1299,27 +1308,39 @@ async function generateWorksheet(){
   }
   for(const entry of entryItems){
     const n=entry.chars.length;
-    if(rowSlots+n>TARGET_COLS)newRow();
-    if(curY+PINY+CELL>WS.H-WS.MY-20)break;
-    if(rowSlots>0)curX+=WORD_GAP_PX;
-    entry.chars.forEach((ci2,ci)=>{
-      const cx=curX+ci*(CELL+CELL_GAP);
-      const cy=curY;
-      drawCellPy(ci2.pinyin||'',cx,cy,CELL);
-    });
-    entry.chars.forEach((ci2,ci)=>{
-      const cx=curX+ci*(CELL+CELL_GAP);const cy=curY+PINY;
-      drawTzg(cx,cy,CELL);
-      if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
-        const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);
-        const redIdx=[],blueIdx=[];for(let k=1;k<=ns;k++){(rs.has(k)?redIdx:blueIdx).push(k-1);}
-        const showRed=blueIdx.length===0||(redIdx.length>0&&Math.random()<.5);
-        const shown=showRed?redIdx:blueIdx;const col=showRed?'#dc2626':'#1d4ed8';
-        shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL,STROKE_PAD));
-      }
-    });
-    curX+=n*CELL+(n-1)*CELL_GAP;
+    if(rowSlots+n>TARGET_COLS)flushRow();
+    const w=wordWidth(n);
+    const gap=rowEntries.length?WORD_GAP_PX:0;
+    rowWidth+=gap+w;
+    rowEntries.push({entry,width:w,gap});
     rowSlots+=n;
+  }
+  flushRow();
+  for(const row of rows){
+    if(curY+PINY+CELL>WS.H-WS.MY-20)break;
+    let curX=WS.MX+Math.max(0,(contentWidth-row.rowWidth)/2);
+    row.entries.forEach(item=>{
+      curX+=item.gap;
+      const entry=item.entry;
+      entry.chars.forEach((ci2,ci)=>{
+        const cx=curX+ci*(CELL+CELL_GAP);
+        const cy=curY;
+        drawCellPy(ci2.pinyin||'',cx,cy,CELL);
+      });
+      entry.chars.forEach((ci2,ci)=>{
+        const cx=curX+ci*(CELL+CELL_GAP);const cy=curY+PINY;
+        drawTzg(cx,cy,CELL);
+        if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
+          const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);
+          const redIdx=[],blueIdx=[];for(let k=1;k<=ns;k++){(rs.has(k)?redIdx:blueIdx).push(k-1);}
+          const showRed=blueIdx.length===0||(redIdx.length>0&&Math.random()<.5);
+          const shown=showRed?redIdx:blueIdx;const col=showRed?'#dc2626':'#1d4ed8';
+          shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL,STROKE_PAD));
+        }
+      });
+      curX+=item.width;
+    });
+    curY+=PINY+CELL+ROW_GAP;
   }
   ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,WS.H-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
