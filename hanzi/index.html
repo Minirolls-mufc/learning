@@ -195,7 +195,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .prac-msg{font-size:.85rem;font-weight:800;text-align:center;padding:6px 16px;border-radius:99px;background:var(--bg);border:1.5px solid var(--border);color:var(--ink);}
 .prac-nav-arrows{position:absolute;top:50%;transform:translateY(-50%);display:flex;width:100%;justify-content:space-between;padding:0 4px;pointer-events:none;z-index:5;}
 .prac-nav-arrows .nav-arrow{pointer-events:all}
-.prac-actions{flex-shrink:0;display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:9px 14px 11px;border-top:1.5px solid var(--border);background:var(--paper);}
+.prac-ctrl-row{margin-top:4px;}
 
 /* ── ACHIEVE ── */
 #page-achieve{background:var(--bg)}
@@ -484,17 +484,17 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
       <div class="tb-right"><button class="tb-btn" onclick="exitPractice()">‹ 返回</button></div>
     </div>
     <div class="prac-quiz-body">
-      <div class="prac-nav-arrows">
-        <button class="nav-arrow" id="prac-prev" onclick="pracGoPrev()">‹</button>
-        <button class="nav-arrow" id="prac-next" onclick="pracGoNext()">›</button>
-      </div>
       <div class="prac-progress" id="prac-progress"></div>
       <div class="prac-chars-row" id="prac-chars-row"></div>
       <div class="prac-msg" id="prac-msg">根据拼音把字写出来</div>
-    </div>
-    <div class="prac-actions">
-      <button class="btn btn-ghost btn-sm" onclick="pracSkip()">跳过 →</button>
-      <button class="btn btn-ghost btn-sm" onclick="pracRestart()">↺ 重来</button>
+      <div class="study-ctrl-row prac-ctrl-row">
+        <button class="study-nav-btn" id="prac-prev" onclick="pracGoPrev()">‹ 上一题</button>
+        <div class="study-mid-btns">
+          <button class="study-act-btn" onclick="pracSkip()">跳过 →</button>
+          <button class="study-act-btn" onclick="pracRestart()">↺ 重来</button>
+        </div>
+        <button class="study-nav-btn study-nav-next" id="prac-next" onclick="pracGoNext()">下一题 ›</button>
+      </div>
     </div>
   </div>
 </div>
