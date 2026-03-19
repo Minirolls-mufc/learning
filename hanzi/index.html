@@ -1239,7 +1239,7 @@ async function generateWorksheet(){
   const contentWidth=WS.W-WS.MX*2;
   const TARGET_COLS=10;
   const BASE_CELL_GAP=4;
-  const BASE_WORD_GAP=8;
+  const BASE_WORD_GAP=12;
   function calcCell(cellGap,wordGap){
     return Math.floor((contentWidth-(TARGET_COLS-1)*cellGap-(TARGET_COLS-1)*wordGap)/TARGET_COLS);
   }
