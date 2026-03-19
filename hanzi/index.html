@@ -184,9 +184,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .prac-chars-row{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;align-items:flex-start}
 .prac-char-unit{display:flex;flex-direction:column;align-items:center;gap:5px;position:relative}
 .prac-char-pinyin{font-size:1.4rem;font-weight:900;letter-spacing:4px;min-height:1.6em;text-align:center;line-height:1.2;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.prac-hint-badge{position:absolute;top:-8px;right:-8px;z-index:10;width:28px;height:28px;border-radius:50%;border:none;cursor:pointer;background:var(--grad-btn);color:#fff;font-size:.72rem;font-weight:900;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,107,0,.4);transition:all .15s;}
-.prac-hint-badge:hover{transform:scale(1.15)}
-.prac-hint-badge.used{background:#22c55e;color:#fff;cursor:default;box-shadow:none}
+.prac-hint-badge{position:absolute;top:-8px;right:-8px;z-index:10;width:24px;height:24px;border-radius:50%;border:none;cursor:pointer;background:var(--grad-btn);color:#fff;font-size:.68rem;font-weight:900;display:inline-flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(255,107,0,.4);transition:all .15s;}
+.prac-hint-badge:hover{transform:scale(1.2)}
+.prac-hint-badge.used{background:#e5d4c0;color:var(--muted);cursor:default;box-shadow:none}
 .prac-char-status{font-size:.66rem;font-weight:700;text-align:center;min-height:1em;color:var(--muted)}
 .prac-char-status.ok{color:var(--green)}.prac-char-status.tracing{color:var(--o1)}
 .prac-progress{display:flex;gap:4px;align-items:center;flex-wrap:wrap;justify-content:center}
@@ -860,159 +860,91 @@ function loadPracEntry(){
     const py=document.createElement('div');py.className='prac-char-pinyin';py.textContent=cs.pinyin;unit.appendChild(py);
     const box=document.createElement('div');box.className='tzg-box';box.id=`pb-${ci}`;
     box.appendChild(makeTzgSvg('position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0'));unit.appendChild(box);
-    const hBtn=document.createElement('button');hBtn.className='prac-hint-badge';hBtn.id=`ph-${ci}`;hBtn.textContent='💡';hBtn.title='点击查看/收起提示';hBtn.onclick=()=>pracHintChar(ci);unit.appendChild(hBtn);
+    const hBtn=document.createElement('button');hBtn.className='prac-hint-badge';hBtn.id=`ph-${ci}`;hBtn.textContent='💡';hBtn.title='查看笔顺提示';hBtn.onclick=()=>pracHintChar(ci);unit.appendChild(hBtn);
     const st=document.createElement('div');st.className='prac-char-status';st.id=`ps-${ci}`;unit.appendChild(st);
     row.appendChild(unit);
     fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(cs.ch)}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{cs.charData=data;initPracChar(ci);}).catch(()=>setPracSt(ci,'⚠️ 无数据'));
   });
 }
-function buildSubData(data, idxs){
-  // Build a HanziWriter-compatible subset data object for the given stroke indices
+function buildSubData(data,idxs){
+  // Subset of strokes/medians for HanziWriter quiz (only the half to write)
   const sorted=[...idxs].sort((a,b)=>a-b);
-  return {
-    character: data.character,
-    strokes: sorted.map(i=>data.strokes[i]),
-    medians: sorted.map(i=>data.medians[i]),
-    radicalStrokeCount: data.radicalStrokeCount
-  };
+  return {character:data.character,strokes:sorted.map(i=>data.strokes[i]),medians:sorted.map(i=>data.medians[i]),radicalStrokeCount:data.radicalStrokeCount};
 }
-
-function renderStaticStrokes(box, data, idxs, color, zIndex){
-  // Draw static strokes as SVG overlay; returns the svg element
-  const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-  svg.setAttribute('viewBox','0 0 1024 1024');
-  svg.style.cssText=`position:absolute;inset:0;width:100%;height:100%;z-index:${zIndex};pointer-events:none`;
-  idxs.forEach(i=>svg.appendChild(mkPath(data.strokes[i],color)));
-  box.appendChild(svg);
-  return svg;
-}
-
 function initPracChar(ci){
   const cs=P.chars[ci];if(!cs||!cs.charData)return;
   const box=document.getElementById(`pb-${ci}`);if(!box)return;
   const bsz=box.clientWidth||220;const data=cs.charData;
   const isComplex=cs.cfg.mode==='complex'&&cs.cfg.redRange;
   while(box.children.length>1)box.removeChild(box.lastChild);
-
+  cs.hintShowing=false;cs.hintFullSvg=null;
   if(P.mode==='simple'&&isComplex){
     const n=data.strokes.length,rs=parseRange(cs.cfg.redRange,n);
-    const redIdxs=[],blueIdxs=[];
-    for(let k=1;k<=n;k++){(rs.has(k)?redIdxs:blueIdxs).push(k-1);}
-    // Randomly pick which half to show (static) vs quiz (write)
+    const redIdxs=[],blueIdxs=[];for(let k=1;k<=n;k++){(rs.has(k)?redIdxs:blueIdxs).push(k-1);}
+    // Randomly decide which half to show (static) vs quiz (write)
     const showRed=blueIdxs.length===0||(redIdxs.length>0&&Math.random()<.5);
-    const shownIdxs=showRed?redIdxs:blueIdxs;   // displayed statically
-    const quizIdxs=showRed?blueIdxs:redIdxs;     // user must write these
+    const shownIdxs=showRed?redIdxs:blueIdxs;
+    const quizIdxs=showRed?blueIdxs:redIdxs;
     const shownColor=showRed?'#dc2626':'#1d4ed8';
-    const quizLabel=showRed?'蓝色部分':'红色部分';
-
-    // Store on cs for hint toggle
-    cs.shownIdxs=shownIdxs;
-    cs.quizIdxs=quizIdxs;
-    cs.shownColor=shownColor;
-    cs.quizLabel=quizLabel;
-    cs.hintShowing=false;
-
-    // Static overlay for shown half (z-index 1)
-    cs.staticSvg=renderStaticStrokes(box,data,shownIdxs,shownColor,1);
-
-    // Build sub-data for just the quiz half
+    cs.shownIdxs=shownIdxs;cs.quizIdxs=quizIdxs;cs.shownColor=shownColor;
+    cs.quizLabel=showRed?'蓝色部分':'红色部分';
+    // Static SVG for shown half
+    const hintSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    hintSvg.setAttribute('viewBox','0 0 1024 1024');
+    hintSvg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none';
+    shownIdxs.forEach(i=>hintSvg.appendChild(mkPath(data.strokes[i],shownColor)));
+    box.appendChild(hintSvg);
+    setPracSt(ci,`写出${cs.quizLabel}`);
+    // HanziWriter only quizzes the OTHER half (subData)
     const subData=buildSubData(data,quizIdxs);
-
-    setPracSt(ci,`写出${quizLabel}`);
-    cs.hwWriter=HanziWriter.create(box,cs.ch,{
-      width:bsz,height:bsz,padding:0,
-      showCharacter:false,showOutline:false,
-      strokeColor:'#ff6b00',outlineColor:'rgba(0,0,0,0)',
-      drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),
-      showHintAfterMisses:999,  // never auto-hint
-      highlightColor:'#fbbf24',
-      charDataLoader:(_,onL)=>onL(subData),
-      onLoadCharDataSuccess:()=>startPracCharQuiz(ci)
-    });
+    cs.hwWriter=HanziWriter.create(box,cs.ch,{width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:false,strokeColor:'#ff6b00',outlineColor:'rgba(0,0,0,0)',drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:999,highlightColor:'#fbbf24',charDataLoader:(_,onL)=>onL(subData),onLoadCharDataSuccess:()=>startPracCharQuiz(ci)});
   } else {
-    // Standard mode or simple non-complex: full character quiz
-    cs.shownIdxs=null;cs.quizIdxs=null;cs.hintShowing=false;
-    cs.hwWriter=HanziWriter.create(box,cs.ch,{
-      width:bsz,height:bsz,padding:0,
-      showCharacter:false,showOutline:false,
-      strokeColor:'#ff6b00',outlineColor:'rgba(0,0,0,0)',
-      drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),
-      showHintAfterMisses:999,  // never auto-hint
-      highlightColor:'#fbbf24',
-      charDataLoader:(_,onL)=>onL(cs.charData),
-      onLoadCharDataSuccess:()=>startPracCharQuiz(ci)
-    });
+    cs.shownIdxs=null;cs.quizIdxs=null;
+    cs.hwWriter=HanziWriter.create(box,cs.ch,{width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:false,strokeColor:'#ff6b00',outlineColor:'rgba(0,0,0,0)',drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:999,highlightColor:'#fbbf24',charDataLoader:(_,onL)=>onL(data),onLoadCharDataSuccess:()=>startPracCharQuiz(ci)});
     setPracSt(ci,'写出这个字');
   }
 }
-
 function startPracCharQuiz(ci){
-  const cs=P.chars[ci];if(!cs||!cs.hwWriter||cs.done)return;
-  cs.phase='write';cs.mistakeCount=0;
-  cs.hwWriter.quiz({
-    leniency:1.1,
-    onMistake:info=>{
-      cs.mistakeCount++;
-      setPracSt(ci,`第${info.strokeNum+1}笔再试`);
-    },
-    onCorrectStroke:info=>{
-      setPracSt(ci,`第${info.strokeNum+1}笔 ✓`,'tracing');
-      achRecordCorrect();
-    },
-    onComplete:sum=>{
-      cs.done=true;
-      setPracSt(ci,`完成！错${sum.totalMistakes}次 🎉`,'ok');
-      const hb=document.getElementById(`ph-${ci}`);
-      if(hb){hb.classList.add('used');hb.textContent='✅';}
-      checkAllCharsDone();
-    }
+  const cs=P.chars[ci];if(!cs||!cs.hwWriter||cs.done)return;cs.phase='write';cs.mistakeCount=0;
+  cs.hwWriter.quiz({leniency:1.1,
+    onMistake:info=>{cs.mistakeCount++;setPracSt(ci,`第${info.strokeNum+1}笔再试`);},
+    onCorrectStroke:info=>{setPracSt(ci,`第${info.strokeNum+1}笔 ✓`,'tracing');achRecordCorrect();},
+    onComplete:sum=>{cs.done=true;setPracSt(ci,`完成！错${sum.totalMistakes}次 🎉`,'ok');const hb=document.getElementById(`ph-${ci}`);if(hb){hb.classList.add('used');hb.textContent='✅';}checkAllCharsDone();}
   });
 }
-
-// Toggle hint: show full char or restore quiz state
 function pracHintChar(ci){
   const cs=P.chars[ci];if(!cs||cs.done)return;
   const box=document.getElementById(`pb-${ci}`);if(!box)return;
   const hb=document.getElementById(`ph-${ci}`);
-  const data=cs.charData;
-
   if(!cs.hintShowing){
-    // Show full character: pause quiz, draw complete char as static SVG
+    // Show full character
     cs.hintShowing=true;
     if(hb)hb.textContent='✖ 收起';
     try{cs.hwWriter.cancelQuiz();}catch(e){}
-    // Draw all strokes: shown half + quiz half in their original colors
+    cs.hintFullSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    cs.hintFullSvg.setAttribute('viewBox','0 0 1024 1024');
+    cs.hintFullSvg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none';
     if(cs.shownIdxs){
-      // Simple+complex mode: show both halves colored
-      cs.hintFullSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      cs.hintFullSvg.setAttribute('viewBox','0 0 1024 1024');
-      cs.hintFullSvg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none';
+      // Simple+complex: show both halves in their colors
       const quizColor=cs.shownColor==='#dc2626'?'#1d4ed8':'#dc2626';
-      // All strokes: shown (their color) + quiz (their color)
-      const allIdxs=[...Array(data.strokes.length).keys()];
-      allIdxs.forEach(i=>{
+      cs.charData.strokes.forEach((d,i)=>{
         const col=cs.shownIdxs.includes(i)?cs.shownColor:quizColor;
-        cs.hintFullSvg.appendChild(mkPath(data.strokes[i],col));
+        cs.hintFullSvg.appendChild(mkPath(d,col));
       });
-      box.appendChild(cs.hintFullSvg);
     } else {
-      // Standard mode: show full char in orange
-      cs.hintFullSvg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-      cs.hintFullSvg.setAttribute('viewBox','0 0 1024 1024');
-      cs.hintFullSvg.style.cssText='position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none';
-      data.strokes.forEach(d=>cs.hintFullSvg.appendChild(mkPath(d,'#ff6b00')));
-      box.appendChild(cs.hintFullSvg);
+      // Standard: show full char in orange
+      cs.charData.strokes.forEach(d=>cs.hintFullSvg.appendChild(mkPath(d,'#ff6b00')));
     }
-    setPracSt(ci,'看清楚后点✖收起');
+    box.appendChild(cs.hintFullSvg);
+    setPracSt(ci,'看清后点✖收起');
     document.getElementById('prac-msg').textContent='💡 看清笔顺，点✖收起后继续写';
   } else {
     // Hide hint, restart quiz
     cs.hintShowing=false;
-    if(hb){hb.classList.remove('used');hb.textContent='💡';}
+    if(hb){hb.textContent='💡';}
     if(cs.hintFullSvg){cs.hintFullSvg.remove();cs.hintFullSvg=null;}
     setPracSt(ci,cs.shownIdxs?`写出${cs.quizLabel}`:'写出这个字');
     document.getElementById('prac-msg').textContent='根据拼音把字写出来';
-    // Restart quiz from scratch
     try{cs.hwWriter.cancelQuiz();}catch(e){}
     cs.mistakeCount=0;cs.phase='write';
     startPracCharQuiz(ci);
