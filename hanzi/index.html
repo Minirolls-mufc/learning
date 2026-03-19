@@ -1235,9 +1235,10 @@ async function generateWorksheet(){
   canvas.width=WS.W;canvas.height=WS.H;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,WS.W,WS.H);
   ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${grpName} · ${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`,WS.W/2,WS.MY+46);
 
+  const MX=48;
   const contentTop=WS.MY+WS.TITLE_H+20;
   const contentHeight=WS.H-WS.MY-20-contentTop;
-  const contentWidth=WS.W-WS.MX*2;
+  const contentWidth=WS.W-MX*2;
   const TARGET_COLS=10;
   const BASE_CELL_GAP=4;
   const BASE_WORD_GAP=28;
@@ -1301,7 +1302,7 @@ async function generateWorksheet(){
     ctx.fillStyle=color;try{ctx.fill(new Path2D(pathD));}catch(e){}ctx.restore();
   }
   function drawCellPy(txt,cx,cy,cellSz){
-    const pyFont=Math.max(16,Math.round(20*(CELL/WS.CELL)));
+    const pyFont=Math.max(16,Math.round(26*(CELL/WS.CELL)));
     const pyOffset=Math.min(PINY-6,Math.max(18,Math.round(24*(CELL/WS.CELL))));
     ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`${pyFont}px 'Noto Sans SC',Arial,sans-serif`;
     ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+pyOffset);ctx.restore();
@@ -1318,7 +1319,7 @@ async function generateWorksheet(){
   flushRow();
   for(const row of rows){
     if(curY+PINY+CELL>WS.H-WS.MY-20)break;
-    let curX=WS.MX+Math.max(0,(contentWidth-row.rowWidth)/2);
+    let curX=MX;
     row.entries.forEach(item=>{
       curX+=item.gap;
       const entry=item.entry;
