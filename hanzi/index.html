@@ -197,6 +197,38 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .prac-nav-arrows .nav-arrow{pointer-events:all}
 .prac-ctrl-row{margin-top:4px;}
 
+/* ── PINYIN ── */
+#page-pinyin{background:var(--bg)}
+.py-step{display:none;flex-direction:column;height:100%}
+.py-step.active{display:flex}
+.py-sel-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px;gap:22px;}
+.py-modes{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.py-mode-card{background:var(--paper);border:1.5px solid var(--border);border-radius:18px;padding:26px 28px;cursor:pointer;transition:all .2s;text-align:center;min-width:165px;max-width:220px;box-shadow:0 2px 8px rgba(255,107,0,.05);}
+.py-mode-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,107,0,.13);border-color:var(--o2)}
+.py-mode-card.active{border-color:var(--o1);box-shadow:0 0 0 3px rgba(255,107,0,.15),0 4px 16px rgba(255,107,0,.12)}
+.py-mode-card .pm-icon{font-size:2.2rem;display:block;margin-bottom:8px}
+.py-mode-card .pm-name{font-weight:900;font-size:.95rem;color:var(--ink);display:block}
+.py-mode-card .pm-desc{font-size:.7rem;color:var(--muted);line-height:1.5;margin-top:5px;display:block}
+.py-mode-card.active .pm-name{color:var(--o1)}
+
+.py-quiz-body{flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 18px 26px;gap:12px}
+.py-progress{display:flex;gap:6px;align-items:center;justify-content:center;flex-wrap:wrap}
+.py-dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:all .2s}
+.py-dot.done{background:var(--green)}
+.py-dot.current{background:var(--o1);transform:scale(1.3)}
+.py-target{font-size:2.2rem;font-weight:900;letter-spacing:3px;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.py-hint{font-size:.78rem;color:var(--muted);font-weight:700}
+.py-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.py-opt{padding:8px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--paper);font-weight:800;font-size:.9rem;cursor:pointer;transition:all .15s;color:var(--ink2);}
+.py-opt:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
+.py-opt.active{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(255,107,0,.25)}
+.py-opt.wrong{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
+.py-opt.correct{background:#dcfce7;border-color:#86efac;color:#166534}
+.py-input-wrap{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
+.py-input{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;width:180px;outline:none;background:#fff;}
+.py-input:focus{border-color:var(--o2);box-shadow:0 0 0 3px rgba(255,107,0,.1)}
+.py-msg{min-height:1.2em;font-size:.85rem;font-weight:800;color:var(--ink)}
+
 /* ── ACHIEVE ── */
 #page-achieve{background:var(--bg)}
 .ach-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
@@ -385,6 +417,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
       <div class="nav-card" onclick="showPage('practice');pracGoStep(1)">
         <span class="nav-icon">✏️</span><span class="nav-name">练 习</span><span class="nav-desc">默写检测·两种模式</span>
       </div>
+      <div class="nav-card" onclick="openPinyin()">
+        <span class="nav-icon">🔤</span><span class="nav-name">拼 音</span><span class="nav-desc">对对碰·拼音输入</span>
+      </div>
       <div class="nav-card" onclick="showPage('achieve');renderAchieve()">
         <span class="nav-icon">🏆</span><span class="nav-name">成 就</span><span class="nav-desc">星星·火箭·徽章</span>
       </div>
@@ -415,6 +450,54 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   </div>
   <div class="sg-tabbar" id="gpick-tabbar"></div>
   <div class="gpick-body"><div class="gpick-grid" id="gpick-grid"></div></div>
+</div>
+
+<!-- PINYIN -->
+<div id="page-pinyin" class="page">
+  <div class="topbar">
+    <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
+    <div class="tb-title">拼 音</div>
+    <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
+  </div>
+  <div id="py-step1" class="py-step active">
+    <div class="py-sel-body">
+      <div class="py-modes">
+        <div class="py-mode-card active" id="pymc-simple" onclick="selectPyMode('simple')">
+          <span class="pm-icon">🧩</span><span class="pm-name">简单模式</span><span class="pm-desc">随机5组拼音<br>声母韵母对对碰</span>
+        </div>
+        <div class="py-mode-card" id="pymc-standard" onclick="selectPyMode('standard')">
+          <span class="pm-icon">⌨️</span><span class="pm-name">标准模式</span><span class="pm-desc">随机10组拼音<br>看读音输入拼音</span>
+        </div>
+      </div>
+      <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="startPinyin()">开始练习 →</button>
+    </div>
+  </div>
+  <div id="py-step2" class="py-step">
+    <div class="py-quiz-body">
+      <div class="py-progress" id="py-progress"></div>
+      <div class="py-target" id="py-target"></div>
+      <div class="py-hint" id="py-hint"></div>
+      <div id="py-simple-panel">
+        <div class="py-row" id="py-sm-row"></div>
+        <div class="py-row" id="py-ym-row" style="margin-top:6px"></div>
+      </div>
+      <div id="py-standard-panel" style="display:none">
+        <div class="py-input-wrap">
+          <input class="py-input" id="py-input" placeholder="请输入拼音（无声调）">
+          <button class="btn btn-primary btn-sm" onclick="submitPyInput()">提交</button>
+          <button class="btn btn-ghost btn-sm" onclick="skipPyInput()">跳过</button>
+        </div>
+      </div>
+      <div class="py-msg" id="py-msg"></div>
+      <div class="study-ctrl-row" style="margin-top:8px">
+        <button class="study-nav-btn" onclick="openPinyin()">← 返回模式</button>
+        <div class="study-mid-btns">
+          <button class="study-act-btn" onclick="resetPyQuiz()">↺ 重来</button>
+        </div>
+        <button class="study-nav-btn study-nav-next" onclick="showPage('home')">🏠 首页</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- STUDY -->
@@ -992,6 +1075,261 @@ function pracRestart(){killPracWriters();P.idx=0;for(let i=P.queue.length-1;i>0;
 function exitPractice(){killPracWriters();pracGoStep(1);}
 function killPracWriters(){(P.chars||[]).forEach(cs=>{if(cs.hwWriter){try{cs.hwWriter.cancelAnimation();cs.hwWriter.cancelQuiz();}catch(e){}cs.hwWriter=null;}});}
 function setPracSt(ci,msg,cls){const el=document.getElementById(`ps-${ci}`);if(!el)return;el.textContent=msg;el.className='prac-char-status'+(cls?' '+cls:'');}
+
+/* ━━━━━ PINYIN ━━━━━ */
+const PY={
+  mode:'simple',
+  queue:[],
+  idx:0,
+  score:0,
+  activeSM:null,
+  activeYM:null
+};
+
+const PY_SHENGMU=["zh","ch","sh","b","p","m","f","d","t","n","l","g","k","h","j","q","x","r","z","c","s","y","w",""];
+const PY_SPECIAL=["zhi","chi","shi","ri","zi","ci","si"];
+const PY_FINALS_BASE=["a","o","e","ai","ei","ao","ou","an","en","ang","eng","er"];
+const PY_FINALS_I=["i","ia","ie","iao","iu","ian","in","iang","ing","iong"];
+const PY_FINALS_U=["u","ua","uo","uai","ui","uan","un","uang","ong"];
+const PY_FINALS_UML=["ü","üe","üan","ün"];
+
+function buildPinyinPool(){
+  const list=new Set();
+  const add=s=>{if(s)list.add(s);};
+
+  PY_FINALS_BASE.forEach(add);
+
+  ["b","p","m","f"].forEach(sm=>{
+    ["a","o","ai","ei","ao","ou","an","en","ang","eng","u","ua","uo","uai","ui","uan","un","uang","ong","i","ia","ie","iao","iu","ian","in","iang","ing"].forEach(ym=>add(sm+ym));
+  });
+  ["fia","fie","fiao","fiu","fian","fing","fiang","fin","fiong"].forEach(x=>list.delete(x));
+
+  ["d","t","n","l"].forEach(sm=>{
+    ["a","o","e","ai","ei","ao","ou","an","en","ang","eng","ong","i","ia","ie","iao","iu","ian","in","iang","ing","u","ua","uo","uai","ui","uan","un","uang"].forEach(ym=>add(sm+ym));
+  });
+  ["n","l"].forEach(sm=>PY_FINALS_UML.forEach(ym=>add(sm+ym)));
+
+  ["g","k","h"].forEach(sm=>{
+    ["a","o","e","ai","ei","ao","ou","an","en","ang","eng","ong","u","ua","uo","uai","ui","uan","un","uang"].forEach(ym=>add(sm+ym));
+  });
+
+  ["j","q","x"].forEach(sm=>{
+    ["i","ia","ie","iao","iu","ian","in","iang","ing","iong","u","ue","uan","un"].forEach(ym=>add(sm+ym));
+  });
+
+  ["zh","ch","sh","r"].forEach(sm=>{
+    ["a","e","ai","ei","ao","ou","an","en","ang","eng","ong","u","ua","uo","uai","ui","uan","un","uang"].forEach(ym=>add(sm+ym));
+  });
+  PY_SPECIAL.forEach(add);
+
+  ["z","c","s"].forEach(sm=>{
+    ["a","e","ai","ei","ao","ou","an","en","ang","eng","ong","u","ua","uo","uai","ui","uan","un","uang","i"].forEach(ym=>add(sm+ym));
+  });
+
+  const yMap={
+    i:"yi",ia:"ya",iao:"yao",ie:"ye",iu:"you",ian:"yan",in:"yin",iang:"yang",ing:"ying",iong:"yong",
+    a:"ya",ao:"yao",an:"yan",ang:"yang",e:"ye",
+    u:"yu",ue:"yue",uan:"yuan",un:"yun",
+    ü:"yu","üe":"yue","üan":"yuan","ün":"yun"
+  };
+  Object.values(yMap).forEach(add);
+  add("yi");add("ya");add("yao");add("ye");add("you");add("yan");add("yin");add("yang");add("ying");add("yong");add("yu");add("yue");add("yuan");add("yun");
+
+  const wMap={u:"wu",ua:"wa",uo:"wo",uai:"wai",ui:"wei",uan:"wan",un:"wen",uang:"wang",ong:"weng",o:"wo",a:"wa",ai:"wai"};
+  Object.values(wMap).forEach(add);
+
+  return Array.from(list);
+}
+
+const PY_POOL=buildPinyinPool();
+
+function openPinyin(){
+  showPage('pinyin');
+  document.querySelectorAll('.py-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('py-step1').classList.add('active');
+  selectPyMode(PY.mode);
+}
+
+function selectPyMode(m){
+  PY.mode=m;
+  document.getElementById('pymc-simple').classList.toggle('active',m==='simple');
+  document.getElementById('pymc-standard').classList.toggle('active',m==='standard');
+}
+
+function startPinyin(){
+  PY.queue=[];
+  PY.idx=0;
+  PY.score=0;
+  PY.activeSM=null;
+  PY.activeYM=null;
+  const n=PY.mode==='simple'?5:10;
+  const pool=[...PY_POOL];
+  for(let i=0;i<n;i++){
+    const r=Math.floor(Math.random()*pool.length);
+    PY.queue.push(pool.splice(r,1)[0]);
+  }
+  document.querySelectorAll('.py-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('py-step2').classList.add('active');
+  renderPyQuestion();
+}
+
+function splitPinyin(py){
+  const lower=py.toLowerCase();
+  const initials=["zh","ch","sh","b","p","m","f","d","t","n","l","g","k","h","j","q","x","r","z","c","s","y","w"];
+  for(const sm of initials){
+    if(lower.startsWith(sm)){
+      return {sm,ym:lower.slice(sm.length)};
+    }
+  }
+  return {sm:"",ym:lower};
+}
+
+function normalizePyInput(s){
+  return (s||'').toLowerCase().trim().replace(/u:|v/g,'ü');
+}
+
+function renderPyProgress(){
+  const prog=document.getElementById('py-progress');prog.innerHTML='';
+  PY.queue.forEach((_,i)=>{const d=document.createElement('div');d.className='py-dot'+(i<PY.idx?' done':i===PY.idx?' current':'');prog.appendChild(d);});
+}
+
+function renderPyQuestion(){
+  if(PY.idx>=PY.queue.length){
+    document.getElementById('py-target').textContent='🎉 完成！';
+    document.getElementById('py-hint').textContent=`得分 ${PY.score} / ${PY.queue.length}`;
+    document.getElementById('py-simple-panel').style.display='none';
+    document.getElementById('py-standard-panel').style.display='none';
+    document.getElementById('py-msg').textContent='';
+    renderPyProgress();
+    return;
+  }
+  const target=PY.queue[PY.idx];
+  document.getElementById('py-target').textContent=target;
+  document.getElementById('py-hint').textContent=PY.mode==='simple'?'选择正确的声母 + 韵母':'输入拼音（不含声调）';
+  document.getElementById('py-msg').textContent='';
+  renderPyProgress();
+
+  if(PY.mode==='simple'){
+    document.getElementById('py-simple-panel').style.display='';
+    document.getElementById('py-standard-panel').style.display='none';
+    renderPyMatchOptions();
+  }else{
+    document.getElementById('py-simple-panel').style.display='none';
+    document.getElementById('py-standard-panel').style.display='';
+    const input=document.getElementById('py-input');
+    input.value='';
+    setTimeout(()=>input.focus(),60);
+  }
+}
+
+function renderPyMatchOptions(){
+  const target=PY.queue[PY.idx];
+  let tries=0;
+  let items=[];
+  let sms=[];
+  let yms=[];
+  while(tries<30){
+    const pool=[...PY_POOL];
+    items=[];
+    for(let i=0;i<5;i++){
+      const r=Math.floor(Math.random()*pool.length);
+      items.push(pool.splice(r,1)[0]);
+    }
+    if(!items.includes(target))items[0]=target;
+    sms=[...new Set(items.map(x=>splitPinyin(x).sm))];
+    yms=[...new Set(items.map(x=>splitPinyin(x).ym))];
+    if(sms.length>=5 && yms.length>=5)break;
+    tries++;
+  }
+  PY.activeSM=null;
+  PY.activeYM=null;
+  const smRow=document.getElementById('py-sm-row');smRow.innerHTML='';
+  const ymRow=document.getElementById('py-ym-row');ymRow.innerHTML='';
+
+  const pickFill=(arr,source,need)=>{
+    const out=[...arr];
+    const pool=source.filter(x=>!out.includes(x));
+    while(out.length<need&&pool.length){
+      const r=Math.floor(Math.random()*pool.length);
+      out.push(pool.splice(r,1)[0]);
+    }
+    return out.slice(0,need);
+  };
+  const smSource=[...new Set(PY_SHENGMU.map(x=>x||''))];
+  const ymSource=[...new Set(PY_POOL.map(x=>splitPinyin(x).ym))];
+  const smList=pickFill(sms,smSource,5);
+  const ymList=pickFill(yms,ymSource,5);
+  const makeBtn=(txt,cb)=>{
+    const b=document.createElement('button');
+    b.className='py-opt';
+    b.textContent=txt||'∅';
+    b.onclick=cb;
+    return b;
+  };
+  smList.forEach(sm=>{
+    const label=sm||'∅';
+    smRow.appendChild(makeBtn(label,()=>selectPySm(sm)));
+  });
+  ymList.forEach(ym=>{
+    ymRow.appendChild(makeBtn(ym,()=>selectPyYm(ym)));
+  });
+}
+
+function selectPySm(sm){
+  PY.activeSM=sm;
+  document.querySelectorAll('#py-sm-row .py-opt').forEach(b=>b.classList.remove('active'));
+  const btn=[...document.querySelectorAll('#py-sm-row .py-opt')].find(b=>b.textContent===(sm||'∅'));
+  if(btn)btn.classList.add('active');
+  tryCheckPyMatch();
+}
+
+function selectPyYm(ym){
+  PY.activeYM=ym;
+  document.querySelectorAll('#py-ym-row .py-opt').forEach(b=>b.classList.remove('active'));
+  const btn=[...document.querySelectorAll('#py-ym-row .py-opt')].find(b=>b.textContent===ym);
+  if(btn)btn.classList.add('active');
+  tryCheckPyMatch();
+}
+
+function tryCheckPyMatch(){
+  if(PY.activeSM===null||PY.activeYM===null)return;
+  const target=PY.queue[PY.idx];
+  const cur=(PY.activeSM||'')+(PY.activeYM||'');
+  const msg=document.getElementById('py-msg');
+  if(cur===target){
+    PY.score++;
+    msg.textContent='✅ 正确！';
+    PY.idx++;
+    setTimeout(()=>renderPyQuestion(),500);
+  }else{
+    msg.textContent='❌ 不对，再试一次';
+  }
+}
+
+function submitPyInput(){
+  const input=document.getElementById('py-input');
+  const val=normalizePyInput(input.value);
+  const target=normalizePyInput(PY.queue[PY.idx]);
+  const msg=document.getElementById('py-msg');
+  if(!val){msg.textContent='请输入拼音';return;}
+  if(val===target){
+    PY.score++;
+    msg.textContent='✅ 正确！';
+    PY.idx++;
+    setTimeout(()=>renderPyQuestion(),500);
+  }else{
+    msg.textContent='❌ 不对，再试一次';
+  }
+}
+
+function skipPyInput(){
+  PY.idx++;
+  renderPyQuestion();
+}
+
+function resetPyQuiz(){
+  startPinyin();
+}
 
 /* ━━━━━ ACHIEVE ━━━━━ */
 const BADGES=[
