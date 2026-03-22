@@ -216,10 +216,10 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:all .2s}
 .py-dot.done{background:var(--green)}
 .py-dot.current{background:var(--o1);transform:scale(1.3)}
-.py-target{font-size:1.2rem;font-weight:900;letter-spacing:2px;color:var(--ink2)}
+.py-target{font-size:1.6rem;font-weight:900;letter-spacing:2px;color:var(--ink2)}
 .py-hint{font-size:.78rem;color:var(--muted);font-weight:700}
 .py-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.py-opt{padding:8px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--paper);font-weight:800;font-size:.9rem;cursor:pointer;transition:all .15s;color:var(--ink2);}
+.py-opt{padding:10px 18px;border-radius:12px;border:1.5px solid var(--border);background:var(--paper);font-weight:800;font-size:1.05rem;cursor:pointer;transition:all .15s;color:var(--ink2);}
 .py-opt:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
 .py-opt.active{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 3px 10px rgba(255,107,0,.25)}
 .py-opt.wrong{background:#fee2e2;border-color:#fecaca;color:#b91c1c}
@@ -231,7 +231,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-audio-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
 .py-all-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
 .py-all-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
-.py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center;font-weight:800;font-size:.9rem;color:var(--ink2);}
+.py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center;font-weight:800;font-size:.95rem;color:var(--ink2);}
+.py-all-group{margin-bottom:14px}
+.py-all-title{font-size:.78rem;letter-spacing:2px;color:var(--muted);font-weight:800;margin:6px 0 8px 2px;}
 
 /* ── ACHIEVE ── */
 #page-achieve{background:var(--bg)}
@@ -490,9 +492,6 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
       <div id="py-simple-panel">
         <div class="py-row" id="py-sm-row"></div>
         <div class="py-row" id="py-ym-row" style="margin-top:6px"></div>
-        <div style="margin-top:8px;text-align:center">
-          <button class="btn btn-primary btn-sm" onclick="confirmPyMatch()">确认</button>
-        </div>
       </div>
       <div id="py-standard-panel" style="display:none">
         <div class="py-input-wrap">
@@ -507,7 +506,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         <div class="study-mid-btns">
           <button class="study-act-btn" onclick="resetPyQuiz()">↺ 重来</button>
         </div>
-        <button class="study-nav-btn study-nav-next" onclick="showPage('home')">🏠 首页</button>
+        <button class="study-nav-btn study-nav-next" id="py-confirm-btn" onclick="confirmPyAction()">确认 ›</button>
       </div>
     </div>
   </div>
@@ -518,7 +517,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
       <div class="study-ctrl-row" style="margin-top:16px">
         <button class="study-nav-btn" onclick="openPinyin()">← 返回模式</button>
         <div class="study-mid-btns"></div>
-        <button class="study-nav-btn study-nav-next" onclick="showPage('home')">🏠 首页</button>
+        <button class="study-nav-btn study-nav-next" onclick="openPinyin()">确认 ›</button>
       </div>
     </div>
   </div>
@@ -1124,7 +1123,9 @@ function buildPinyinPool(){
   PY_FINALS_BASE.forEach(add);
 
   ["b","p","m","f"].forEach(sm=>{
-    ["a","o","ai","ei","ao","ou","an","en","ang","eng","u","ua","uo","uai","ui","uan","un","uang","ong","i","ia","ie","iao","iu","ian","in","iang","ing"].forEach(ym=>add(sm+ym));
+    const finals=["a","o","ai","ei","ao","ou","an","en","ang","eng","u","ua","uai","ui","uan","un","uang","ong","i","ia","ie","iao","iu","ian","in","iang","ing"];
+    if(sm!=="f")finals.push("uo");
+    finals.forEach(ym=>add(sm+ym));
   });
   ["fia","fie","fiao","fiu","fian","fing","fiang","fin","fiong"].forEach(x=>list.delete(x));
 
@@ -1239,6 +1240,8 @@ function renderPyQuestion(){
   document.getElementById('py-hint').textContent=PY.mode==='simple'?'选声母 + 韵母，点击确认':'听后输入拼音（不含声调）';
   document.getElementById('py-msg').textContent='';
   renderPyProgress();
+  const cbtn=document.getElementById('py-confirm-btn');
+  if(cbtn)cbtn.textContent=PY.mode==='simple'?'确认 ›':'提交 ›';
 
   if(PY.mode==='simple'){
     document.getElementById('py-simple-panel').style.display='';
@@ -1347,6 +1350,11 @@ function resetPyQuiz(){
   startPinyin();
 }
 
+function confirmPyAction(){
+  if(PY.mode==='simple')confirmPyMatch();
+  else submitPyInput();
+}
+
 function playPyAudio(){
   if(PY.idx>=PY.queue.length)return;
   const text=PY.queue[PY.idx];
@@ -1363,22 +1371,35 @@ function renderPyAllList(){
   const grid=document.getElementById('py-all-grid');if(!grid)return;
   grid.innerHTML='';
   const order=PY_SHENGMU;
-  const sortKey=py=>{
-    const s=splitPinyin(py);
-    const i=order.indexOf(s.sm);
-    return [i<0?999:i,s.ym,py];
-  };
-  const list=[...PY_POOL].sort((a,b)=>{
-    const ka=sortKey(a),kb=sortKey(b);
-    if(ka[0]!==kb[0])return ka[0]-kb[0];
-    if(ka[1]!==kb[1])return ka[1].localeCompare(kb[1]);
-    return ka[2].localeCompare(kb[2]);
-  });
+  const list=[...PY_POOL];
+  const groups={};
   list.forEach(py=>{
-    const d=document.createElement('div');
-    d.className='py-all-item';
-    d.textContent=py;
-    grid.appendChild(d);
+    const s=splitPinyin(py);
+    const key=s.sm||'（零声母）';
+    if(!groups[key])groups[key]=[];
+    groups[key].push(py);
+  });
+  order.forEach(sm=>{
+    const key=sm||'（零声母）';
+    const arr=groups[key];
+    if(!arr||!arr.length)return;
+    const wrap=document.createElement('div');
+    wrap.className='py-all-group';
+    const title=document.createElement('div');
+    title.className='py-all-title';
+    title.textContent=sm?`声母 ${sm}`:'零声母';
+    wrap.appendChild(title);
+    const g=document.createElement('div');
+    g.className='py-all-grid';
+    arr.sort((a,b)=>splitPinyin(a).ym.localeCompare(splitPinyin(b).ym));
+    arr.forEach(py=>{
+      const d=document.createElement('div');
+      d.className='py-all-item';
+      d.textContent=py;
+      g.appendChild(d);
+    });
+    wrap.appendChild(g);
+    grid.appendChild(wrap);
   });
 }
 
