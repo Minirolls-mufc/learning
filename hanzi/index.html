@@ -216,7 +216,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-dot{width:9px;height:9px;border-radius:50%;background:var(--border);transition:all .2s}
 .py-dot.done{background:var(--green)}
 .py-dot.current{background:var(--o1);transform:scale(1.3)}
-.py-target{font-size:2.2rem;font-weight:900;letter-spacing:3px;background:var(--grad-hero);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.py-target{font-size:1.2rem;font-weight:900;letter-spacing:2px;color:var(--ink2)}
 .py-hint{font-size:.78rem;color:var(--muted);font-weight:700}
 .py-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .py-opt{padding:8px 16px;border-radius:12px;border:1.5px solid var(--border);background:var(--paper);font-weight:800;font-size:.9rem;cursor:pointer;transition:all .15s;color:var(--ink2);}
@@ -228,6 +228,10 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-input{border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:1rem;font-family:inherit;width:180px;outline:none;background:#fff;}
 .py-input:focus{border-color:var(--o2);box-shadow:0 0 0 3px rgba(255,107,0,.1)}
 .py-msg{min-height:1.2em;font-size:.85rem;font-weight:800;color:var(--ink)}
+.py-audio-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.py-all-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
+.py-all-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px}
+.py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:8px 6px;text-align:center;font-weight:800;font-size:.9rem;color:var(--ink2);}
 
 /* ── ACHIEVE ── */
 #page-achieve{background:var(--bg)}
@@ -468,6 +472,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         <div class="py-mode-card" id="pymc-standard" onclick="selectPyMode('standard')">
           <span class="pm-icon">⌨️</span><span class="pm-name">标准模式</span><span class="pm-desc">随机10组拼音<br>看读音输入拼音</span>
         </div>
+        <div class="py-mode-card" onclick="openPyList()">
+          <span class="pm-icon">📚</span><span class="pm-name">拼音大全</span><span class="pm-desc">查看全部拼音组合</span>
+        </div>
       </div>
       <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="startPinyin()">开始练习 →</button>
     </div>
@@ -477,9 +484,15 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
       <div class="py-progress" id="py-progress"></div>
       <div class="py-target" id="py-target"></div>
       <div class="py-hint" id="py-hint"></div>
+      <div class="py-audio-row">
+        <button class="btn btn-ghost btn-sm" onclick="playPyAudio()">🔊 朗读</button>
+      </div>
       <div id="py-simple-panel">
         <div class="py-row" id="py-sm-row"></div>
         <div class="py-row" id="py-ym-row" style="margin-top:6px"></div>
+        <div style="margin-top:8px;text-align:center">
+          <button class="btn btn-primary btn-sm" onclick="confirmPyMatch()">确认</button>
+        </div>
       </div>
       <div id="py-standard-panel" style="display:none">
         <div class="py-input-wrap">
@@ -494,6 +507,17 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         <div class="study-mid-btns">
           <button class="study-act-btn" onclick="resetPyQuiz()">↺ 重来</button>
         </div>
+        <button class="study-nav-btn study-nav-next" onclick="showPage('home')">🏠 首页</button>
+      </div>
+    </div>
+  </div>
+  <div id="py-step3" class="py-step">
+    <div class="py-all-body">
+      <div class="sec-label" style="margin-bottom:10px">拼音组合大全</div>
+      <div class="py-all-grid" id="py-all-grid"></div>
+      <div class="study-ctrl-row" style="margin-top:16px">
+        <button class="study-nav-btn" onclick="openPinyin()">← 返回模式</button>
+        <div class="study-mid-btns"></div>
         <button class="study-nav-btn study-nav-next" onclick="showPage('home')">🏠 首页</button>
       </div>
     </div>
@@ -1150,6 +1174,13 @@ function openPinyin(){
   selectPyMode(PY.mode);
 }
 
+function openPyList(){
+  showPage('pinyin');
+  document.querySelectorAll('.py-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('py-step3').classList.add('active');
+  renderPyAllList();
+}
+
 function selectPyMode(m){
   PY.mode=m;
   document.getElementById('pymc-simple').classList.toggle('active',m==='simple');
@@ -1170,6 +1201,7 @@ function startPinyin(){
   }
   document.querySelectorAll('.py-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('py-step2').classList.add('active');
+  if(PY.mode==='simple')buildSimpleOptions();
   renderPyQuestion();
 }
 
@@ -1203,9 +1235,8 @@ function renderPyQuestion(){
     renderPyProgress();
     return;
   }
-  const target=PY.queue[PY.idx];
-  document.getElementById('py-target').textContent=target;
-  document.getElementById('py-hint').textContent=PY.mode==='simple'?'选择正确的声母 + 韵母':'输入拼音（不含声调）';
+  document.getElementById('py-target').textContent=`第 ${PY.idx+1} / ${PY.queue.length} 题 · 请听朗读`;
+  document.getElementById('py-hint').textContent=PY.mode==='simple'?'选声母 + 韵母，点击确认':'听后输入拼音（不含声调）';
   document.getElementById('py-msg').textContent='';
   renderPyProgress();
 
@@ -1220,32 +1251,12 @@ function renderPyQuestion(){
     input.value='';
     setTimeout(()=>input.focus(),60);
   }
+  setTimeout(()=>playPyAudio(),120);
 }
 
-function renderPyMatchOptions(){
-  const target=PY.queue[PY.idx];
-  let tries=0;
-  let items=[];
-  let sms=[];
-  let yms=[];
-  while(tries<30){
-    const pool=[...PY_POOL];
-    items=[];
-    for(let i=0;i<5;i++){
-      const r=Math.floor(Math.random()*pool.length);
-      items.push(pool.splice(r,1)[0]);
-    }
-    if(!items.includes(target))items[0]=target;
-    sms=[...new Set(items.map(x=>splitPinyin(x).sm))];
-    yms=[...new Set(items.map(x=>splitPinyin(x).ym))];
-    if(sms.length>=5 && yms.length>=5)break;
-    tries++;
-  }
-  PY.activeSM=null;
-  PY.activeYM=null;
-  const smRow=document.getElementById('py-sm-row');smRow.innerHTML='';
-  const ymRow=document.getElementById('py-ym-row');ymRow.innerHTML='';
-
+function buildSimpleOptions(){
+  const sms=[...new Set(PY.queue.map(x=>splitPinyin(x).sm))];
+  const yms=[...new Set(PY.queue.map(x=>splitPinyin(x).ym))];
   const pickFill=(arr,source,need)=>{
     const out=[...arr];
     const pool=source.filter(x=>!out.includes(x));
@@ -1257,8 +1268,15 @@ function renderPyMatchOptions(){
   };
   const smSource=[...new Set(PY_SHENGMU.map(x=>x||''))];
   const ymSource=[...new Set(PY_POOL.map(x=>splitPinyin(x).ym))];
-  const smList=pickFill(sms,smSource,5);
-  const ymList=pickFill(yms,ymSource,5);
+  PY.simpleSMs=shuffleArr(pickFill(sms,smSource,5));
+  PY.simpleYMs=shuffleArr(pickFill(yms,ymSource,5));
+}
+
+function renderPyMatchOptions(){
+  PY.activeSM=null;
+  PY.activeYM=null;
+  const smRow=document.getElementById('py-sm-row');smRow.innerHTML='';
+  const ymRow=document.getElementById('py-ym-row');ymRow.innerHTML='';
   const makeBtn=(txt,cb)=>{
     const b=document.createElement('button');
     b.className='py-opt';
@@ -1266,11 +1284,11 @@ function renderPyMatchOptions(){
     b.onclick=cb;
     return b;
   };
-  smList.forEach(sm=>{
+  (PY.simpleSMs||[]).forEach(sm=>{
     const label=sm||'∅';
     smRow.appendChild(makeBtn(label,()=>selectPySm(sm)));
   });
-  ymList.forEach(ym=>{
+  (PY.simpleYMs||[]).forEach(ym=>{
     ymRow.appendChild(makeBtn(ym,()=>selectPyYm(ym)));
   });
 }
@@ -1280,7 +1298,6 @@ function selectPySm(sm){
   document.querySelectorAll('#py-sm-row .py-opt').forEach(b=>b.classList.remove('active'));
   const btn=[...document.querySelectorAll('#py-sm-row .py-opt')].find(b=>b.textContent===(sm||'∅'));
   if(btn)btn.classList.add('active');
-  tryCheckPyMatch();
 }
 
 function selectPyYm(ym){
@@ -1288,14 +1305,13 @@ function selectPyYm(ym){
   document.querySelectorAll('#py-ym-row .py-opt').forEach(b=>b.classList.remove('active'));
   const btn=[...document.querySelectorAll('#py-ym-row .py-opt')].find(b=>b.textContent===ym);
   if(btn)btn.classList.add('active');
-  tryCheckPyMatch();
 }
 
-function tryCheckPyMatch(){
-  if(PY.activeSM===null||PY.activeYM===null)return;
+function confirmPyMatch(){
   const target=PY.queue[PY.idx];
   const cur=(PY.activeSM||'')+(PY.activeYM||'');
   const msg=document.getElementById('py-msg');
+  if(PY.activeSM===null||PY.activeYM===null){msg.textContent='请选择声母和韵母';return;}
   if(cur===target){
     PY.score++;
     msg.textContent='✅ 正确！';
@@ -1329,6 +1345,50 @@ function skipPyInput(){
 
 function resetPyQuiz(){
   startPinyin();
+}
+
+function playPyAudio(){
+  if(PY.idx>=PY.queue.length)return;
+  const text=PY.queue[PY.idx];
+  if(!('speechSynthesis' in window))return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='zh-CN';
+  u.rate=0.9;
+  u.pitch=1;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(u);
+}
+
+function renderPyAllList(){
+  const grid=document.getElementById('py-all-grid');if(!grid)return;
+  grid.innerHTML='';
+  const order=PY_SHENGMU;
+  const sortKey=py=>{
+    const s=splitPinyin(py);
+    const i=order.indexOf(s.sm);
+    return [i<0?999:i,s.ym,py];
+  };
+  const list=[...PY_POOL].sort((a,b)=>{
+    const ka=sortKey(a),kb=sortKey(b);
+    if(ka[0]!==kb[0])return ka[0]-kb[0];
+    if(ka[1]!==kb[1])return ka[1].localeCompare(kb[1]);
+    return ka[2].localeCompare(kb[2]);
+  });
+  list.forEach(py=>{
+    const d=document.createElement('div');
+    d.className='py-all-item';
+    d.textContent=py;
+    grid.appendChild(d);
+  });
+}
+
+function shuffleArr(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
 }
 
 /* ━━━━━ ACHIEVE ━━━━━ */
