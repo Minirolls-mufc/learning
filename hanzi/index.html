@@ -232,8 +232,12 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-all-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
 .py-all-grid{display:flex;flex-wrap:wrap;gap:8px}
 .py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;font-weight:800;font-size:1rem;color:var(--ink2);min-width:56px}
-.py-all-group{margin-bottom:16px;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
-.py-all-title{font-size:.8rem;letter-spacing:2px;color:var(--muted);font-weight:800;margin:6px 0 8px 2px;min-width:90px}
+.py-all-group{margin-bottom:16px;display:flex;flex-direction:column;gap:6px}
+.py-all-title{font-size:.8rem;letter-spacing:2px;color:var(--muted);font-weight:800;margin:6px 0 2px 2px}
+.py-ctrl-row{width:100%;max-width:920px;flex-wrap:wrap;row-gap:8px}
+.py-list-panel{display:none;margin-top:8px;background:var(--paper);border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;width:100%;max-width:920px}
+.py-list-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.py-pill{padding:6px 10px;border-radius:999px;border:1.5px solid var(--border);font-weight:800;font-size:1rem;color:var(--ink2);background:#fff}
 
 /* ── ACHIEVE ── */
 #page-achieve{background:var(--bg)}
@@ -501,9 +505,13 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         </div>
       </div>
       <div class="py-msg" id="py-msg"></div>
-      <div class="study-ctrl-row" style="margin-top:8px">
+      <div class="py-list-panel" id="py-list-panel">
+        <div class="py-list-row" id="py-list-row"></div>
+      </div>
+      <div class="study-ctrl-row py-ctrl-row" style="margin-top:8px">
         <button class="study-nav-btn" onclick="openPinyin()">← 返回模式</button>
         <div class="study-mid-btns">
+          <button class="study-act-btn" onclick="togglePyList()">本组拼音</button>
           <button class="study-act-btn" onclick="resetPyQuiz()">↺ 重来</button>
         </div>
         <button class="study-nav-btn study-nav-next" id="py-confirm-btn" onclick="confirmPyAction()">确认 ›</button>
@@ -1233,6 +1241,7 @@ function renderPyQuestion(){
     document.getElementById('py-simple-panel').style.display='none';
     document.getElementById('py-standard-panel').style.display='none';
     document.getElementById('py-msg').textContent='';
+    const lp=document.getElementById('py-list-panel');if(lp)lp.style.display='none';
     renderPyProgress();
     return;
   }
@@ -1353,6 +1362,25 @@ function resetPyQuiz(){
 function confirmPyAction(){
   if(PY.mode==='simple')confirmPyMatch();
   else submitPyInput();
+}
+
+function togglePyList(){
+  const panel=document.getElementById('py-list-panel');
+  const row=document.getElementById('py-list-row');
+  if(!panel||!row)return;
+  const show=panel.style.display!=='block';
+  if(show){
+    row.innerHTML='';
+    PY.queue.forEach(py=>{
+      const d=document.createElement('div');
+      d.className='py-pill';
+      d.textContent=py;
+      row.appendChild(d);
+    });
+    panel.style.display='block';
+  }else{
+    panel.style.display='none';
+  }
 }
 
 function playPyAudio(){
