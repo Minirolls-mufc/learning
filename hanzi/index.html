@@ -231,7 +231,8 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-audio-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
 .py-all-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
 .py-all-grid{display:flex;flex-wrap:wrap;gap:8px}
-.py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;font-weight:800;font-size:1rem;color:var(--ink2);min-width:56px}
+.py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;font-weight:800;font-size:1rem;color:var(--ink2);min-width:56px;cursor:pointer}
+.py-all-item:hover{background:#fff5ec;border-color:var(--o2);color:var(--o1)}
 .py-all-group{margin-bottom:18px;display:block}
 .py-all-title{font-size:.8rem;letter-spacing:2px;color:var(--muted);font-weight:800;margin:4px 0 8px 2px}
 .py-ctrl-row{width:100%;max-width:1040px;flex-wrap:wrap;row-gap:8px;padding:0 12px;box-sizing:border-box}
@@ -1122,7 +1123,7 @@ const PY_SHENGMU=["zh","ch","sh","b","p","m","f","d","t","n","l","g","k","h","j"
 const PY_SPECIAL=["zhi","chi","shi","ri","zi","ci","si"];
 const PY_COLS=["a","o","e","i","u","ü","ai","ei","ui","ao","ou","iu","ie","üe","er","an","en","in","un","ün","ang","eng","ing","ong","ia","ian","iang","iao","iong","ua","uai","uan","uang","uo","üan"];
 const PY_TABLE=[
-  {sm:"",cells:{a:"a",o:"o",e:"e",i:"i",u:"u",ü:"ü",ai:"ai",ei:"ei",ui:"ui",ao:"ao",ou:"ou",iu:"iu",ie:"ie",üe:"üe",er:"er",an:"an",en:"en",in:"in",un:"un",ün:"ün",ang:"ang",eng:"eng",ing:"ing",ong:"ong",ia:"ia",ian:"ian",iang:"iang",iao:"iao",iong:"iong",ua:"ua",uai:"uai",uan:"uan",uang:"uang",uo:"uo",üan:"üan"}},
+  {sm:"",cells:{a:"a",ai:"ai",ao:"ao",an:"an",ang:"ang",e:"e",er:"er",en:"en",o:"o",ou:"ou"}},
   {sm:"b",cells:{a:"ba",o:"bo",i:"bi",u:"bu",ai:"bai",ei:"bei",ao:"bao",ie:"bie",an:"ban",en:"ben",in:"bin",ang:"bang",eng:"beng",ing:"bing",ian:"bian",iao:"biao"}},
   {sm:"p",cells:{a:"pa",o:"po",i:"pi",u:"pu",ai:"pai",ei:"pei",ao:"pao",ou:"pou",ie:"pie",an:"pan",en:"pen",in:"pin",ang:"pang",eng:"peng",ing:"ping",ian:"pian",iao:"piao"}},
   {sm:"m",cells:{a:"ma",o:"mo",e:"me",i:"mi",u:"mu",ai:"mai",ei:"mei",ao:"mao",ou:"mou",iu:"miu",ie:"mie",an:"man",en:"men",in:"min",ang:"mang",eng:"meng",ing:"ming",ian:"mian",iao:"miao"}},
@@ -1160,6 +1161,8 @@ function buildPinyinPool(){
 }
 
 const PY_POOL=buildPinyinPool();
+let PY_CHAR_MAP=null;
+let PY_CHAR_MAP_ORDER={};
 
 function openPinyin(){
   showPage('pinyin');
@@ -1368,9 +1371,34 @@ function togglePyList(){
   }
 }
 
-function playPyAudio(){
-  if(PY.idx>=PY.queue.length)return;
-  const text=PY.queue[PY.idx];
+async function loadPyCharMap(){
+  if(PY_CHAR_MAP)return PY_CHAR_MAP;
+  try{
+    const res=await fetch('pinyin_map.json');
+    if(!res.ok)throw 0;
+    const data=await res.json();
+    PY_CHAR_MAP=(data&&data.map)?data.map:{};
+  }catch(e){
+    PY_CHAR_MAP={};
+  }
+  PY_CHAR_MAP_ORDER={};
+  Object.keys(PY_CHAR_MAP).forEach(k=>{PY_CHAR_MAP_ORDER[k]=0;});
+  return PY_CHAR_MAP;
+}
+
+function pickPinyinChar(py){
+  if(!PY_CHAR_MAP||!PY_CHAR_MAP[py]||!PY_CHAR_MAP[py].length)return null;
+  const arr=PY_CHAR_MAP[py];
+  const idx=PY_CHAR_MAP_ORDER[py]||0;
+  const ch=arr[idx%arr.length];
+  PY_CHAR_MAP_ORDER[py]=(idx+1)%arr.length;
+  return ch;
+}
+
+async function speakPinyin(py){
+  await loadPyCharMap();
+  const ch=pickPinyinChar(py);
+  const text=ch||py;
   if(!('speechSynthesis' in window))return;
   const synth=window.speechSynthesis;
   const u=new SpeechSynthesisUtterance(text);
@@ -1383,12 +1411,17 @@ function playPyAudio(){
   }else{
     u.lang='en-US';
     u.rate=0.85;
-    // spell with spacing to improve clarity if no Chinese voice
-    u.text=text.replace(/ü/g,'v').split('').join(' ');
+    u.text=ch?ch:py.replace(/ü/g,'v').split('').join(' ');
   }
   u.pitch=1;
   synth.cancel();
   synth.speak(u);
+}
+
+function playPyAudio(){
+  if(PY.idx>=PY.queue.length)return;
+  const text=PY.queue[PY.idx];
+  speakPinyin(text);
 }
 
 function renderPyAllList(){
@@ -1407,9 +1440,11 @@ function renderPyAllList(){
     PY_COLS.forEach(col=>{
       const v=row.cells[col];
       if(!v)return;
-      const d=document.createElement('div');
+      const d=document.createElement('button');
       d.className='py-all-item';
+      d.type='button';
       d.textContent=v;
+      d.onclick=()=>speakPinyin(v);
       g.appendChild(d);
     });
     wrap.appendChild(g);
