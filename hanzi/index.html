@@ -229,6 +229,8 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-input:focus{border-color:var(--o2);box-shadow:0 0 0 3px rgba(255,107,0,.1)}
 .py-msg{min-height:1.2em;font-size:.85rem;font-weight:800;color:var(--ink)}
 .py-audio-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+.py-speed{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);font-weight:700}
+.py-speed input[type=range]{accent-color:var(--o1)}
 .py-all-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
 .py-all-grid{display:flex;flex-wrap:wrap;gap:8px}
 .py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;font-weight:800;font-size:1rem;color:var(--ink2);min-width:56px;cursor:pointer}
@@ -494,6 +496,11 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
       <div class="py-hint" id="py-hint"></div>
       <div class="py-audio-row">
         <button class="btn btn-ghost btn-sm" onclick="playPyAudio()">🔊 朗读</button>
+        <div class="py-speed">
+          <span>速度</span>
+          <input type="range" id="py-speed" min="0.5" max="1.2" step="0.05" value="0.7" oninput="updatePySpeed(this.value)">
+          <span id="py-speed-val">0.70</span>
+        </div>
       </div>
       <div id="py-simple-panel">
         <div class="py-row" id="py-sm-row"></div>
@@ -1116,7 +1123,8 @@ const PY={
   idx:0,
   score:0,
   activeSM:null,
-  activeYM:null
+  activeYM:null,
+  rate:0.7
 };
 
 const PY_SHENGMU=["zh","ch","sh","b","p","m","f","d","t","n","l","g","k","h","j","q","x","r","z","c","s","y","w",""];
@@ -1239,6 +1247,9 @@ function renderPyQuestion(){
   renderPyProgress();
   const cbtn=document.getElementById('py-confirm-btn');
   if(cbtn)cbtn.textContent=PY.mode==='simple'?'确认 ›':'提交 ›';
+  const speedSlider=document.getElementById('py-speed');
+  if(speedSlider) speedSlider.value=String(PY.rate||0.7);
+  updatePySpeed(PY.rate||0.7);
 
   if(PY.mode==='simple'){
     document.getElementById('py-simple-panel').style.display='';
@@ -1352,6 +1363,13 @@ function confirmPyAction(){
   else submitPyInput();
 }
 
+function updatePySpeed(v){
+  const val=parseFloat(v);
+  if(!isNaN(val))PY.rate=val;
+  const el=document.getElementById('py-speed-val');
+  if(el)el.textContent=(PY.rate||0).toFixed(2);
+}
+
 function togglePyList(){
   const panel=document.getElementById('py-list-panel');
   const row=document.getElementById('py-list-row');
@@ -1378,8 +1396,14 @@ async function loadPyCharMap(){
     if(!res.ok)throw 0;
     const data=await res.json();
     PY_CHAR_MAP=(data&&data.map)?data.map:{};
+    try{localStorage.setItem('romeo_py_map_cache',JSON.stringify(PY_CHAR_MAP));}catch(e){}
   }catch(e){
-    PY_CHAR_MAP={};
+    try{
+      const cached=localStorage.getItem('romeo_py_map_cache');
+      PY_CHAR_MAP=cached?JSON.parse(cached):{};
+    }catch(err){
+      PY_CHAR_MAP={};
+    }
   }
   PY_CHAR_MAP_ORDER={};
   Object.keys(PY_CHAR_MAP).forEach(k=>{PY_CHAR_MAP_ORDER[k]=0;});
@@ -1407,10 +1431,10 @@ async function speakPinyin(py){
   if(zhVoice){
     u.voice=zhVoice;
     u.lang=zhVoice.lang;
-    u.rate=0.8;
+    u.rate=PY.rate||0.7;
   }else{
     u.lang='en-US';
-    u.rate=0.85;
+    u.rate=(PY.rate||0.7)+0.05;
     u.text=ch?ch:py.replace(/ü/g,'v').split('').join(' ');
   }
   u.pitch=1;
