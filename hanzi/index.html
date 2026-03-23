@@ -230,7 +230,6 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-msg{min-height:1.2em;font-size:.85rem;font-weight:800;color:var(--ink)}
 .py-audio-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
 .py-speed{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);font-weight:700}
-.py-speed input[type=range]{accent-color:var(--o1)}
 .py-audio-status{font-size:.72rem;color:var(--muted);font-weight:700;min-height:1em}
 .py-all-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
 .py-all-grid{display:flex;flex-wrap:wrap;gap:8px}
@@ -497,12 +496,6 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
       <div class="py-hint" id="py-hint"></div>
       <div class="py-audio-row">
         <button class="btn btn-ghost btn-sm" onclick="playPyAudio()">🔊 朗读</button>
-        <button class="btn btn-ghost btn-sm" id="py-auto-btn" onclick="togglePyAutoplay()">自动朗读：关</button>
-        <div class="py-speed">
-          <span>速度</span>
-          <input type="range" id="py-speed" min="0.2" max="1.2" step="0.05" value="0.7" oninput="updatePySpeed(this.value)">
-          <span id="py-speed-val">0.70</span>
-        </div>
       </div>
       <div class="py-audio-status" id="py-audio-status"></div>
       <div id="py-simple-panel">
@@ -1128,8 +1121,8 @@ const PY={
   score:0,
   activeSM:null,
   activeYM:null,
-  rate:0.7,
-  autoplay:false
+  rate:0.3,
+  autoplay:true
 };
 
 const PY_SHENGMU=["zh","ch","sh","b","p","m","f","d","t","n","l","g","k","h","j","q","x","r","z","c","s","y","w",""];
@@ -1252,11 +1245,6 @@ function renderPyQuestion(){
   renderPyProgress();
   const cbtn=document.getElementById('py-confirm-btn');
   if(cbtn)cbtn.textContent=PY.mode==='simple'?'确认 ›':'提交 ›';
-  const speedSlider=document.getElementById('py-speed');
-  if(speedSlider) speedSlider.value=String(PY.rate||0.7);
-  updatePySpeed(PY.rate||0.7);
-  const ab=document.getElementById('py-auto-btn');
-  if(ab) ab.textContent=PY.autoplay?'自动朗读：开':'自动朗读：关';
   const as=document.getElementById('py-audio-status');
   if(as) as.textContent='';
 
@@ -1372,18 +1360,6 @@ function confirmPyAction(){
   else submitPyInput();
 }
 
-function updatePySpeed(v){
-  const val=parseFloat(v);
-  if(!isNaN(val))PY.rate=val;
-  const el=document.getElementById('py-speed-val');
-  if(el)el.textContent=(PY.rate||0).toFixed(2);
-}
-
-function togglePyAutoplay(){
-  PY.autoplay=!PY.autoplay;
-  const ab=document.getElementById('py-auto-btn');
-  if(ab)ab.textContent=PY.autoplay?'自动朗读：开':'自动朗读：关';
-}
 
 function togglePyList(){
   const panel=document.getElementById('py-list-panel');
