@@ -230,7 +230,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .py-msg{min-height:1.2em;font-size:.85rem;font-weight:800;color:var(--ink)}
 .py-audio-row{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
 .py-speed{display:flex;align-items:center;gap:8px;font-size:.78rem;color:var(--muted);font-weight:700}
-.py-audio-status{font-size:.72rem;color:var(--muted);font-weight:700;min-height:1em}
+.py-audio-status{display:none}
 .py-all-body{flex:1;overflow-y:auto;padding:18px 16px 32px}
 .py-all-grid{display:flex;flex-wrap:wrap;gap:8px}
 .py-all-item{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;text-align:center;font-weight:800;font-size:1rem;color:var(--ink2);min-width:56px;cursor:pointer}
@@ -1415,7 +1415,7 @@ async function speakPinyin(py){
   const ch=pickPinyinChar(py);
   const text=ch||py;
   const status=document.getElementById('py-audio-status');
-  if(status)status.textContent=ch?`朗读：${py} → ${ch}`:`朗读：${py}（无映射）`;
+  if(status)status.textContent='';
   if(!('speechSynthesis' in window))return;
   const synth=window.speechSynthesis;
   const u=new SpeechSynthesisUtterance(text);
