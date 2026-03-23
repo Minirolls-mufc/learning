@@ -498,7 +498,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         <button class="btn btn-ghost btn-sm" onclick="playPyAudio()">🔊 朗读</button>
         <div class="py-speed">
           <span>速度</span>
-          <input type="range" id="py-speed" min="0.5" max="1.2" step="0.05" value="0.7" oninput="updatePySpeed(this.value)">
+          <input type="range" id="py-speed" min="0.2" max="1.2" step="0.05" value="0.7" oninput="updatePySpeed(this.value)">
           <span id="py-speed-val">0.70</span>
         </div>
       </div>
@@ -828,7 +828,8 @@ function achRecordMistake(ch,py){}
 function achRecordCorrect(){store.ach.totalCorrect++;const today=new Date().toDateString();if(store.ach.lastDate!==today){const yest=new Date(Date.now()-86400000).toDateString();store.ach.streak=(store.ach.lastDate===yest)?store.ach.streak+1:1;store.ach.lastDate=today;}saveStore();}
 
 /* ━━━━━ NAV ━━━━━ */
-function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');}
+function stopSpeech(){if('speechSynthesis'in window){try{window.speechSynthesis.cancel();}catch(e){}}}
+function showPage(id){stopSpeech();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open');}));
@@ -1262,7 +1263,7 @@ function renderPyQuestion(){
     input.value='';
     setTimeout(()=>input.focus(),60);
   }
-  setTimeout(()=>playPyAudio(),120);
+  // autoplay disabled
 }
 
 function buildSimpleOptions(){
