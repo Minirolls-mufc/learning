@@ -1394,32 +1394,22 @@ function playPyAudio(){
 function renderPyAllList(){
   const grid=document.getElementById('py-all-grid');if(!grid)return;
   grid.innerHTML='';
-  const order=PY_SHENGMU;
-  const list=[...PY_POOL];
-  const groups={};
-  list.forEach(py=>{
-    const s=splitPinyin(py);
-    const key=s.sm||'（零声母）';
-    if(!groups[key])groups[key]=[];
-    groups[key].push(py);
-  });
-  order.forEach(sm=>{
-    const key=sm||'（零声母）';
-    const arr=groups[key];
-    if(!arr||!arr.length)return;
+  PY_TABLE.forEach(row=>{
+    const key=row.sm||'（零声母）';
     const wrap=document.createElement('div');
     wrap.className='py-all-group';
     const title=document.createElement('div');
     title.className='py-all-title';
-    title.textContent=sm?`声母 ${sm}`:'零声母';
+    title.textContent=row.sm?`声母 ${row.sm}`:'零声母';
     wrap.appendChild(title);
     const g=document.createElement('div');
     g.className='py-all-grid';
-    arr.sort((a,b)=>splitPinyin(a).ym.localeCompare(splitPinyin(b).ym));
-    arr.forEach(py=>{
+    PY_COLS.forEach(col=>{
+      const v=row.cells[col];
+      if(!v)return;
       const d=document.createElement('div');
       d.className='py-all-item';
-      d.textContent=py;
+      d.textContent=v;
       g.appendChild(d);
     });
     wrap.appendChild(g);
