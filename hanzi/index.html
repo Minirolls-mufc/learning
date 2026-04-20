@@ -986,15 +986,17 @@ function advanceFollow(){
   const c=S.chars[ci];if(!c||!c.charData){S.followCharIdx++;advanceFollow();return;}
   const box=document.getElementById(`box-${ci}`);if(!box)return;
   const cvEl=document.getElementById(`cv-${ci}`);if(cvEl)cvEl.classList.remove('show');
-  document.getElementById(`svg-${ci}`).style.display='none';
+  c.stepIdx=0;
+  renderSvg(ci,0);
+  document.getElementById(`svg-${ci}`).style.display='';
   const qd=document.getElementById(`qd-${ci}`);qd.style.display='block';qd.innerHTML='';qd.style.zIndex='4';
   const bsz=box.clientWidth||220,isMo=S.coverMode;
   document.getElementById('study-quiz-msg').textContent=isMo?`✏️ 默写「${c.ch}」`:`✏️ 描写「${c.ch}」`;
-  S.quizWriter=HanziWriter.create(`qd-${ci}`,c.ch,{width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:!isMo,strokeColor:'#444',outlineColor:'#e0cbb0',drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:isMo?5:3,highlightColor:'#fbbf24',
+  S.quizWriter=HanziWriter.create(`qd-${ci}`,c.ch,{width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:!isMo,strokeColor:'rgba(0,0,0,0)',outlineColor:'#e0cbb0',drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:isMo?5:3,highlightColor:'#fbbf24',
     charDataLoader:(ch2,onL,onE)=>{fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch2)}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}).then(onL).catch(onE);},
     onLoadCharDataSuccess:()=>{S.quizWriter.quiz({
       onMistake:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔再试！`;},
-      onCorrectStroke:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔 ✓ 👍`;achRecordCorrect();},
+      onCorrectStroke:d=>{c.stepIdx=Math.max(c.stepIdx,d.strokeNum+1);renderSvg(ci,c.stepIdx,d.strokeNum);document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔 ✓ 👍`;achRecordCorrect();},
       onComplete:sum=>{document.getElementById('study-quiz-msg').textContent=`「${c.ch}」完成！错${sum.totalMistakes}次 🎉`;requestAnimationFrame(()=>restoreStudyChar(ci,false));S.followCharIdx++;setTimeout(()=>advanceFollow(),700);}
     });}
   });
