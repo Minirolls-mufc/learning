@@ -922,6 +922,8 @@ function curEntry(){const g=curGroup();return g?g.entries[S.entryIdx]:null;}
 function goPrevEntry(){if(S.entryIdx<=0)return;S.entryIdx--;loadEntry();}
 function goNextEntry(){const g=curGroup();if(!g||S.entryIdx>=g.entries.length-1)return;S.entryIdx++;loadEntry();}
 function updateNavBtns(){const g=curGroup(),n=g?g.entries.length:0;document.getElementById('btn-prev-entry').disabled=S.entryIdx<=0;document.getElementById('btn-next-entry').disabled=S.entryIdx>=n-1;document.getElementById('entry-label').textContent=`${S.entryIdx+1} / ${n}`;}
+function setFollowBtn(){const btn=document.getElementById('btn-follow');if(!btn)return;btn.classList.toggle('toggled',S.followMode);btn.textContent=S.followMode?(S.coverMode?'✋ 退出默写':'✋ 退出跟写'):(S.coverMode?'✏️ 默写':'🖊 跟写');}
+function setStudyMsg(msg){document.getElementById('study-quiz-msg').textContent=S.coverMode?'':msg;}
 
 function makeTzgSvg(style){
   const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 100 100');s.setAttribute('preserveAspectRatio','none');s.style.cssText=style||'';
@@ -941,7 +943,7 @@ function resolveCfgForChar(entry,ci,ch){
 
 function loadEntry(){
   exitAllQuiz();S.followMode=false;S.coverMode=false;
-  document.getElementById('btn-follow').classList.remove('toggled');document.getElementById('btn-follow').textContent='🖊 跟写';
+  setFollowBtn();
   document.getElementById('btn-cover').classList.remove('toggled');document.getElementById('btn-cover').textContent='👁 遮盖';
   document.getElementById('study-quiz-msg').textContent='';updateNavBtns();
   const entry=curEntry();
@@ -951,7 +953,7 @@ function loadEntry(){
   const row=document.getElementById('tzg-row');row.innerHTML='';
   chars.forEach((ch,ci)=>{
     const cfg=resolveCfgForChar(entry,ci,ch);
-    S.chars.push({ch,charData:null,strokeColors:[],stepIdx:0,mode:cfg.mode,redRange:cfg.redRange||''});
+    S.chars.push({ch,charData:null,strokeColors:[],stepIdx:0,mode:cfg.mode,redRange:cfg.redRange||'',quizWriter:null,done:false});
     const unit=document.createElement('div');unit.className='tzg-unit';
     const py=document.createElement('div');py.className='tzg-pinyin';py.textContent=pinyins[ci]||autoPinyin(ch);unit.appendChild(py);
     const box=document.createElement('div');box.className='tzg-box';box.id=`box-${ci}`;
@@ -979,32 +981,38 @@ function charNext(ci){if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charD
 function charPrev(ci){if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charData||c.stepIdx<=0)return;c.stepIdx--;renderSvg(ci,c.stepIdx);updSt(ci);}
 function charReset(ci){if(S.followMode)return;restoreStudyChar(ci,S.coverMode);}
 function updSt(ci){const c=S.chars[ci];if(!c||!c.charData)return;const n=c.charData.strokes.length,s=c.stepIdx;setSt(ci,s===0?`${n}笔（隐藏）`:s===n?`${n}笔`:`第${s}/${n}笔`,s===n?'ok':'');}
-function resetAll(){exitAllQuiz();S.followMode=false;S.coverMode=false;document.getElementById('btn-follow').classList.remove('toggled');document.getElementById('btn-follow').textContent='🖊 跟写';document.getElementById('btn-cover').classList.remove('toggled');document.getElementById('btn-cover').textContent='👁 遮盖';document.getElementById('study-quiz-msg').textContent='';S.chars.forEach((_,ci)=>{const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.remove('show');charReset(ci);});}
-function toggleFollow(){S.followMode=!S.followMode;const btn=document.getElementById('btn-follow');btn.classList.toggle('toggled',S.followMode);if(!S.followMode){btn.textContent='🖊 跟写';exitAllQuiz();S.chars.forEach((c,ci)=>{if(c.charData)restoreStudyChar(ci,false);});return;}btn.textContent=S.coverMode?'✋ 退出默写':'✋ 退出跟写';S.chars.forEach((c,ci)=>{exitCharQuiz(ci);if(c.charData){c.stepIdx=0;renderSvg(ci,0);}});S.followCharIdx=0;advanceFollow();}
-function advanceFollow(){
-  if(!S.followMode)return;const ci=S.followCharIdx;if(ci>=S.chars.length){finishFollow();return;}
-  const c=S.chars[ci];if(!c||!c.charData){S.followCharIdx++;advanceFollow();return;}
+function resetAll(){exitAllQuiz();S.followMode=false;S.coverMode=false;setFollowBtn();document.getElementById('btn-cover').classList.remove('toggled');document.getElementById('btn-cover').textContent='👁 遮盖';document.getElementById('study-quiz-msg').textContent='';S.chars.forEach((c,ci)=>{c.done=false;const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.remove('show');charReset(ci);});}
+function toggleFollow(){S.followMode=!S.followMode;setFollowBtn();if(!S.followMode){exitAllQuiz();S.chars.forEach((c,ci)=>{c.done=false;if(c.charData)restoreStudyChar(ci,false);});return;}S.chars.forEach((c,ci)=>{c.done=false;exitCharQuiz(ci);if(c.charData){c.stepIdx=0;renderSvg(ci,0);}});if(S.coverMode){startDictationMode();return;}S.followCharIdx=0;advanceFollow();}
+function startDictationMode(){setStudyMsg('');S.chars.forEach((_,ci)=>startStudyQuizForChar(ci,true));}
+function startStudyQuizForChar(ci,isMo){
+  if(!S.followMode)return;
+  const c=S.chars[ci];if(!c||!c.charData||c.done)return;
   const box=document.getElementById(`box-${ci}`);if(!box)return;
-  const bsz=box.clientWidth||220,isMo=S.coverMode;
+  const bsz=box.clientWidth||220;
   const cvEl=document.getElementById(`cv-${ci}`);if(cvEl)cvEl.classList.remove('show');
   c.stepIdx=0;
   renderSvg(ci,0,undefined,!isMo);
   document.getElementById(`svg-${ci}`).style.display='';
   const qd=document.getElementById(`qd-${ci}`);qd.style.display='block';qd.innerHTML='';qd.style.zIndex='4';
-  document.getElementById('study-quiz-msg').textContent=isMo?`✏️ 默写「${c.ch}」`:`✏️ 描写「${c.ch}」`;
-  S.quizWriter=HanziWriter.create(`qd-${ci}`,c.ch,{width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:!isMo,strokeColor:'rgba(0,0,0,0)',outlineColor:'#e0cbb0',drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:isMo?5:3,highlightColor:'#fbbf24',
+  setStudyMsg(isMo?'':`✏️ 描写「${c.ch}」`);
+  c.quizWriter=HanziWriter.create(`qd-${ci}`,c.ch,{width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:!isMo,strokeColor:'rgba(0,0,0,0)',outlineColor:'#e0cbb0',drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:isMo?5:3,highlightColor:'#fbbf24',
     charDataLoader:(ch2,onL,onE)=>{fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch2)}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}).then(onL).catch(onE);},
-    onLoadCharDataSuccess:()=>{S.quizWriter.quiz({
-      onMistake:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔再试！`;},
-      onCorrectStroke:d=>{c.stepIdx=Math.max(c.stepIdx,d.strokeNum+1);renderSvg(ci,c.stepIdx,d.strokeNum,!isMo);document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔 ✓ 👍`;achRecordCorrect();},
-      onComplete:sum=>{document.getElementById('study-quiz-msg').textContent=`「${c.ch}」完成！错${sum.totalMistakes}次 🎉`;requestAnimationFrame(()=>restoreStudyChar(ci,false));S.followCharIdx++;setTimeout(()=>advanceFollow(),700);}
+    onLoadCharDataSuccess:()=>{c.quizWriter.quiz({
+      onMistake:d=>{setStudyMsg(isMo?'':`第${d.strokeNum+1}笔再试！`);},
+      onCorrectStroke:d=>{c.stepIdx=Math.max(c.stepIdx,d.strokeNum+1);renderSvg(ci,c.stepIdx,d.strokeNum,!isMo);setStudyMsg(isMo?'':`第${d.strokeNum+1}笔 ✓ 👍`);achRecordCorrect();},
+      onComplete:sum=>{c.done=true;requestAnimationFrame(()=>restoreStudyChar(ci,false));if(isMo){if(S.chars.every(ch=>!ch.charData||ch.done)){finishFollow();}}else{setStudyMsg(`「${c.ch}」完成！错${sum.totalMistakes}次 🎉`);S.followCharIdx++;setTimeout(()=>advanceFollow(),700);}}
     });}
   });
 }
-function finishFollow(){S.followMode=false;document.getElementById('btn-follow').classList.remove('toggled');document.getElementById('btn-follow').textContent='🖊 跟写';document.getElementById('study-quiz-msg').textContent='🎉 全部完成！';}
-function exitCharQuiz(ci){const qd=document.getElementById(`qd-${ci}`);if(qd){qd.style.display='none';qd.innerHTML='';qd.style.zIndex='2';}const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display='';S.quizWriter=null;}
+function advanceFollow(){
+  if(!S.followMode)return;const ci=S.followCharIdx;if(ci>=S.chars.length){finishFollow();return;}
+  const c=S.chars[ci];if(!c||!c.charData||c.done){S.followCharIdx++;advanceFollow();return;}
+  startStudyQuizForChar(ci,false);
+}
+function finishFollow(){S.followMode=false;setFollowBtn();setStudyMsg(S.coverMode?'':'🎉 全部完成！');}
+function exitCharQuiz(ci){const c=S.chars[ci];if(c&&c.quizWriter){try{c.quizWriter.cancelAnimation();c.quizWriter.cancelQuiz();}catch(e){}c.quizWriter=null;}const qd=document.getElementById(`qd-${ci}`);if(qd){qd.style.display='none';qd.innerHTML='';qd.style.zIndex='2';}const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display='';S.quizWriter=null;}
 function exitAllQuiz(){S.quizWriter=null;S.chars.forEach((_,ci)=>exitCharQuiz(ci));}
-function toggleCover(){S.coverMode=!S.coverMode;S.chars.forEach((_,ci)=>{const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',S.coverMode);const sv=document.getElementById(`svg-${ci}`);if(sv&&!S.followMode)sv.style.display=S.coverMode?'none':'';});const btn=document.getElementById('btn-cover');btn.classList.toggle('toggled',S.coverMode);btn.textContent=S.coverMode?'👁 显示':'👁 遮盖';}
+function toggleCover(){S.coverMode=!S.coverMode;S.chars.forEach((c,ci)=>{const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',S.coverMode);const sv=document.getElementById(`svg-${ci}`);if(sv&&!S.followMode)sv.style.display=S.coverMode?'none':'';if(c)c.done=false;});const btn=document.getElementById('btn-cover');btn.classList.toggle('toggled',S.coverMode);btn.textContent=S.coverMode?'👁 显示':'👁 遮盖';setFollowBtn();setStudyMsg('');}
 document.addEventListener('keydown',e=>{if(!document.getElementById('page-study').classList.contains('active'))return;if(document.querySelector('.modal-overlay.open'))return;if(e.key==='ArrowRight')goNextEntry();if(e.key==='ArrowLeft')goPrevEntry();});
 
 /* ━━━━━ PRACTICE ━━━━━ */
