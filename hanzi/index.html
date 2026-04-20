@@ -972,8 +972,8 @@ function fetchStudyChar(ch,ci,py){
 }
 function buildColors(n,mode,rr){if(mode==='simple')return Array.from({length:n},(_,i)=>STROKE_PAL[i%STROKE_PAL.length]);const rs=parseRange(rr,n);return Array.from({length:n},(_,i)=>rs.has(i+1)?'#ef4444':'#3b82f6');}
 function parseRange(str,n){const s=new Set();if(!str)return s;str.split(',').forEach(p=>{p=p.trim();if(p.includes('-')){const[a,b]=p.split('-').map(Number);for(let i=a;i<=b&&i<=n;i++)s.add(i);}else{const v=parseInt(p);if(!isNaN(v)&&v>=1&&v<=n)s.add(v);}});return s;}
-function renderSvg(ci,upTo,animIdx){const c=S.chars[ci];if(!c||!c.charData)return;const svg=document.getElementById(`svg-${ci}`);if(!svg)return;svg.innerHTML='';c.charData.strokes.forEach(d=>svg.appendChild(mkPath(d,OUTLINE_COLOR)));for(let i=0;i<upTo;i++){const p=mkPath(c.charData.strokes[i],c.strokeColors[i]);if(i===animIdx){p.style.opacity='0';p.style.transition='opacity .35s ease';svg.appendChild(p);requestAnimationFrame(()=>requestAnimationFrame(()=>p.style.opacity='1'));}else svg.appendChild(p);}}
-function restoreStudyChar(ci,showCover){const c=S.chars[ci];if(!c||!c.charData)return;exitCharQuiz(ci);c.stepIdx=c.charData.strokes.length;const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display=showCover?'none':'';renderSvg(ci,c.stepIdx);updSt(ci);const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',!!showCover);}
+function renderSvg(ci,upTo,animIdx,showOutline=true){const c=S.chars[ci];if(!c||!c.charData)return;const svg=document.getElementById(`svg-${ci}`);if(!svg)return;svg.innerHTML='';if(showOutline)c.charData.strokes.forEach(d=>svg.appendChild(mkPath(d,OUTLINE_COLOR)));for(let i=0;i<upTo;i++){const p=mkPath(c.charData.strokes[i],c.strokeColors[i]);if(i===animIdx){p.style.opacity='0';p.style.transition='opacity .35s ease';svg.appendChild(p);requestAnimationFrame(()=>requestAnimationFrame(()=>p.style.opacity='1'));}else svg.appendChild(p);}}
+function restoreStudyChar(ci,showCover){const c=S.chars[ci];if(!c||!c.charData)return;exitCharQuiz(ci);c.stepIdx=c.charData.strokes.length;const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display=showCover?'none':'';renderSvg(ci,c.stepIdx,undefined,true);updSt(ci);const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',!!showCover);}
 function setSt(ci,msg,cls){const el=document.getElementById(`st-${ci}`);if(!el)return;el.textContent=msg;el.className='tzg-status'+(cls?' '+cls:'');}
 function charNext(ci){if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charData)return;const n=c.charData.strokes.length;if(c.stepIdx>=n){c.stepIdx=0;renderSvg(ci,0);setTimeout(()=>{c.stepIdx=1;renderSvg(ci,1,0);updSt(ci);},60);return;}const prev=c.stepIdx++;renderSvg(ci,c.stepIdx,prev);updSt(ci);}
 function charPrev(ci){if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charData||c.stepIdx<=0)return;c.stepIdx--;renderSvg(ci,c.stepIdx);updSt(ci);}
@@ -985,18 +985,18 @@ function advanceFollow(){
   if(!S.followMode)return;const ci=S.followCharIdx;if(ci>=S.chars.length){finishFollow();return;}
   const c=S.chars[ci];if(!c||!c.charData){S.followCharIdx++;advanceFollow();return;}
   const box=document.getElementById(`box-${ci}`);if(!box)return;
+  const bsz=box.clientWidth||220,isMo=S.coverMode;
   const cvEl=document.getElementById(`cv-${ci}`);if(cvEl)cvEl.classList.remove('show');
   c.stepIdx=0;
-  renderSvg(ci,0);
+  renderSvg(ci,0,undefined,!isMo);
   document.getElementById(`svg-${ci}`).style.display='';
   const qd=document.getElementById(`qd-${ci}`);qd.style.display='block';qd.innerHTML='';qd.style.zIndex='4';
-  const bsz=box.clientWidth||220,isMo=S.coverMode;
   document.getElementById('study-quiz-msg').textContent=isMo?`✏️ 默写「${c.ch}」`:`✏️ 描写「${c.ch}」`;
   S.quizWriter=HanziWriter.create(`qd-${ci}`,c.ch,{width:bsz,height:bsz,padding:0,showCharacter:false,showOutline:!isMo,strokeColor:'rgba(0,0,0,0)',outlineColor:'#e0cbb0',drawingColor:'#ff6b00',drawingWidth:Math.max(5,Math.round(bsz*.025)),showHintAfterMisses:isMo?5:3,highlightColor:'#fbbf24',
     charDataLoader:(ch2,onL,onE)=>{fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch2)}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}).then(onL).catch(onE);},
     onLoadCharDataSuccess:()=>{S.quizWriter.quiz({
       onMistake:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔再试！`;},
-      onCorrectStroke:d=>{c.stepIdx=Math.max(c.stepIdx,d.strokeNum+1);renderSvg(ci,c.stepIdx,d.strokeNum);document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔 ✓ 👍`;achRecordCorrect();},
+      onCorrectStroke:d=>{c.stepIdx=Math.max(c.stepIdx,d.strokeNum+1);renderSvg(ci,c.stepIdx,d.strokeNum,!isMo);document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔 ✓ 👍`;achRecordCorrect();},
       onComplete:sum=>{document.getElementById('study-quiz-msg').textContent=`「${c.ch}」完成！错${sum.totalMistakes}次 🎉`;requestAnimationFrame(()=>restoreStudyChar(ci,false));S.followCharIdx++;setTimeout(()=>advanceFollow(),700);}
     });}
   });
