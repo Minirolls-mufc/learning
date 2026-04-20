@@ -973,14 +973,14 @@ function fetchStudyChar(ch,ci,py){
 function buildColors(n,mode,rr){if(mode==='simple')return Array.from({length:n},(_,i)=>STROKE_PAL[i%STROKE_PAL.length]);const rs=parseRange(rr,n);return Array.from({length:n},(_,i)=>rs.has(i+1)?'#ef4444':'#3b82f6');}
 function parseRange(str,n){const s=new Set();if(!str)return s;str.split(',').forEach(p=>{p=p.trim();if(p.includes('-')){const[a,b]=p.split('-').map(Number);for(let i=a;i<=b&&i<=n;i++)s.add(i);}else{const v=parseInt(p);if(!isNaN(v)&&v>=1&&v<=n)s.add(v);}});return s;}
 function renderSvg(ci,upTo,animIdx){const c=S.chars[ci];if(!c||!c.charData)return;const svg=document.getElementById(`svg-${ci}`);if(!svg)return;svg.innerHTML='';c.charData.strokes.forEach(d=>svg.appendChild(mkPath(d,OUTLINE_COLOR)));for(let i=0;i<upTo;i++){const p=mkPath(c.charData.strokes[i],c.strokeColors[i]);if(i===animIdx){p.style.opacity='0';p.style.transition='opacity .35s ease';svg.appendChild(p);requestAnimationFrame(()=>requestAnimationFrame(()=>p.style.opacity='1'));}else svg.appendChild(p);}}
-function restoreStudyChar(ci){const c=S.chars[ci];if(!c||!c.charData)return;exitCharQuiz(ci);c.stepIdx=c.charData.strokes.length;const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display='';renderSvg(ci,c.stepIdx);updSt(ci);const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',!!S.coverMode);}
+function restoreStudyChar(ci,showCover){const c=S.chars[ci];if(!c||!c.charData)return;exitCharQuiz(ci);c.stepIdx=c.charData.strokes.length;const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display='';renderSvg(ci,c.stepIdx);updSt(ci);const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',!!showCover);}
 function setSt(ci,msg,cls){const el=document.getElementById(`st-${ci}`);if(!el)return;el.textContent=msg;el.className='tzg-status'+(cls?' '+cls:'');}
 function charNext(ci){if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charData)return;const n=c.charData.strokes.length;if(c.stepIdx>=n){c.stepIdx=0;renderSvg(ci,0);setTimeout(()=>{c.stepIdx=1;renderSvg(ci,1,0);updSt(ci);},60);return;}const prev=c.stepIdx++;renderSvg(ci,c.stepIdx,prev);updSt(ci);}
 function charPrev(ci){if(S.followMode)return;const c=S.chars[ci];if(!c||!c.charData||c.stepIdx<=0)return;c.stepIdx--;renderSvg(ci,c.stepIdx);updSt(ci);}
-function charReset(ci){if(S.followMode)return;restoreStudyChar(ci);}
+function charReset(ci){if(S.followMode)return;restoreStudyChar(ci,S.coverMode);}
 function updSt(ci){const c=S.chars[ci];if(!c||!c.charData)return;const n=c.charData.strokes.length,s=c.stepIdx;setSt(ci,s===0?`${n}笔（隐藏）`:s===n?`${n}笔`:`第${s}/${n}笔`,s===n?'ok':'');}
 function resetAll(){exitAllQuiz();S.followMode=false;S.coverMode=false;document.getElementById('btn-follow').classList.remove('toggled');document.getElementById('btn-follow').textContent='🖊 跟写';document.getElementById('btn-cover').classList.remove('toggled');document.getElementById('btn-cover').textContent='👁 遮盖';document.getElementById('study-quiz-msg').textContent='';S.chars.forEach((_,ci)=>{const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.remove('show');charReset(ci);});}
-function toggleFollow(){S.followMode=!S.followMode;const btn=document.getElementById('btn-follow');btn.classList.toggle('toggled',S.followMode);if(!S.followMode){btn.textContent='🖊 跟写';exitAllQuiz();S.chars.forEach((c,ci)=>{if(c.charData)restoreStudyChar(ci);});return;}btn.textContent=S.coverMode?'✋ 退出默写':'✋ 退出跟写';S.chars.forEach((c,ci)=>{exitCharQuiz(ci);if(c.charData){c.stepIdx=0;renderSvg(ci,0);}});S.followCharIdx=0;advanceFollow();}
+function toggleFollow(){S.followMode=!S.followMode;const btn=document.getElementById('btn-follow');btn.classList.toggle('toggled',S.followMode);if(!S.followMode){btn.textContent='🖊 跟写';exitAllQuiz();S.chars.forEach((c,ci)=>{if(c.charData)restoreStudyChar(ci,false);});return;}btn.textContent=S.coverMode?'✋ 退出默写':'✋ 退出跟写';S.chars.forEach((c,ci)=>{exitCharQuiz(ci);if(c.charData){c.stepIdx=0;renderSvg(ci,0);}});S.followCharIdx=0;advanceFollow();}
 function advanceFollow(){
   if(!S.followMode)return;const ci=S.followCharIdx;if(ci>=S.chars.length){finishFollow();return;}
   const c=S.chars[ci];if(!c||!c.charData){S.followCharIdx++;advanceFollow();return;}
@@ -995,7 +995,7 @@ function advanceFollow(){
     onLoadCharDataSuccess:()=>{S.quizWriter.quiz({
       onMistake:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔再试！`;},
       onCorrectStroke:d=>{document.getElementById('study-quiz-msg').textContent=`第${d.strokeNum+1}笔 ✓ 👍`;achRecordCorrect();},
-      onComplete:sum=>{document.getElementById('study-quiz-msg').textContent=`「${c.ch}」完成！错${sum.totalMistakes}次 🎉`;requestAnimationFrame(()=>restoreStudyChar(ci));S.followCharIdx++;setTimeout(()=>advanceFollow(),700);}
+      onComplete:sum=>{document.getElementById('study-quiz-msg').textContent=`「${c.ch}」完成！错${sum.totalMistakes}次 🎉`;requestAnimationFrame(()=>restoreStudyChar(ci,false));S.followCharIdx++;setTimeout(()=>advanceFollow(),700);}
     });}
   });
 }
