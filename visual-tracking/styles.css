@@ -432,26 +432,74 @@ select {
   stroke-linejoin: round;
 }
 
-.terminal rect,
-.terminal circle {
+.lego-terminal {
+  filter: drop-shadow(0 10px 0 rgba(31, 41, 55, 0.14));
+}
+
+.lego-terminal path,
+.lego-terminal rect,
+.lego-terminal circle,
+.lego-terminal ellipse {
   stroke: var(--ink);
+  stroke-linejoin: round;
+}
+
+.lego-terminal .terminal-shadow {
+  fill: rgba(31, 41, 55, 0.12);
+  stroke: none;
+}
+
+.lego-terminal .terminal-wall {
+  fill: #f8fafc;
+  stroke-width: 6;
+}
+
+.lego-terminal .terminal-roof,
+.lego-terminal .terminal-tower-roof,
+.lego-terminal .terminal-light {
+  fill: #f97316;
+  stroke-width: 6;
+}
+
+.lego-terminal .terminal-blue-part {
+  fill: #1d4ed8;
+  stroke-width: 6;
+}
+
+.lego-terminal .terminal-glass,
+.lego-terminal .terminal-tower-glass,
+.lego-terminal .terminal-door {
+  fill: #38bdf8;
   stroke-width: 5;
 }
 
-.terminal-red .terminal-base,
-.terminal-red .terminal-side,
-.terminal-red circle {
-  fill: var(--red);
+.lego-terminal .terminal-stripe {
+  fill: none;
+  stroke: #f97316;
+  stroke-width: 8;
+  stroke-linecap: round;
 }
 
-.terminal-blue .terminal-base,
-.terminal-blue .terminal-side,
-.terminal-blue circle {
-  fill: var(--blue);
+.lego-terminal .terminal-bridge,
+.lego-terminal .terminal-bridge-top {
+  fill: #cbd5e1;
+  stroke-width: 6;
 }
 
-.terminal-window {
+.lego-terminal .terminal-tower {
+  fill: #f8fafc;
+  stroke-width: 6;
+}
+
+.lego-terminal .terminal-studs ellipse {
   fill: #ffffff;
+  stroke: #cbd5e1;
+  stroke-width: 4;
+}
+
+.lego-terminal .terminal-small-windows rect {
+  fill: #38bdf8;
+  stroke: none;
 }
 
 .plane-token {
