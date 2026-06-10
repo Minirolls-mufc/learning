@@ -1,5 +1,11 @@
 const refs = {
-  modeButtons: [...document.querySelectorAll("[data-mode]")],
+  homeScreen: document.querySelector("#homeScreen"),
+  gameScreen: document.querySelector("#gameScreen"),
+  choiceButtons: [...document.querySelectorAll("[data-start-mode]")],
+  homeButton: document.querySelector("#homeButton"),
+  gameIcon: document.querySelector("#gameIcon"),
+  gameTitle: document.querySelector("#gameTitle"),
+  gameSubtitle: document.querySelector("#gameSubtitle"),
   difficulty: document.querySelector("#difficulty"),
   duration: document.querySelector("#duration"),
   soundToggle: document.querySelector("#soundToggle"),
@@ -9,13 +15,20 @@ const refs = {
   timeBadge: document.querySelector("#timeBadge"),
   targetBadge: document.querySelector("#targetBadge"),
   starBadge: document.querySelector("#starBadge"),
-  sessionTitle: document.querySelector("#sessionTitle"),
-  sessionLine: document.querySelector("#sessionLine"),
   figureStage: document.querySelector("#figureEightStage"),
   numberStage: document.querySelector("#numberStage"),
   numberField: document.querySelector("#numberField"),
   flightPath: document.querySelector("#flightPath"),
+  flightShadow: document.querySelector("#flightShadow"),
   plane: document.querySelector("#plane"),
+};
+
+const TAU = Math.PI * 2;
+const figure = {
+  centerX: 500,
+  centerY: 310,
+  radiusX: 390,
+  radiusY: 168,
 };
 
 const state = {
@@ -28,8 +41,7 @@ const state = {
   lastTick: 0,
   animationId: 0,
   timerId: 0,
-  pathLength: 0,
-  pathDistance: 0,
+  figureT: 0,
   loops: 0,
   stars: 0,
   nextNumber: 1,
@@ -38,21 +50,34 @@ const state = {
   numberStartedAt: 0,
 };
 
+const gameMeta = {
+  "figure-eight": {
+    icon: "∞",
+    title: "横向绕 8",
+    subtitle: "小飞机航线",
+  },
+  numbers: {
+    icon: "25",
+    title: "数字积木",
+    subtitle: "1-25",
+  },
+};
+
 const difficultyMap = {
   easy: {
-    speed: 115,
-    numberTwist: 4,
-    hintNext: true,
+    figureAngularSpeed: 0.46,
+    numberTwist: 2,
+    numberClass: "difficulty-easy",
   },
   standard: {
-    speed: 170,
+    figureAngularSpeed: 0.68,
     numberTwist: 8,
-    hintNext: true,
+    numberClass: "difficulty-standard",
   },
   challenge: {
-    speed: 230,
-    numberTwist: 12,
-    hintNext: false,
+    figureAngularSpeed: 0.92,
+    numberTwist: 14,
+    numberClass: "difficulty-challenge",
   },
 };
 
@@ -168,36 +193,49 @@ function getDifficulty() {
   return difficultyMap[refs.difficulty.value];
 }
 
+function figurePoint(t) {
+  return {
+    x: figure.centerX + figure.radiusX * Math.sin(t),
+    y: figure.centerY + figure.radiusY * Math.sin(2 * t),
+  };
+}
+
+function figureAngle(t) {
+  const dx = figure.radiusX * Math.cos(t);
+  const dy = 2 * figure.radiusY * Math.cos(2 * t);
+  return Math.atan2(dy, dx) * (180 / Math.PI);
+}
+
+function buildFigureEightPath() {
+  const samples = 260;
+  const parts = [];
+
+  for (let index = 0; index <= samples; index += 1) {
+    const point = figurePoint((index / samples) * TAU);
+    parts.push(`${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
+  }
+
+  const path = `${parts.join(" ")} Z`;
+  refs.flightPath.setAttribute("d", path);
+  refs.flightShadow.setAttribute("d", path);
+}
+
 function updateBadges() {
   refs.timeBadge.textContent = formatTime(state.remainingSec);
   refs.starBadge.textContent = `燃料星 ${state.stars}`;
 
   if (state.mode === "figure-eight") {
     refs.targetBadge.textContent = `圈数 ${state.loops}`;
-    if (!state.ended) {
-      refs.sessionTitle.textContent = state.running ? "飞行训练中" : "飞行准备";
-      refs.sessionLine.textContent = state.running ? `速度 ${refs.difficulty.options[refs.difficulty.selectedIndex].text}` : "准备起飞";
-    }
     return;
   }
 
   refs.targetBadge.textContent = state.nextNumber <= 25 ? `下一个 ${state.nextNumber}` : "完成 25";
-  if (!state.ended) {
-    refs.sessionTitle.textContent = state.running ? "搜索训练中" : "积木准备";
-    refs.sessionLine.textContent = `已找到 ${state.foundCount}/25`;
-  }
 }
 
-function placePlane(distance = state.pathDistance) {
-  if (!state.pathLength) {
-    state.pathLength = refs.flightPath.getTotalLength();
-  }
-
-  const normalized = ((distance % state.pathLength) + state.pathLength) % state.pathLength;
-  const point = refs.flightPath.getPointAtLength(normalized);
-  const ahead = refs.flightPath.getPointAtLength((normalized + 3) % state.pathLength);
-  const angle = Math.atan2(ahead.y - point.y, ahead.x - point.x) * (180 / Math.PI);
-
+function placePlane(t = state.figureT) {
+  const normalized = ((t % TAU) + TAU) % TAU;
+  const point = figurePoint(normalized);
+  const angle = figureAngle(normalized);
   refs.plane.setAttribute("transform", `translate(${point.x} ${point.y}) rotate(${angle})`);
 }
 
@@ -208,17 +246,17 @@ function tickFigureEight(now) {
 
   const deltaSec = Math.min((now - state.lastTick) / 1000, 0.06);
   state.lastTick = now;
-  state.pathDistance += getDifficulty().speed * deltaSec;
+  state.figureT += getDifficulty().figureAngularSpeed * deltaSec;
 
-  const loops = Math.floor(state.pathDistance / state.pathLength);
+  const loops = Math.floor(state.figureT / TAU);
   if (loops !== state.loops) {
     state.loops = loops;
     state.stars += 1;
     sound.blip(760, 0.08);
-    updateBadges();
   }
 
   placePlane();
+  updateBadges();
   state.animationId = requestAnimationFrame(tickFigureEight);
 }
 
@@ -297,12 +335,8 @@ function finishSession(completed) {
 
   if (completed) {
     state.stars += 3;
-    refs.sessionTitle.textContent = "任务完成";
-    refs.sessionLine.textContent = state.mode === "numbers" ? `错点 ${state.mistakes} 次` : `完成 ${state.loops} 圈`;
     sound.melody();
   } else {
-    refs.sessionTitle.textContent = "时间到";
-    refs.sessionLine.textContent = state.mode === "numbers" ? `已找到 ${state.foundCount}/25` : `完成 ${state.loops} 圈`;
     sound.blip(392, 0.16);
   }
 
@@ -316,7 +350,7 @@ function resetSession() {
   state.durationSec = Number(refs.duration.value);
   state.remainingSec = state.durationSec;
   state.lastTick = performance.now();
-  state.pathDistance = 0;
+  state.figureT = 0;
   state.loops = 0;
   state.stars = 0;
   state.nextNumber = 1;
@@ -346,8 +380,14 @@ function shuffle(items) {
   return copy;
 }
 
+function applyNumberDifficulty() {
+  refs.numberStage.classList.remove("difficulty-easy", "difficulty-standard", "difficulty-challenge");
+  refs.numberStage.classList.add(getDifficulty().numberClass);
+}
+
 function generateNumberBlocks() {
   refs.numberField.innerHTML = "";
+  applyNumberDifficulty();
   const numbers = shuffle(Array.from({ length: 25 }, (_, index) => index + 1));
   const config = getDifficulty();
 
@@ -368,14 +408,6 @@ function generateNumberBlocks() {
 
     cell.append(block);
     refs.numberField.append(cell);
-  });
-
-  highlightNextBlock();
-}
-
-function highlightNextBlock() {
-  refs.numberField.querySelectorAll(".number-block").forEach((block) => {
-    block.classList.toggle("is-next", getDifficulty().hintNext && Number(block.dataset.number) === state.nextNumber);
   });
 }
 
@@ -407,40 +439,45 @@ function handleNumberClick(block) {
     return;
   }
 
-  highlightNextBlock();
   updateBadges();
 }
 
-function switchMode(mode) {
-  if (state.mode === mode) {
-    return;
-  }
-
+function setGameMode(mode) {
   state.mode = mode;
-  stopMotion();
-
-  refs.modeButtons.forEach((button) => {
-    const active = button.dataset.mode === mode;
-    button.classList.toggle("is-active", active);
-    button.setAttribute("aria-selected", String(active));
-  });
-
+  const meta = gameMeta[mode];
+  refs.gameIcon.textContent = meta.icon;
+  refs.gameTitle.textContent = meta.title;
+  refs.gameSubtitle.textContent = meta.subtitle;
   refs.figureStage.classList.toggle("is-hidden", mode !== "figure-eight");
   refs.numberStage.classList.toggle("is-hidden", mode !== "numbers");
-  resetSession();
 }
 
-refs.modeButtons.forEach((button) => {
-  button.addEventListener("click", () => switchMode(button.dataset.mode));
+function showGame(mode) {
+  refs.homeScreen.classList.add("is-hidden");
+  refs.gameScreen.classList.remove("is-hidden");
+  setGameMode(mode);
+  resetSession();
+  window.history.replaceState(null, "", mode === "numbers" ? "#numbers" : "#figure-eight");
+}
+
+function showHome() {
+  stopMotion();
+  state.running = false;
+  refs.startPause.textContent = "开始";
+  refs.gameScreen.classList.add("is-hidden");
+  refs.homeScreen.classList.remove("is-hidden");
+  window.history.replaceState(null, "", window.location.pathname);
+}
+
+refs.choiceButtons.forEach((button) => {
+  button.addEventListener("click", () => showGame(button.dataset.startMode));
 });
 
+refs.homeButton.addEventListener("click", showHome);
 refs.startPause.addEventListener("click", startSession);
 refs.reset.addEventListener("click", resetSession);
 
-refs.difficulty.addEventListener("change", () => {
-  resetSession();
-});
-
+refs.difficulty.addEventListener("change", resetSession);
 refs.duration.addEventListener("change", resetSession);
 
 refs.soundToggle.addEventListener("click", () => {
@@ -460,8 +497,13 @@ window.addEventListener("resize", () => {
   placePlane();
 });
 
+buildFigureEightPath();
+placePlane(0);
+
 if (window.location.hash === "#numbers") {
-  switchMode("numbers");
+  showGame("numbers");
+} else if (window.location.hash === "#figure-eight") {
+  showGame("figure-eight");
 } else {
-  resetSession();
+  updateBadges();
 }
