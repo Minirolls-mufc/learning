@@ -79,8 +79,8 @@ const aircraftMap = {
     lookAhead: 8,
   },
   a380: {
-    scale: 0.7,
-    lookAhead: 10,
+    scale: 0.58,
+    lookAhead: 12,
   },
   helicopter: {
     scale: 0.76,
