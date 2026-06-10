@@ -26,10 +26,17 @@ body {
 body {
   margin: 0;
   font-family:
+    "Hannotate SC",
+    "HanziPen SC",
+    "Yuanti SC",
+    "STYuanti-SC",
+    "PingFang SC",
+    "Comic Sans MS",
+    "Chalkboard SE",
+    "Marker Felt",
+    "Microsoft YaHei",
     ui-rounded,
     "SF Pro Rounded",
-    "PingFang SC",
-    "Microsoft YaHei",
     system-ui,
     sans-serif;
   color: var(--ink);
@@ -71,8 +78,8 @@ button {
 }
 
 .brand-mark {
-  width: 76px;
-  height: 58px;
+  width: 82px;
+  height: 62px;
   flex: 0 0 auto;
   filter: drop-shadow(0 8px 0 rgba(31, 41, 55, 0.08));
 }
@@ -84,7 +91,7 @@ p {
 }
 
 h1 {
-  font-size: clamp(28px, 4.5vw, 48px);
+  font-size: clamp(30px, 4.2vw, 54px);
   line-height: 1.02;
   letter-spacing: 0;
 }
@@ -98,22 +105,23 @@ h1 {
 
 .home-screen {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(16px, 3vw, 28px);
-  min-height: min(72vh, 680px);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  align-items: start;
+  gap: clamp(14px, 2.4vw, 22px);
+  min-height: 0;
 }
 
 .game-choice {
   display: grid;
   align-content: center;
   justify-items: center;
-  gap: 14px;
-  min-height: 430px;
-  padding: clamp(18px, 3vw, 34px);
+  gap: 8px;
+  min-height: 246px;
+  padding: 14px;
   border: 4px solid var(--ink);
   border-radius: 8px;
   background: var(--panel);
-  box-shadow: var(--shadow), 0 9px 0 var(--ink);
+  box-shadow: var(--shadow), 0 7px 0 var(--ink);
   color: var(--ink);
   text-align: center;
   transition:
@@ -128,7 +136,7 @@ h1 {
 
 .game-choice:active {
   transform: translateY(6px);
-  box-shadow: var(--shadow), 0 3px 0 var(--ink);
+  box-shadow: var(--shadow), 0 2px 0 var(--ink);
 }
 
 .choice-flight {
@@ -140,7 +148,7 @@ h1 {
 }
 
 .choice-art {
-  width: min(360px, 92%);
+  width: min(270px, 96%);
   height: auto;
 }
 
@@ -162,13 +170,13 @@ h1 {
 
 .game-choice span {
   color: var(--muted);
-  font-size: clamp(16px, 2vw, 22px);
+  font-size: clamp(14px, 1.7vw, 18px);
   font-weight: 900;
 }
 
 .game-choice strong {
   display: block;
-  font-size: clamp(38px, 5vw, 68px);
+  font-size: clamp(26px, 3.1vw, 40px);
   line-height: 1;
   letter-spacing: 0;
 }
@@ -277,7 +285,7 @@ h2 {
 }
 
 .settings-bar {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   padding: 12px;
 }
 
@@ -424,30 +432,39 @@ select {
   stroke-linejoin: round;
 }
 
-.gate rect,
-.gate circle {
+.terminal rect,
+.terminal circle {
   stroke: var(--ink);
-  stroke-width: 4;
+  stroke-width: 5;
 }
 
-.gate-red rect,
-.gate-red circle {
+.terminal-red .terminal-base,
+.terminal-red .terminal-side,
+.terminal-red circle {
   fill: var(--red);
 }
 
-.gate-yellow rect,
-.gate-yellow circle {
-  fill: var(--yellow);
+.terminal-blue .terminal-base,
+.terminal-blue .terminal-side,
+.terminal-blue circle {
+  fill: var(--blue);
 }
 
-.gate-blue rect,
-.gate-blue circle {
-  fill: var(--blue);
+.terminal-window {
+  fill: #ffffff;
 }
 
 .plane-token {
   filter: drop-shadow(0 12px 0 rgba(31, 41, 55, 0.16));
   transform-origin: center;
+}
+
+.aircraft-shape {
+  display: none;
+}
+
+.aircraft-shape.is-active {
+  display: block;
 }
 
 .number-stage {
@@ -491,19 +508,14 @@ select {
     box-shadow 170ms ease;
 }
 
-.difficulty-easy {
+.speed-slow {
   --block-size: 98px;
   --number-font: 3.8vw;
 }
 
-.difficulty-standard {
+.speed-normal {
   --block-size: 82px;
   --number-font: 3.1vw;
-}
-
-.difficulty-challenge {
-  --block-size: 68px;
-  --number-font: 2.7vw;
 }
 
 .number-block::before,
@@ -565,14 +577,6 @@ select {
   display: none !important;
 }
 
-.parent-note {
-  margin-top: 12px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-  text-align: center;
-}
-
 @keyframes shake {
   0%,
   100% {
@@ -590,11 +594,11 @@ select {
 
 @media (max-width: 980px) {
   .home-screen {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   }
 
   .game-choice {
-    min-height: 330px;
+    min-height: 230px;
   }
 
   .game-toolbar {
@@ -617,7 +621,7 @@ select {
   }
 
   .brand-mark {
-    width: 58px;
+    width: 60px;
   }
 
   .brand p {
@@ -625,11 +629,11 @@ select {
   }
 
   .game-choice {
-    min-height: 280px;
+    min-height: 210px;
   }
 
   .choice-art {
-    width: min(300px, 96%);
+    width: min(235px, 96%);
   }
 
   .game-toolbar,
@@ -675,19 +679,14 @@ select {
     min-height: 468px;
   }
 
-  .difficulty-easy {
+  .speed-slow {
     --block-size: 66px;
     --number-font: 6.2vw;
   }
 
-  .difficulty-standard {
+  .speed-normal {
     --block-size: 58px;
     --number-font: 5.7vw;
-  }
-
-  .difficulty-challenge {
-    --block-size: 50px;
-    --number-font: 5.2vw;
   }
 }
 
