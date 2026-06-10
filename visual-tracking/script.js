@@ -21,6 +21,7 @@ const refs = {
   flightPath: document.querySelector("#flightPath"),
   flightShadow: document.querySelector("#flightShadow"),
   plane: document.querySelector("#plane"),
+  planeBody: document.querySelector("#planeBody"),
 };
 
 const figureStartDistance = 170;
@@ -214,7 +215,8 @@ function placePlane(distance = state.pathDistance) {
   const point = refs.flightPath.getPointAtLength(normalized);
   const ahead = refs.flightPath.getPointAtLength((normalized + 8) % state.pathLength);
   const angle = Math.atan2(ahead.y - point.y, ahead.x - point.x) * (180 / Math.PI);
-  refs.plane.setAttribute("transform", `translate(${point.x} ${point.y}) rotate(${angle}) scale(${planeScale})`);
+  refs.plane.setAttribute("transform", `translate(${point.x} ${point.y})`);
+  refs.planeBody.setAttribute("transform", `rotate(${angle}) scale(${planeScale})`);
 }
 
 function tickFigureEight(now) {
