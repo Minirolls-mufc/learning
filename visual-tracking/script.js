@@ -23,13 +23,8 @@ const refs = {
   plane: document.querySelector("#plane"),
 };
 
-const TAU = Math.PI * 2;
-const figure = {
-  centerX: 500,
-  centerY: 310,
-  radiusX: 390,
-  radiusY: 168,
-};
+const figureStartDistance = 170;
+const planeScale = 0.78;
 
 const state = {
   mode: "figure-eight",
@@ -41,7 +36,9 @@ const state = {
   lastTick: 0,
   animationId: 0,
   timerId: 0,
-  figureT: 0,
+  pathLength: 0,
+  pathDistance: 0,
+  pathProgress: 0,
   loops: 0,
   stars: 0,
   nextNumber: 1,
@@ -65,17 +62,17 @@ const gameMeta = {
 
 const difficultyMap = {
   easy: {
-    figureAngularSpeed: 0.46,
+    figureSpeed: 130,
     numberTwist: 2,
     numberClass: "difficulty-easy",
   },
   standard: {
-    figureAngularSpeed: 0.68,
+    figureSpeed: 190,
     numberTwist: 8,
     numberClass: "difficulty-standard",
   },
   challenge: {
-    figureAngularSpeed: 0.92,
+    figureSpeed: 255,
     numberTwist: 14,
     numberClass: "difficulty-challenge",
   },
@@ -193,31 +190,10 @@ function getDifficulty() {
   return difficultyMap[refs.difficulty.value];
 }
 
-function figurePoint(t) {
-  return {
-    x: figure.centerX + figure.radiusX * Math.sin(t),
-    y: figure.centerY + figure.radiusY * Math.sin(2 * t),
-  };
-}
-
-function figureAngle(t) {
-  const dx = figure.radiusX * Math.cos(t);
-  const dy = 2 * figure.radiusY * Math.cos(2 * t);
-  return Math.atan2(dy, dx) * (180 / Math.PI);
-}
-
-function buildFigureEightPath() {
-  const samples = 260;
-  const parts = [];
-
-  for (let index = 0; index <= samples; index += 1) {
-    const point = figurePoint((index / samples) * TAU);
-    parts.push(`${index === 0 ? "M" : "L"} ${point.x.toFixed(2)} ${point.y.toFixed(2)}`);
+function ensurePathLength() {
+  if (!state.pathLength) {
+    state.pathLength = refs.flightPath.getTotalLength();
   }
-
-  const path = `${parts.join(" ")} Z`;
-  refs.flightPath.setAttribute("d", path);
-  refs.flightShadow.setAttribute("d", path);
 }
 
 function updateBadges() {
@@ -232,11 +208,13 @@ function updateBadges() {
   refs.targetBadge.textContent = state.nextNumber <= 25 ? `下一个 ${state.nextNumber}` : "完成 25";
 }
 
-function placePlane(t = state.figureT) {
-  const normalized = ((t % TAU) + TAU) % TAU;
-  const point = figurePoint(normalized);
-  const angle = figureAngle(normalized);
-  refs.plane.setAttribute("transform", `translate(${point.x} ${point.y}) rotate(${angle})`);
+function placePlane(distance = state.pathDistance) {
+  ensurePathLength();
+  const normalized = ((distance % state.pathLength) + state.pathLength) % state.pathLength;
+  const point = refs.flightPath.getPointAtLength(normalized);
+  const ahead = refs.flightPath.getPointAtLength((normalized + 8) % state.pathLength);
+  const angle = Math.atan2(ahead.y - point.y, ahead.x - point.x) * (180 / Math.PI);
+  refs.plane.setAttribute("transform", `translate(${point.x} ${point.y}) rotate(${angle}) scale(${planeScale})`);
 }
 
 function tickFigureEight(now) {
@@ -246,9 +224,12 @@ function tickFigureEight(now) {
 
   const deltaSec = Math.min((now - state.lastTick) / 1000, 0.06);
   state.lastTick = now;
-  state.figureT += getDifficulty().figureAngularSpeed * deltaSec;
+  ensurePathLength();
+  const step = getDifficulty().figureSpeed * deltaSec;
+  state.pathDistance += step;
+  state.pathProgress += step;
 
-  const loops = Math.floor(state.figureT / TAU);
+  const loops = Math.floor(state.pathProgress / state.pathLength);
   if (loops !== state.loops) {
     state.loops = loops;
     state.stars += 1;
@@ -350,7 +331,9 @@ function resetSession() {
   state.durationSec = Number(refs.duration.value);
   state.remainingSec = state.durationSec;
   state.lastTick = performance.now();
-  state.figureT = 0;
+  ensurePathLength();
+  state.pathDistance = Math.min(figureStartDistance, state.pathLength * 0.1);
+  state.pathProgress = 0;
   state.loops = 0;
   state.stars = 0;
   state.nextNumber = 1;
@@ -358,7 +341,7 @@ function resetSession() {
   state.mistakes = 0;
   state.numberStartedAt = 0;
   refs.startPause.textContent = "开始";
-  placePlane(0);
+  placePlane();
 
   if (state.mode === "numbers") {
     generateNumberBlocks();
@@ -497,7 +480,6 @@ window.addEventListener("resize", () => {
   placePlane();
 });
 
-buildFigureEightPath();
 placePlane(0);
 
 if (window.location.hash === "#numbers") {
