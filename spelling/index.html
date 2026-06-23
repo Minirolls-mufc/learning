@@ -9,7 +9,7 @@
 <link rel="apple-touch-icon" href="https://img.icons8.com/color/180/lego-head.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&family=Literata:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <title>Romeo's Spelling</title>
 <style>
 :root {
@@ -144,6 +144,41 @@ header {
 .stat-wrong { background: #ffeef0; color: #c0392b; }
 .stat-net-pos { background: #e8f5ff; color: #2563eb; }
 .stat-net-neg { background: #fff0e8; color: #c2410c; }
+.target-group-card {
+  display: flex; align-items: center; gap: 14px; cursor: pointer;
+  padding: 18px; min-height: 92px;
+}
+.target-group-card:active { transform: scale(0.99); }
+.target-group-icon {
+  width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 25px;
+  background: #eef2ff;
+}
+.target-group-count {
+  margin-left: auto; flex-shrink: 0; min-width: 38px; height: 32px;
+  padding: 0 10px; border-radius: 16px; display: flex; align-items: center;
+  justify-content: center; background: #f1f3f7; color: var(--text-2);
+  font-size: 13px; font-weight: 800;
+}
+.target-word-row {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0; cursor: pointer;
+}
+.target-word-row:last-child { border-bottom: none; }
+.target-word-main { min-width: 0; flex: 1; }
+.target-word-name {
+  font-family: 'Nunito', sans-serif; font-size: 19px; font-weight: 800; color: var(--text);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.target-word-meta {
+  margin-top: 3px; color: var(--text-2); font-size: 11px; font-weight: 700;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.target-word-stats { display: flex; gap: 5px; flex-shrink: 0; }
+@media (max-width: 520px) {
+  .target-word-row { align-items: flex-start; flex-wrap: wrap; }
+  .target-word-stats { width: 100%; padding-left: 32px; }
+}
 
 /* Learn module */
 .learn-progress {
@@ -158,7 +193,7 @@ header {
 }
 .phonics-display {
   display: flex; flex-wrap: wrap; justify-content: center; gap: 0;
-  font-family: 'Literata', Georgia, serif; font-size: 76px; font-weight: 400;
+  font-family: 'Nunito', sans-serif; font-size: 76px; font-weight: 400;
   line-height: 1.15; min-height: 92px; align-items: center; letter-spacing: 1px;
 }
 .phonics-chunk { display: inline-flex; transition: opacity 0.3s, transform 0.3s; }
@@ -176,7 +211,7 @@ header {
 .letter-tile {
   width: 58px; height: 68px; background: var(--primary); color: #fff;
   border-radius: 12px; font-size: 34px; font-weight: 400;
-  font-family: 'Literata', Georgia, serif;
+  font-family: 'Nunito', sans-serif;
   display: flex; align-items: center; justify-content: center; cursor: pointer;
   box-shadow: 0 5px 0 var(--primary-dark);
   transition: transform 0.1s, box-shadow 0.1s, opacity 0.2s; border: none;
@@ -187,7 +222,7 @@ header {
 .slots-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 18px 0 24px 0; }
 .answer-slot {
   width: 58px; height: 68px; border-bottom: 5px solid #e0e0e0;
-  font-size: 34px; font-weight: 400; font-family: 'Literata', Georgia, serif;
+  font-size: 34px; font-weight: 400; font-family: 'Nunito', sans-serif;
   display: flex; align-items: center; justify-content: center;
   background: #fff; color: #333; border-radius: 8px; transition: all 0.2s;
 }
@@ -196,7 +231,7 @@ header {
 .answer-slot.wrong { background: var(--red); border-bottom-color: var(--red); color: #fff; border-radius: 12px; border-bottom-width: 0; }
 .blank-char {
   width: 52px; height: 64px; border-bottom: 5px solid #e0e0e0;
-  font-size: 38px; font-weight: 400; font-family: 'Literata', Georgia, serif;
+  font-size: 38px; font-weight: 400; font-family: 'Nunito', sans-serif;
   display: flex; align-items: center; justify-content: center;
   background: #fff; color: #333; border-radius: 8px; transition: all 0.15s;
 }
@@ -272,6 +307,7 @@ textarea:focus { border-color: var(--primary); outline: none; }
 /* ==================== CONFIG ==================== */
 const BIN_ID = '695b813c43b1c97be91a29d3';
 const API_KEY = '$2a$10$uEeLgIqeB1wImpeUneAhref2IXtkWjDsrQ1rh4tDTOdjMu8zDeYBC';
+const STATS_VERSION = 2;
 
 /* ==================== STATE ==================== */
 let db;
@@ -279,7 +315,9 @@ let currentSetDate = null;
 let practiceList = [], currentIndex = 0, sessionMasteredSet = new Set();
 let sessionWrongSet = new Set(); // words that were wrong at least once this session
 let isProcessing = false;
-let easyHadWrong = false; // track if current easy word had any wrong attempt
+let currentWordHadWrong = false;
+let targetSelectionWords = [], currentTargetGroupKey = null;
+let pendingPracticeWords = null;
 
 // Learn state
 let learnList = [], learnIndex = 0, learnChunks = [], learnRevealedCount = 0, learnCovered = false, learnInStepMode = false;
@@ -370,12 +408,7 @@ async function autoRestoreFromCloud() {
     stores.forEach(s => tx.objectStore(s).clear());
     (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put({ id: s.id || s.date, words: s.words }));
     (content.groups || []).forEach(g => tx.objectStore('groups').put(g));
-    (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put({
-      word: w.word,
-      lastPractice: w.lastPractice || w.lastWrong || new Date().toISOString(),
-      correctCount: w.correctCount || 0,
-      wrongCount: w.wrongCount || (w.lastWrong ? 1 : 0)
-    }));
+    (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(normalizeWrongRecord(w, content.statsVersion)));
     (content.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
 
     await new Promise((resolve, reject) => {
@@ -413,13 +446,8 @@ function migrateFromV6() {
           if (!sets.length && !wrongs.length) return resolve();
           const tx7 = db.transaction(['wordSets', 'wrongBank', 'practiceLogs'], 'readwrite');
           sets.forEach(s => tx7.objectStore('wordSets').put({ id: s.id || s.date, words: s.words }));
-          // Migrate wrongBank: old format {word, lastWrong} → new format {word, lastPractice, correctCount, wrongCount}
-          wrongs.forEach(w => tx7.objectStore('wrongBank').put({
-            word: w.word,
-            lastPractice: w.lastWrong || w.lastPractice || new Date().toISOString(),
-            correctCount: w.correctCount || 0,
-            wrongCount: w.wrongCount || 1
-          }));
+          // Preserve v6 counters as legacy-only data and start the new mastery statistics from zero.
+          wrongs.forEach(w => tx7.objectStore('wrongBank').put(normalizeWrongRecord(w, 1)));
           logs.forEach(l => tx7.objectStore('practiceLogs').put(l));
           tx7.oncomplete = () => resolve();
         });
@@ -431,6 +459,69 @@ function migrateFromV6() {
 
 function getAll(store) {
   return new Promise(r => { const req = store.getAll(); req.onsuccess = () => r(req.result); req.onerror = () => r([]); });
+}
+
+function localDateKey(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
+function addDaysToDateKey(dateKey, days) {
+  const [y, m, d] = dateKey.split('-').map(Number);
+  const date = new Date(y, m - 1, d, 12);
+  date.setDate(date.getDate() + days);
+  return localDateKey(date);
+}
+
+function isNewStatsRecord(w, sourceVersion) {
+  return Number(sourceVersion) >= STATS_VERSION || Number(w.statsVersion) >= STATS_VERSION || 'legacyWrongCount' in w;
+}
+
+function normalizeWrongRecord(w, sourceVersion = 1) {
+  const cleanWord = String(w.word || '').replace(/\//g, '').toLowerCase();
+  if (isNewStatsRecord(w, sourceVersion)) {
+    return {
+      word: cleanWord,
+      statsVersion: STATS_VERSION,
+      legacyCorrectCount: Number(w.legacyCorrectCount) || 0,
+      legacyWrongCount: Number(w.legacyWrongCount) || 0,
+      legacyLastPracticeAt: w.legacyLastPracticeAt || null,
+      correctCount: Number(w.correctCount) || 0,
+      wrongCount: Number(w.wrongCount) || 0,
+      skipCount: Number(w.skipCount) || 0,
+      lastPracticeAt: w.lastPracticeAt || null,
+      lastCorrectAt: w.lastCorrectAt || null,
+      lastWrongAt: w.lastWrongAt || null,
+      lastResult: w.lastResult || null,
+      masteryStep: Math.min(3, Math.max(0, Number(w.masteryStep) || 0)),
+      lastMasteryDate: w.lastMasteryDate || null,
+      nextReviewDate: w.nextReviewDate || null,
+      masteredAt: w.masteredAt || null,
+      needsConsolidation: Boolean(w.needsConsolidation)
+    };
+  }
+
+  return {
+    word: cleanWord,
+    statsVersion: STATS_VERSION,
+    legacyCorrectCount: Number(w.correctCount) || 0,
+    legacyWrongCount: Number(w.wrongCount) || (w.lastWrong ? 1 : 0),
+    legacyLastPracticeAt: w.lastPractice || w.lastWrong || null,
+    correctCount: 0,
+    wrongCount: 0,
+    skipCount: 0,
+    lastPracticeAt: null,
+    lastCorrectAt: null,
+    lastWrongAt: null,
+    lastResult: null,
+    masteryStep: 0,
+    lastMasteryDate: null,
+    nextReviewDate: null,
+    masteredAt: null,
+    needsConsolidation: false
+  };
 }
 
 function keepFocus() {
@@ -449,7 +540,7 @@ async function syncToCloud(isSilent = false) {
     getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
     getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
   ]);
-  const payload = { updatedAt: new Date(), data: { wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs } };
+  const payload = { updatedAt: new Date(), data: { statsVersion: STATS_VERSION, wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs } };
 
   let toast = null;
   if (isSilent) {
@@ -486,12 +577,7 @@ async function syncFromCloud() {
     stores.forEach(s => tx.objectStore(s).clear());
     (content.wordSets || []).forEach(s => tx.objectStore('wordSets').put({ id: s.id || s.date, words: s.words }));
     (content.groups || []).forEach(g => tx.objectStore('groups').put(g));
-    (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put({
-      word: w.word,
-      lastPractice: w.lastPractice || w.lastWrong || new Date().toISOString(),
-      correctCount: w.correctCount || 0,
-      wrongCount: w.wrongCount || (w.lastWrong ? 1 : 0)
-    }));
+    (content.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(normalizeWrongRecord(w, content.statsVersion)));
     (content.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
     tx.oncomplete = () => { alert("✅ 恢复成功！"); renderHome(); };
   } catch (err) { alert("下载失败，请检查网络"); }
@@ -612,82 +698,177 @@ function renderSetSelection(mode, activeTab) {
 }
 
 /* ==================== TARGET SELECTION ==================== */
-// Shows all words from wrongBank sorted by (correctCount - wrongCount) asc, then lastPractice asc
-function renderTargetSelection(mode) {
-  const backFn = `renderSetSelection('${mode}')`;
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="${backFn}">‹ 返回</button>`;
+function buildTargetData(bank, sets) {
+  const today = localDateKey();
+  const statsByWord = new Map(bank.map(w => [w.word, w]));
+  const catalog = new Map();
 
-  // Read both wrongBank and wordSets together
+  [...sets].sort((a, b) => a.id.localeCompare(b.id)).forEach(s => {
+    (s.words || []).forEach(rawWord => {
+      const clean = rawWord.replace(/\//g, '').toLowerCase();
+      const existing = catalog.get(clean);
+      if (existing) {
+        if (!existing.setIds.includes(s.id)) existing.setIds.push(s.id);
+        existing.rawWord = rawWord;
+      } else {
+        catalog.set(clean, { clean, rawWord, setIds: [s.id] });
+      }
+    });
+  });
+
+  bank.forEach(w => {
+    if (!catalog.has(w.word)) catalog.set(w.word, { clean: w.word, rawWord: w.word, setIds: [] });
+  });
+
+  const toEntry = (w, reason = '') => {
+    const source = catalog.get(w.word) || { clean: w.word, rawWord: w.word, setIds: [] };
+    return { ...source, stats: w, reason };
+  };
+  const isToday = timestamp => Boolean(timestamp) && localDateKey(new Date(timestamp)) === today;
+  const byWrongPriority = (a, b) => {
+    const countDiff = (b.wrongCount || 0) - (a.wrongCount || 0);
+    if (countDiff) return countDiff;
+    return new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0);
+  };
+
+  const activeBank = bank.filter(w =>
+    (w.correctCount || 0) > 0 || (w.wrongCount || 0) > 0 || (w.skipCount || 0) > 0 || w.lastPracticeAt
+  );
+  const todayWrong = activeBank
+    .filter(w => isToday(w.lastWrongAt))
+    .sort((a, b) => new Date(b.lastWrongAt) - new Date(a.lastWrongAt))
+    .map(w => toEntry(w, '今天拼错'));
+
+  const unresolved = activeBank
+    .filter(w => w.needsConsolidation && (w.masteryStep || 0) < 3)
+    .sort((a, b) => new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0));
+  const unresolvedKeys = new Set(unresolved.map(w => w.word));
+  const due = activeBank
+    .filter(w => !unresolvedKeys.has(w.word) && (w.masteryStep || 0) > 0 && (w.masteryStep || 0) < 3 && w.nextReviewDate && w.nextReviewDate <= today)
+    .sort((a, b) => a.nextReviewDate.localeCompare(b.nextReviewDate));
+  const highFrequency = activeBank
+    .filter(w => (w.wrongCount || 0) > 0 && (w.masteryStep || 0) < 3)
+    .sort(byWrongPriority);
+
+  const consolidation = [];
+  const consolidationKeys = new Set();
+  unresolved.forEach(w => {
+    consolidation.push(toEntry(w, '待重新巩固'));
+    consolidationKeys.add(w.word);
+  });
+  due.forEach(w => {
+    const reason = (w.masteryStep || 0) === 1 ? '3天复习到期' : '7天复习到期';
+    consolidation.push(toEntry(w, reason));
+    consolidationKeys.add(w.word);
+  });
+  for (const w of highFrequency) {
+    if (consolidation.length >= 10) break;
+    if (consolidationKeys.has(w.word)) continue;
+    if (w.lastMasteryDate === today) continue;
+    consolidation.push(toEntry(w, '高频补充'));
+    consolidationKeys.add(w.word);
+  }
+
+  const historical = highFrequency.slice(0, 10).map(w => toEntry(w, `累计错${w.wrongCount || 0}次`));
+  const mastered = activeBank
+    .filter(w => (w.masteryStep || 0) >= 3)
+    .sort((a, b) => new Date(b.masteredAt || 0) - new Date(a.masteredAt || 0))
+    .map(w => toEntry(w, '已掌握'));
+  const allWords = [...catalog.values()]
+    .sort((a, b) => a.clean.localeCompare(b.clean))
+    .map(source => ({ ...source, stats: statsByWord.get(source.clean) || null, reason: '' }));
+
+  return { todayWrong, consolidation, historical, mastered, allWords };
+}
+
+function getTargetData() {
   const tx = db.transaction(['wrongBank', 'wordSets'], 'readonly');
-  Promise.all([
-    getAll(tx.objectStore('wrongBank')),
-    getAll(tx.objectStore('wordSets'))
-  ]).then(([bank, sets]) => {
-    if (bank.length === 0) {
-      document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:40px;color:#999">
-        <div style="font-size:48px;margin-bottom:12px">🎉</div>
-        <div style="font-weight:700;font-size:17px">还没有练习记录</div>
-        <div style="font-size:13px;color:var(--text-2);margin-top:8px;font-weight:600">先去练习几个词组，这里就会出现数据了！</div>
-      </div>`;
-      return;
-    }
+  return Promise.all([getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('wordSets'))])
+    .then(([bank, sets]) => buildTargetData(bank, sets));
+}
 
-    // Build cleanWord → rawWord map AND cleanWord → setId map
-    const cleanToRaw = {};
-    const cleanToSet = {};
-    sets.forEach(s => s.words.forEach(w => {
-      const k = w.replace(/\//g, '').toLowerCase();
-      cleanToRaw[k] = w;
-      cleanToSet[k] = s.id;
-    }));
-
-    // Sort: net score asc, then lastPractice asc
-    bank.sort((a, b) => {
-      const netA = (a.correctCount || 0) - (a.wrongCount || 0);
-      const netB = (b.correctCount || 0) - (b.wrongCount || 0);
-      if (netA !== netB) return netA - netB;
-      return new Date(a.lastPractice || 0) - new Date(b.lastPractice || 0);
-    });
-
+function renderTargetSelection(mode) {
+  currentTargetGroupKey = null;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderSetSelection('${mode}')">‹ 返回</button>`;
+  getTargetData().then(data => {
     const title = mode === 'learn' ? '🎯 针对复习' : '🎯 针对练习';
-    const desc = mode === 'learn' ? '按掌握程度排序，全选或选择要复习的词' : '按掌握程度排序，全选或选择要练习的词';
-    const startFn = mode === 'learn' ? `startTargetLearn` : `startTargetPractice`;
+    const groups = [];
+    if (mode === 'practice') {
+      groups.push({ key: 'todayWrong', icon: '✕', title: '今日错词', desc: '只包含今天实际拼错过的词，不添加其他内容', items: data.todayWrong });
+    }
+    groups.push(
+      { key: 'consolidation', icon: '✓', title: '今日巩固', desc: '待纠正、到期复习和高频补充', items: data.consolidation },
+      { key: 'historical', icon: '↻', title: '历史高频错词', desc: '按新规则统计，最多10个词', items: data.historical },
+      { key: 'mastered', icon: '★', title: '已掌握', desc: '已在三个不同日期完成巩固', items: data.mastered },
+      { key: 'allWords', icon: '≡', title: '全部词列表', desc: '查看全部词及新规则下的正确、错误次数', items: data.allWords }
+    );
 
-    const resolvedWords = bank.map(w => {
-      const cleanKey = w.word.replace(/\//g, '').toLowerCase();
-      return cleanToRaw[cleanKey] || w.word;
-    });
-    const wordsJson = JSON.stringify(resolvedWords).replace(/"/g, '&quot;');
-
-    let listHtml = bank.map((w, i) => {
-      const clean = w.word.replace(/\//g, '');
-      const cleanKey = clean.toLowerCase();
-      const net = (w.correctCount || 0) - (w.wrongCount || 0);
-      const netClass = net >= 0 ? 'stat-net-pos' : 'stat-net-neg';
-      const netSign = net >= 0 ? '+' : '';
-      const lp = w.lastPractice ? new Date(w.lastPractice).toLocaleDateString('zh-CN', {month:'numeric',day:'numeric'}) : '—';
-      const setId = cleanToSet[cleanKey] || '';
-      return `<label style="display:grid;grid-template-columns:20px 1fr 80px 36px 36px 36px 34px;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid #f5f5f5;cursor:pointer">
-        <input type="checkbox" id="tchk-${i}" checked style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer">
-        <span style="font-family:'Literata',Georgia,serif;font-size:19px;color:#1a1a2e;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${clean}</span>
-        <span style="font-size:11px;color:#bbb;font-weight:600;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding-right:2px">${setId}</span>
-        <span class="stat-badge stat-correct" style="justify-content:center">✓${w.correctCount||0}</span>
-        <span class="stat-badge stat-wrong" style="justify-content:center">✗${w.wrongCount||0}</span>
-        <span class="stat-badge ${netClass}" style="justify-content:center">${netSign}${net}</span>
-        <span style="font-size:11px;color:#bbb;font-weight:600;text-align:right;white-space:nowrap">${lp}</span>
-      </label>`;
-    }).join('');
+    const cards = groups.map(group => `<div class="card target-group-card" onclick="renderTargetGroup('${mode}','${group.key}')">
+      <div class="target-group-icon">${group.icon}</div>
+      <div style="min-width:0;flex:1">
+        <div style="font-size:17px;font-weight:800;margin-bottom:3px">${group.title}</div>
+        <div style="font-size:12px;color:var(--text-2);font-weight:600;line-height:1.4">${group.desc}</div>
+      </div>
+      <div class="target-group-count">${group.items.length}</div>
+    </div>`).join('');
 
     document.getElementById('app').innerHTML = `
       <h3 style="margin:0 0 4px 0">${title}</h3>
-      <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:14px">${desc}</div>
-      <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--text-2);font-weight:600;margin-bottom:14px">选择本次需要处理的词组</div>
+      ${cards}
+    `;
+  });
+}
+
+function targetStatusText(entry) {
+  const w = entry.stats;
+  if (!w || (!w.lastPracticeAt && !(w.correctCount || 0) && !(w.wrongCount || 0) && !(w.skipCount || 0))) return '进度 0/3';
+  if ((w.masteryStep || 0) >= 3) return '已掌握 · 进度 3/3';
+  if (w.needsConsolidation) return '进度 0/3';
+  if (w.nextReviewDate) return `进度 ${w.masteryStep || 0}/3 · ${w.nextReviewDate}复习`;
+  return `进度 ${w.masteryStep || 0}/3`;
+}
+
+function renderTargetGroup(mode, groupKey) {
+  currentTargetGroupKey = groupKey;
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderTargetSelection('${mode}')">‹ 返回</button>`;
+  getTargetData().then(data => {
+    const labels = {
+      todayWrong: '今日错词', consolidation: '今日巩固', historical: '历史高频错词',
+      mastered: '已掌握', allWords: '全部词列表'
+    };
+    const items = data[groupKey] || [];
+    targetSelectionWords = items.map(item => item.rawWord);
+    const checked = groupKey === 'allWords' ? '' : 'checked';
+    const startFn = mode === 'learn' ? 'startTargetLearn()' : 'startTargetPractice()';
+
+    const listHtml = items.map((entry, i) => {
+      const w = entry.stats || {};
+      const source = entry.setIds.length ? entry.setIds.join(' · ') : '不在当前词表中';
+      const reason = entry.reason ? `${entry.reason} · ` : '';
+      return `<label class="target-word-row">
+        <input type="checkbox" id="tchk-${i}" ${checked} style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
+        <div class="target-word-main">
+          <div class="target-word-name">${entry.clean}</div>
+          <div class="target-word-meta">${reason}${targetStatusText(entry)} · ${source}</div>
+        </div>
+        <div class="target-word-stats">
+          <span class="stat-badge stat-correct">✓${w.correctCount || 0}</span>
+          <span class="stat-badge stat-wrong">✗${w.wrongCount || 0}</span>
+        </div>
+      </label>`;
+    }).join('');
+
+    const emptyHtml = `<div style="text-align:center;padding:42px 20px;color:var(--text-2);font-weight:700">当前分组暂无单词</div>`;
+    document.getElementById('app').innerHTML = `
+      <h3 style="margin:0 0 4px 0">${labels[groupKey] || '针对练习'}</h3>
+      <div style="display:flex;gap:8px;margin:12px 0">
         <button class="btn btn-gray btn-sm" onclick="toggleAllTarget(true)">全选</button>
         <button class="btn btn-gray btn-sm" onclick="toggleAllTarget(false)">全不选</button>
-        <span style="margin-left:auto;font-size:12px;color:var(--text-2);font-weight:600;align-self:center">${bank.length} 个词</span>
+        <span style="margin-left:auto;font-size:12px;color:var(--text-2);font-weight:700;align-self:center">${items.length} 个词</span>
       </div>
-      <div class="card" style="padding:4px 0;margin-bottom:14px">${listHtml}</div>
-      <button class="btn btn-primary" onclick="${startFn}(${wordsJson})">开始 ›</button>
+      <div class="card" style="padding:0;margin-bottom:14px;overflow:hidden">${items.length ? listHtml : emptyHtml}</div>
+      ${items.length ? `<button class="btn btn-primary" onclick="${startFn}">开始 ›</button>` : ''}
     `;
   });
 }
@@ -696,16 +877,16 @@ function toggleAllTarget(checked) {
   document.querySelectorAll('[id^="tchk-"]').forEach(cb => cb.checked = checked);
 }
 
-function startTargetLearn(words) {
-  const selected = words.filter((_, i) => { const cb = document.getElementById(`tchk-${i}`); return cb && cb.checked; });
+function startTargetLearn() {
+  const selected = targetSelectionWords.filter((_, i) => { const cb = document.getElementById(`tchk-${i}`); return cb && cb.checked; });
   if (!selected.length) return alert("请至少选择一个单词");
   currentSetDate = 'target';
   learnList = selected; learnIndex = 0;
   renderLearnUI();
 }
 
-function startTargetPractice(words) {
-  const selected = words.filter((_, i) => { const cb = document.getElementById(`tchk-${i}`); return cb && cb.checked; });
+function startTargetPractice() {
+  const selected = targetSelectionWords.filter((_, i) => { const cb = document.getElementById(`tchk-${i}`); return cb && cb.checked; });
   if (!selected.length) return alert("请至少选择一个单词");
   currentSetDate = 'target';
   renderPracticeMode('target', selected);
@@ -874,30 +1055,29 @@ function learnRevealNext() {
 /* ==================== PRACTICE MODE SELECTION ==================== */
 function renderPracticeMode(setId, preloadedWords) {
   currentSetDate = setId;
-  const backFn = preloadedWords ? `renderSetSelection('practice')` : `renderSetSelection('practice')`;
+  pendingPracticeWords = preloadedWords ? [...preloadedWords] : null;
+  const backFn = preloadedWords && currentTargetGroupKey
+    ? `renderTargetGroup('practice','${currentTargetGroupKey}')`
+    : `renderSetSelection('practice')`;
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="${backFn}">‹ 返回</button>`;
-  const wordsAttr = preloadedWords ? `data-words='${JSON.stringify(preloadedWords)}'` : '';
   document.getElementById('app').innerHTML = `
     <h3 style="margin:0 0 18px 0">选择练习方式</h3>
-    <button class="practice-mode-btn easy" id="modeEasyBtn" ${wordsAttr} onclick="startPracticeFromBtn(this,'easy')">
+    <button class="practice-mode-btn easy" id="modeEasyBtn" onclick="startPracticeFromBtn('easy')">
       <div class="pmb-title">🎮 简单模式 — 字母拼图</div>
       <div class="pmb-desc">打乱字母展示成磁贴，按顺序点击拼出单词</div>
     </button>
-    <button class="practice-mode-btn normal" id="modeNormalBtn" ${wordsAttr} onclick="startPracticeFromBtn(this,'normal')">
+    <button class="practice-mode-btn normal" id="modeNormalBtn" onclick="startPracticeFromBtn('normal')">
       <div class="pmb-title">✍️ 普通模式 — 听写输入</div>
       <div class="pmb-desc">听到发音，用键盘逐一输入字母</div>
     </button>
   `;
 }
 
-function startPracticeFromBtn(btn, mode) {
-  const rawWords = btn.getAttribute('data-words');
-  if (rawWords) {
-    try {
-      const words = JSON.parse(rawWords);
-      practiceList = words; currentIndex = 0; sessionMasteredSet = new Set(); sessionWrongSet = new Set();
-      renderPracticeUI(mode);
-    } catch(e) { startPractice(currentSetDate, mode); }
+function startPracticeFromBtn(mode) {
+  if (pendingPracticeWords) {
+    practiceList = [...pendingPracticeWords];
+    currentIndex = 0; sessionMasteredSet = new Set(); sessionWrongSet = new Set();
+    renderPracticeUI(mode);
   } else {
     startPractice(currentSetDate, mode);
   }
@@ -928,7 +1108,7 @@ function renderPracticeUI(mode) {
 function loadPracticeWord(mode) {
   if (currentIndex >= practiceList.length) { finishPractice(); return; }
   isProcessing = false;
-  easyHadWrong = false;
+  currentWordHadWrong = false;
   const rawWord = practiceList[currentIndex];
   const cleanWord = rawWord.replace(/\//g, '');
   const prog = document.getElementById('practiceProgress');
@@ -995,21 +1175,19 @@ function handleTileClick(origIdx, cleanWord) {
       document.getElementById('feedback').innerHTML = `<span style="color:var(--green)">太棒了！🎉</span>`;
       playSuccessTone();
       const wordKey = practiceList[currentIndex].replace(/\//g, '').toLowerCase();
-      if (!easyHadWrong) {
+      if (!currentWordHadWrong) {
         sessionMasteredSet.add(wordKey);
-        recordWordResult(practiceList[currentIndex], true);
-      } else {
-        recordWordResult(practiceList[currentIndex], false);
+        recordCorrectResult(practiceList[currentIndex]);
       }
       setTimeout(() => { currentIndex++; loadPracticeWord('easy'); }, 900);
     }
   } else {
     // Wrong tap
-    easyHadWrong = true;
-    const wordKey = practiceList[currentIndex].replace(/\//g, '').toLowerCase();
-    if (!sessionWrongSet.has(wordKey)) {
+    if (!currentWordHadWrong) {
+      currentWordHadWrong = true;
+      const wordKey = practiceList[currentIndex].replace(/\//g, '').toLowerCase();
       sessionWrongSet.add(wordKey);
-      recordEasyWrong(practiceList[currentIndex]); // record wrong once per word
+      recordWrongResult(practiceList[currentIndex]);
     }
     tile.classList.add('wrong-tile');
     const slot = document.getElementById(`slot-${nextEmpty}`);
@@ -1023,7 +1201,11 @@ function handleTileClick(origIdx, cleanWord) {
   }
 }
 
-function skipEasy() { currentIndex++; loadPracticeWord('easy'); }
+function skipEasy() {
+  recordSkipResult(practiceList[currentIndex]);
+  currentIndex++;
+  loadPracticeWord('easy');
+}
 
 /* ---------- NORMAL MODE ---------- */
 function loadNormalWord(cleanWord, rawWord, mode) {
@@ -1085,21 +1267,19 @@ function checkNormal(mode) {
     playSuccessTone();
     const wordKey = cleanTarget;
     const rawWord = practiceList[currentIndex];
-    const hadWrong = sessionWrongSet.has(wordKey);
-    if (!hadWrong) {
+    if (!currentWordHadWrong) {
       sessionMasteredSet.add(wordKey);
-      recordWordResult(rawWord, true);
-    } else {
-      recordWordResult(rawWord, false);
+      recordCorrectResult(rawWord);
     }
     setTimeout(() => { currentIndex++; loadPracticeWord(mode); }, 800);
   } else {
     fb.innerHTML = `<span style="color:var(--red)">正确: ${targetWord}</span>`;
     document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
     const wordKey = targetWord.toLowerCase();
-    if (!sessionWrongSet.has(wordKey)) {
+    if (!currentWordHadWrong) {
+      currentWordHadWrong = true;
       sessionWrongSet.add(wordKey);
-      recordWordResult(practiceList[currentIndex], false, true); // mark wrong
+      recordWrongResult(practiceList[currentIndex]);
     }
     const btn = document.getElementById('confirmBtn');
     btn.innerText = "记住了 ↺ 重试"; btn.className = "btn btn-yellow";
@@ -1120,45 +1300,74 @@ function resetNormal(btn, mode) {
   keepFocus();
 }
 
-function skipNormal(mode) { currentIndex++; loadPracticeWord(mode); }
+function skipNormal(mode) {
+  recordSkipResult(practiceList[currentIndex]);
+  currentIndex++;
+  loadPracticeWord(mode);
+}
 
 /* ==================== WRONG BANK RECORD KEEPING ==================== */
-// wrongBank key is always cleanWord (lowercase, no slashes)
-// isWrongOnly: only increment wrongCount (normal mode first wrong answer)
-// isCorrect: no wrong this session, add correctCount
-function recordWordResult(rawWord, isCorrect, isWrongOnly) {
+function updateWordStats(rawWord, updater) {
   const cleanKey = rawWord.replace(/\//g, '').toLowerCase();
-  const now = new Date().toISOString();
   const tx = db.transaction('wrongBank', 'readwrite');
   const store = tx.objectStore('wrongBank');
   const req = store.get(cleanKey);
   req.onsuccess = (e) => {
-    const existing = e.target.result || { word: cleanKey, lastPractice: now, correctCount: 0, wrongCount: 0 };
-    existing.lastPractice = now;
-    if (isWrongOnly) {
-      existing.wrongCount = (existing.wrongCount || 0) + 1;
-    } else if (isCorrect) {
-      existing.correctCount = (existing.correctCount || 0) + 1;
-    } else {
-      existing.wrongCount = (existing.wrongCount || 0) + 1;
-    }
+    const existing = normalizeWrongRecord(e.target.result || { word: cleanKey }, STATS_VERSION);
+    updater(existing);
     store.put(existing);
   };
 }
 
-// For easy mode: record wrong once per word per session
-function recordEasyWrong(rawWord) {
-  const cleanKey = rawWord.replace(/\//g, '').toLowerCase();
+function recordCorrectResult(rawWord) {
   const now = new Date().toISOString();
-  const tx = db.transaction('wrongBank', 'readwrite');
-  const store = tx.objectStore('wrongBank');
-  const req = store.get(cleanKey);
-  req.onsuccess = (e) => {
-    const existing = e.target.result || { word: cleanKey, lastPractice: now, correctCount: 0, wrongCount: 0 };
-    existing.lastPractice = now;
-    existing.wrongCount = (existing.wrongCount || 0) + 1;
-    store.put(existing);
-  };
+  const today = localDateKey();
+  updateWordStats(rawWord, record => {
+    record.correctCount += 1;
+    record.lastPracticeAt = now;
+    record.lastCorrectAt = now;
+    record.lastResult = 'correct';
+    record.needsConsolidation = false;
+
+    const step = record.masteryStep || 0;
+    const isDue = step === 0 || !record.nextReviewDate || record.nextReviewDate <= today;
+    if (step < 3 && record.lastMasteryDate !== today && isDue) {
+      record.masteryStep = step + 1;
+      record.lastMasteryDate = today;
+      if (record.masteryStep === 1) {
+        record.nextReviewDate = addDaysToDateKey(today, 3);
+      } else if (record.masteryStep === 2) {
+        record.nextReviewDate = addDaysToDateKey(today, 7);
+      } else {
+        record.nextReviewDate = null;
+        record.masteredAt = now;
+      }
+    }
+  });
+}
+
+function recordWrongResult(rawWord) {
+  const now = new Date().toISOString();
+  updateWordStats(rawWord, record => {
+    record.wrongCount += 1;
+    record.lastPracticeAt = now;
+    record.lastWrongAt = now;
+    record.lastResult = 'wrong';
+    record.masteryStep = 0;
+    record.lastMasteryDate = null;
+    record.nextReviewDate = localDateKey();
+    record.masteredAt = null;
+    record.needsConsolidation = true;
+  });
+}
+
+function recordSkipResult(rawWord) {
+  const now = new Date().toISOString();
+  updateWordStats(rawWord, record => {
+    record.skipCount += 1;
+    record.lastPracticeAt = now;
+    record.lastResult = 'skip';
+  });
 }
 
 function finishPractice() {
@@ -1250,7 +1459,7 @@ function renderSetsTab(sets, groups, tabsHtml, activeSetGroup) {
           <span style="font-size:11px;font-weight:700;color:#fff;background:var(--primary);padding:2px 8px;border-radius:20px">${s.words.length}词</span>
           ${grpName ? `<span style="font-size:11px;font-weight:700;color:#7c3aed;background:#f0e8ff;padding:2px 8px;border-radius:20px">📁 ${grpName}</span>` : ''}
         </div>
-        <div style="font-size:13px;color:#aaa;margin-top:3px;font-family:'Literata',Georgia,serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${preview}${s.words.length > 6 ? ' …' : ''}</div>
+        <div style="font-size:13px;color:#aaa;margin-top:3px;font-family:'Nunito',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${preview}${s.words.length > 6 ? ' …' : ''}</div>
       </div>
       <div style="color:var(--primary);font-size:14px;font-weight:700;flex-shrink:0;margin-left:10px">编辑 ›</div>
     </div>`;
@@ -1526,7 +1735,7 @@ function exportAllData() {
     getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
     getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
   ]).then(([sets, groups, wrongs, logs]) => {
-    const data = { wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs, exportDate: new Date().toISOString() };
+    const data = { statsVersion: STATS_VERSION, wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs, exportDate: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `romeo_backup_${new Date().toISOString().slice(0, 10)}.json`;
@@ -1546,12 +1755,7 @@ function importData(inputEl) {
       ['wordSets', 'groups', 'wrongBank', 'practiceLogs'].forEach(s => tx.objectStore(s).clear());
       (data.wordSets || []).forEach(s => tx.objectStore('wordSets').put(s));
       (data.groups || []).forEach(g => tx.objectStore('groups').put(g));
-      (data.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put({
-        word: w.word,
-        lastPractice: w.lastPractice || w.lastWrong || new Date().toISOString(),
-        correctCount: w.correctCount || 0,
-        wrongCount: w.wrongCount || (w.lastWrong ? 1 : 0)
-      }));
+      (data.wrongBank || []).forEach(w => tx.objectStore('wrongBank').put(normalizeWrongRecord(w, data.statsVersion)));
       (data.practiceLogs || []).forEach(l => tx.objectStore('practiceLogs').put(l));
       tx.oncomplete = () => { alert("导入成功！"); renderHome(); inputEl.value = ''; syncToCloud(true); };
     } catch (err) { alert("文件格式错误"); inputEl.value = ''; }
