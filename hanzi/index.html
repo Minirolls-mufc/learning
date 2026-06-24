@@ -283,6 +283,15 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .manage-tab{padding:7px 16px;border:none;border-radius:99px;background:transparent;font-family:inherit;font-size:.8rem;font-weight:700;color:var(--muted);cursor:pointer;transition:all .15s;}
 .manage-tab.active{color:var(--o1);background:var(--paper);box-shadow:0 1px 6px rgba(255,107,0,.12);}
 .manage-tab:hover:not(.active){color:var(--ink2)}
+.wm-filter-panel{background:var(--paper);border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:14px;box-shadow:0 2px 8px rgba(255,107,0,.05)}
+.wm-filter-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.wm-filter-tab{flex:0 0 auto;padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg);font-family:inherit;font-size:.74rem;font-weight:800;color:var(--ink2);cursor:pointer;transition:all .15s}
+.wm-filter-tab.active{background:var(--grad-btn);color:#fff;border-color:transparent;box-shadow:0 2px 8px rgba(255,107,0,.22)}
+.wm-filter-row{display:flex;align-items:center;gap:9px;border-top:1px solid var(--border);padding-top:9px}
+.wm-filter-label{font-size:.68rem;font-weight:800;color:var(--muted);flex-shrink:0}
+.wm-filter-select{flex:1;min-width:0;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);padding:7px 10px;font-family:inherit;font-size:.78rem;font-weight:700;color:var(--ink2);outline:none}
+.wm-filter-select:focus{border-color:var(--o2);box-shadow:0 0 0 3px rgba(255,107,0,.1)}
+.wm-filter-count{font-size:.66rem;color:var(--muted);font-weight:700;white-space:nowrap}
 .wm-group{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;box-shadow:0 3px 12px rgba(255,107,0,.06)}
 .wm-gh{display:flex;align-items:center;gap:7px;padding:10px 13px;border-bottom:1.5px solid var(--border);background:var(--bg)}
 .wm-gname{flex:1;font-weight:900;font-size:.86rem;color:var(--ink)}
@@ -344,6 +353,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .sg-grp-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--o1);cursor:pointer;flex-shrink:0;}
 .sg-grp-item-name{font-size:.82rem;font-weight:700;color:var(--ink);flex:1;}
 .sg-grp-item-cnt{font-size:.64rem;color:var(--muted);}
+.ws-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px}
+.ws-mode-btn{border:none;border-radius:7px;background:transparent;padding:8px 10px;font-family:inherit;font-size:.76rem;font-weight:800;color:var(--muted);cursor:pointer;transition:all .15s}
+.ws-mode-btn.active{background:var(--paper);color:var(--o1);box-shadow:0 2px 8px rgba(255,107,0,.12)}
 
 /* ── CLOUD SYNC ── */
 .sync-section{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;margin:12px 14px 0;padding:14px 16px;box-shadow:0 2px 7px rgba(255,107,0,.05);}
@@ -639,8 +651,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
     </div>
   </div>
   <div class="manage-tabs">
-    <button class="manage-tab active" id="mtab-groups" onclick="switchManageTab('groups')">📝 字词管理</button>
-    <button class="manage-tab" id="mtab-sg" onclick="switchManageTab('sg')">🗂 分组管理</button>
+    <button class="manage-tab active" id="mtab-groups" onclick="switchManageTab('groups')">📝 全部字词</button>
+    <button class="manage-tab" id="mtab-grouped" onclick="switchManageTab('grouped')">📚 分组字词</button>
+    <button class="manage-tab" id="mtab-sg" onclick="switchManageTab('sg')">🗂 分组设置</button>
   </div>
   <div class="manage-body" id="manage-body"></div>
 </div>
@@ -704,9 +717,13 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 
 <!-- MODAL: worksheet -->
 <div class="modal-overlay" id="modal-worksheet">
-  <div class="modal" style="max-width:520px">
+  <div class="modal" style="max-width:620px">
     <div class="mhdr"><div class="mtitle">📄 练习纸预览</div><button class="mclose" onclick="closeModal('modal-worksheet')">✕</button></div>
     <div class="mbody" style="gap:14px">
+      <div class="ws-mode-switch">
+        <button class="ws-mode-btn active" id="ws-mode-practice" onclick="setWorksheetVariant('practice')">练习版</button>
+        <button class="ws-mode-btn" id="ws-mode-complete" onclick="setWorksheetVariant('complete')">完整字词</button>
+      </div>
       <div id="ws-status" style="font-size:.82rem;color:var(--muted);text-align:center;padding:8px 0">正在生成，请稍候…</div>
       <canvas id="ws-canvas" style="width:100%;border:1.5px solid var(--border);border-radius:8px;display:none"></canvas>
     </div>
@@ -1505,12 +1522,15 @@ function renderAchieve(){
 
 /* ━━━━━ MANAGE ━━━━━ */
 let manageTab='groups';
+let manageSgFilterId=null;
+let manageGroupFilterId=null;
 function switchManageTab(t){
   manageTab=t;
   document.getElementById('mtab-groups').classList.toggle('active',t==='groups');
+  document.getElementById('mtab-grouped').classList.toggle('active',t==='grouped');
   document.getElementById('mtab-sg').classList.toggle('active',t==='sg');
   const rightEl=document.getElementById('manage-tb-right');
-  if(t==='groups'){
+  if(t!=='sg'){
     rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   } else {
     rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSuperGroup()">＋ 分组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
@@ -1520,7 +1540,10 @@ function switchManageTab(t){
 
 function renderManage(){
   manageTab='groups';
+  manageSgFilterId=null;
+  manageGroupFilterId=null;
   document.getElementById('mtab-groups').classList.add('active');
+  document.getElementById('mtab-grouped').classList.remove('active');
   document.getElementById('mtab-sg').classList.remove('active');
   const rightEl=document.getElementById('manage-tb-right');
   rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
@@ -1528,13 +1551,17 @@ function renderManage(){
 }
 function renderManageBody(){
   if(manageTab==='groups') renderManageGroups();
+  else if(manageTab==='grouped') renderManageGrouped();
   else renderManageSG();
 }
 function renderManageGroups(){
   const body=document.getElementById('manage-body');body.innerHTML='';
   if(!store.groups.length){body.innerHTML='<div style="text-align:center;padding:36px;color:var(--muted)"><div style="font-size:3rem">📚</div><div style="margin-top:8px;font-weight:700">暂无分组</div><div style="font-size:.72rem;margin-top:5px">点右上角「＋分组」</div></div>';return;}
+  renderManageGroupCards(store.groups,body);
+}
+function renderManageGroupCards(groups,body){
   const grpSgMap={};store.superGroups.forEach(sg=>(sg.groupIds||[]).forEach(gid=>grpSgMap[gid]=sg.name));
-  store.groups.forEach(g=>{
+  groups.forEach(g=>{
     const card=document.createElement('div');card.className='wm-group';
     const sgTag=grpSgMap[g.id]?`<span style="font-size:.6rem;color:var(--o1);background:#fff5ec;border:1px solid var(--o4);border-radius:99px;padding:1px 7px;font-weight:700;">${grpSgMap[g.id]}</span>`:'';
     card.innerHTML=`<div class="wm-gh"><span class="wm-gname">${g.name}</span>${sgTag}<span class="wm-gcnt">${g.entries.length}条</span><div class="wm-ga"><button class="btn btn-ghost btn-sm btn-icon" onclick="startStudy('${g.id}')" title="学习">📖</button><button class="btn btn-ghost btn-sm btn-icon" onclick="openEditGroup('${g.id}')" title="编辑">✏️</button></div></div><div class="wm-entries" id="wme-${g.id}"></div>`;
@@ -1544,6 +1571,29 @@ function renderManageGroups(){
     const ab=document.createElement('button');ab.className='wm-add';ab.textContent='＋';ab.onclick=()=>openAddEntry(g.id);el.appendChild(ab);
   });
   setupEntryDnD();
+}
+function selectManageSuperGroup(id){manageSgFilterId=id;manageGroupFilterId=null;renderManageGrouped();}
+function selectManageGroup(id){manageGroupFilterId=id;renderManageGrouped();}
+function renderManageGrouped(){
+  const body=document.getElementById('manage-body');body.innerHTML='';
+  const assigned=new Set(store.superGroups.flatMap(sg=>sg.groupIds||[]));
+  const ungrouped=store.groups.filter(g=>!assigned.has(g.id));
+  const filterItems=store.superGroups.map(sg=>({id:sg.id,name:sg.name,groupIds:sg.groupIds||[]}));
+  if(ungrouped.length)filterItems.push({id:'__ungrouped',name:'未归类',groupIds:ungrouped.map(g=>g.id)});
+  if(!filterItems.length){body.innerHTML='<div style="text-align:center;padding:36px;color:var(--muted)"><div style="font-size:3rem">📚</div><div style="margin-top:8px;font-weight:700">暂无可管理分组</div></div>';return;}
+  if(!filterItems.some(x=>x.id===manageSgFilterId))manageSgFilterId=filterItems[0].id;
+  const selected=filterItems.find(x=>x.id===manageSgFilterId);
+  const groups=selected.groupIds.map(gid=>store.groups.find(g=>g.id===gid)).filter(Boolean);
+  if(manageGroupFilterId!=='all'&&!groups.some(g=>g.id===manageGroupFilterId))manageGroupFilterId=groups[0]?groups[0].id:'all';
+  const panel=document.createElement('div');panel.className='wm-filter-panel';
+  const tabs=filterItems.map(item=>`<button class="wm-filter-tab ${item.id===manageSgFilterId?'active':''}" onclick="selectManageSuperGroup('${item.id}')">${item.name}</button>`).join('');
+  const options=['<option value="all">全部小组</option>'].concat(groups.map(g=>`<option value="${g.id}" ${g.id===manageGroupFilterId?'selected':''}>${g.name}</option>`)).join('');
+  const shownGroups=manageGroupFilterId==='all'?groups:groups.filter(g=>g.id===manageGroupFilterId);
+  const entryCount=shownGroups.reduce((sum,g)=>sum+g.entries.length,0);
+  panel.innerHTML=`<div class="wm-filter-tabs">${tabs}</div><div class="wm-filter-row"><span class="wm-filter-label">小组</span><select class="wm-filter-select" onchange="selectManageGroup(this.value)">${options}</select><span class="wm-filter-count">${shownGroups.length}组 · ${entryCount}条</span></div>`;
+  body.appendChild(panel);
+  if(!shownGroups.length){const empty=document.createElement('div');empty.className='wm-sg-empty';empty.textContent='当前分组没有小组';body.appendChild(empty);return;}
+  renderManageGroupCards(shownGroups,body);
 }
 function renderManageSG(){
   const body=document.getElementById('manage-body');body.innerHTML='';
@@ -1614,7 +1664,7 @@ function setupEntryDnD(){
       const insertAt=srcIdx<destIdx?destIdx-1:destIdx;
       g.entries.splice(insertAt,0,moved);
       saveStore();scheduleAutoSync();
-      renderManageGroups();
+      renderManageBody();
     };
     list.querySelectorAll('.wm-entry').forEach(card=>{
       card.ondragstart=e=>{
@@ -1710,7 +1760,8 @@ function deleteSuperGroup(){if(!confirm('确定删除该超级分组？（分组
 function autoPinyin(s){if(window.pinyinPro){try{return pinyinPro.pinyin(s,{toneType:'symbol',type:'string'});}catch(e){}}return '';}
 
 /* ━━━━━ WORKSHEET ━━━━━ */
-const WS={W:1240,H:1754,MX:72,MY:80,TITLE_H:68,INFO_H:66,ROW_GAP:36,CELL:120,CELL_GAP:10,GROUP_GAP:32,PINYIN_H:34};
+const WS={W:1240,H:1754,MX:64,MY:64,TITLE_H:82,FOOTER_H:56,MAX_CELL:102,MIN_CELL:48};
+const WS_STATE={variant:'practice',entryItems:null,grpName:'练习',token:0};
 function getSelectedPracticeEntries(){
   const ids=(P.groupIds&&P.groupIds.length)?P.groupIds:[P.groupId].filter(Boolean);
   let entries=[];
@@ -1721,73 +1772,72 @@ function getSelectedPracticeEntries(){
   return entries;
 }
 
+function setWorksheetVariant(variant){
+  if(!['practice','complete'].includes(variant))return;
+  WS_STATE.variant=variant;
+  document.getElementById('ws-mode-practice').classList.toggle('active',variant==='practice');
+  document.getElementById('ws-mode-complete').classList.toggle('active',variant==='complete');
+  const saveBtn=document.getElementById('ws-save-btn');
+  if(saveBtn)saveBtn.textContent=variant==='complete'?'💾 保存完整字词':'💾 保存练习纸';
+  if(WS_STATE.entryItems)renderWorksheet();
+}
+
 async function generateWorksheet(){
-  let entries=[];
-  entries=getSelectedPracticeEntries();
+  const entries=getSelectedPracticeEntries();
   if(!entries.length){alert('所选分组暂无内容');return;}
   const grpName=entries.length===store.groups.reduce((s,g)=>s+(g.entries?g.entries.length:0),0)
     ?'全部'
     :((P.groupIds&&P.groupIds.length>1)?'多分组':(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name);
   openModal('modal-worksheet');const stEl=document.getElementById('ws-status');const canvas=document.getElementById('ws-canvas');const saveBtn=document.getElementById('ws-save-btn');
+  WS_STATE.entryItems=null;WS_STATE.grpName=grpName;setWorksheetVariant(WS_STATE.variant);
   stEl.textContent='正在加载字形数据，请稍候…';stEl.style.display='block';canvas.style.display='none';saveBtn.style.display='none';
+  const token=++WS_STATE.token;
   const fetchChar=ch=>fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch)}.json`).then(r=>r.ok?r.json():null).catch(()=>null);
+  const uniqueChars=[...new Set(entries.flatMap(entry=>[...entry.hanzi]))];
+  const loaded=await Promise.all(uniqueChars.map(async ch=>[ch,await fetchChar(ch)]));
+  if(token!==WS_STATE.token)return;
+  const dataMap=new Map(loaded);
   const entryItems=[];
-  for(const entry of entries){const chars=[...entry.hanzi];const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).split(' ');const dataArr=await Promise.all(chars.map(ch=>fetchChar(ch)));entryItems.push({pinyins,chars:chars.map((ch,ci)=>({ch,pinyin:pinyins[ci]||'',cfg:resolveCfgForChar(entry,ci,ch),data:dataArr[ci]}))});}
-  canvas.width=WS.W;canvas.height=WS.H;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,WS.W,WS.H);
-  ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${grpName} · ${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`,WS.W/2,WS.MY+46);
+  entries.forEach((entry,order)=>{const chars=[...entry.hanzi];const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).trim().split(/\s+/);entryItems.push({order,chars:chars.map((ch,ci)=>({ch,pinyin:pinyins[ci]||autoPinyin(ch),cfg:resolveCfgForChar(entry,ci,ch),data:dataMap.get(ch)}))});});
+  WS_STATE.entryItems=entryItems;
+  renderWorksheet();
+}
 
-  const MX=80;
-  const contentTop=WS.MY+WS.TITLE_H+20;
-  const contentHeight=WS.H-WS.MY-20-contentTop;
-  const contentWidth=WS.W-MX*2;
-  const TARGET_COLS=10;
-  const BASE_CELL_GAP=0;
-  const BASE_WORD_GAP=28;
-  const TARGET_WORD_GAPS=4;
-  function calcCell(cellGap,wordGap){
-    return Math.floor((contentWidth-(TARGET_COLS-1)*cellGap-(TARGET_WORD_GAPS)*wordGap)/TARGET_COLS);
+function worksheetMetrics(cell){
+  return{cell,pinyinH:Math.max(22,Math.round(cell*.28)),rowGap:Math.max(14,Math.round(cell*.18)),cellGap:Math.max(2,Math.round(cell*.04)),singleGap:Math.max(6,Math.round(cell*.08)),wordGap:Math.max(14,Math.round(cell*.2))};
+}
+function packWorksheetRows(entries,metrics,contentWidth){
+  const rows=[];let items=[];let width=0;let previous=null;
+  const flush=()=>{if(items.length){rows.push({items,width});items=[];width=0;previous=null;}};
+  entries.forEach(entry=>{
+    const wordWidth=entry.chars.length*metrics.cell+(entry.chars.length-1)*metrics.cellGap;
+    const gap=items.length?((previous.chars.length===1&&entry.chars.length===1)?metrics.singleGap:metrics.wordGap):0;
+    if(items.length&&width+gap+wordWidth>contentWidth)flush();
+    const actualGap=items.length?((previous.chars.length===1&&entry.chars.length===1)?metrics.singleGap:metrics.wordGap):0;
+    items.push({entry,gap:actualGap,width:wordWidth});width+=actualGap+wordWidth;previous=entry;
+  });
+  flush();return rows;
+}
+function renderWorksheet(){
+  const entryItems=WS_STATE.entryItems;if(!entryItems)return;
+  const canvas=document.getElementById('ws-canvas');const stEl=document.getElementById('ws-status');const saveBtn=document.getElementById('ws-save-btn');
+  const contentTop=WS.MY+WS.TITLE_H;
+  const baseContentHeight=WS.H-contentTop-WS.FOOTER_H-WS.MY;
+  const contentWidth=WS.W-WS.MX*2;
+  let layout=null;
+  for(let cell=WS.MAX_CELL;cell>=WS.MIN_CELL;cell-=2){
+    const metrics=worksheetMetrics(cell);const rows=packWorksheetRows(entryItems,metrics,contentWidth);
+    const totalH=rows.length*(metrics.pinyinH+cell)+Math.max(0,rows.length-1)*metrics.rowGap;
+    layout={metrics,rows,totalH};if(totalH<=baseContentHeight)break;
   }
-  function layoutFor(cell,cellGap,wordGap){
-    const rowGap=Math.round(WS.ROW_GAP*(cell/WS.CELL));
-    const piny=Math.round(WS.PINYIN_H*(cell/WS.CELL));
-    let rows=1;let rowSlots=0;
-    entryItems.forEach(entry=>{
-      const slots=entry.chars.length;
-      if(rowSlots+slots>TARGET_COLS){rows++;rowSlots=slots;}
-      else rowSlots+=slots;
-    });
-    const totalH=rows*(cell+piny)+ (rows-1)*rowGap;
-    return {cell,cellGap,wordGap,rowGap,piny,rows,totalH,fit:totalH<=contentHeight};
-  }
-  let cell=calcCell(BASE_CELL_GAP,BASE_WORD_GAP);
-  let layout=layoutFor(cell,BASE_CELL_GAP,BASE_WORD_GAP);
-  if(!layout.fit){
-    for(let c=cell-5;c>=60;c-=5){
-      const cand=layoutFor(c,BASE_CELL_GAP,BASE_WORD_GAP);
-      if(cand.fit){layout=cand;break;}
-      layout=cand;
-    }
-  }
-  if(!layout.fit){
-    const squeeze=Math.min(0.95,contentHeight/layout.totalH);
-    const squeezedCell=Math.max(60,Math.floor(layout.cell*squeeze));
-    layout=layoutFor(squeezedCell,BASE_CELL_GAP,BASE_WORD_GAP);
-  }
-
-  const CELL=layout.cell,PINY=layout.piny;
-  const CELL_GAP=layout.cellGap,WORD_GAP_PX=layout.wordGap,ROW_GAP=layout.rowGap;
+  const canvasHeight=Math.max(WS.H,contentTop+layout.totalH+WS.FOOTER_H+WS.MY);
+  canvas.width=WS.W;canvas.height=canvasHeight;
+  const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  const titleMode=WS_STATE.variant==='complete'?'完整字词':`${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`;
+  ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${WS_STATE.grpName} · ${titleMode}`,WS.W/2,WS.MY+46);
+  const {cell:CELL,pinyinH:PINY,rowGap:ROW_GAP,cellGap:CELL_GAP}=layout.metrics;
   const STROKE_PAD=Math.round(CELL*0.1);
   let curY=contentTop;
-  const rows=[];
-  let rowSlots=0;
-  let rowWidth=0;
-  let rowEntries=[];
-  function wordWidth(n){return n*CELL+(n-1)*CELL_GAP;}
-  function flushRow(){
-    if(!rowEntries.length)return;
-    rows.push({entries:rowEntries,rowWidth});
-    rowEntries=[];rowWidth=0;rowSlots=0;
-  }
   function drawTzg(x,y,sz){
     ctx.save();ctx.strokeStyle='#2d2d2d';ctx.lineWidth=1.6;ctx.strokeRect(x,y,sz,sz);
     ctx.setLineDash([5,4]);ctx.strokeStyle='#b0b0b0';ctx.lineWidth=0.9;
@@ -1804,25 +1854,14 @@ async function generateWorksheet(){
     ctx.fillStyle=color;try{ctx.fill(new Path2D(pathD));}catch(e){}ctx.restore();
   }
   function drawCellPy(txt,cx,cy,cellSz){
-    const pyFont=Math.max(16,Math.round(32*(CELL/WS.CELL)));
-    const pyOffset=Math.min(PINY-6,Math.max(18,Math.round(24*(CELL/WS.CELL))));
+    const pyFont=Math.max(15,Math.round(CELL*.25));
+    const pyOffset=Math.min(PINY-5,Math.max(17,Math.round(CELL*.21)));
     ctx.save();ctx.fillStyle='#1a1a1a';ctx.font=`${pyFont}px 'Noto Sans SC',Arial,sans-serif`;
     ctx.textAlign='center';ctx.fillText(txt,cx+cellSz/2,cy+pyOffset);ctx.restore();
   }
-  for(const entry of entryItems){
-    const n=entry.chars.length;
-    if(rowSlots+n>TARGET_COLS)flushRow();
-    const w=wordWidth(n);
-    const gap=rowEntries.length?WORD_GAP_PX:0;
-    rowWidth+=gap+w;
-    rowEntries.push({entry,width:w,gap});
-    rowSlots+=n;
-  }
-  flushRow();
-  for(const row of rows){
-    if(curY+PINY+CELL>WS.H-WS.MY-20)break;
-    let curX=MX;
-    row.entries.forEach(item=>{
+  for(const row of layout.rows){
+    let curX=(WS.W-row.width)/2;
+    row.items.forEach(item=>{
       curX+=item.gap;
       const entry=item.entry;
       entry.chars.forEach((ci2,ci)=>{
@@ -1833,10 +1872,13 @@ async function generateWorksheet(){
       entry.chars.forEach((ci2,ci)=>{
         const cx=curX+ci*(CELL+CELL_GAP);const cy=curY+PINY;
         drawTzg(cx,cy,CELL);
-        if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
+        if(WS_STATE.variant==='complete'&&ci2.data){
+          const colors=buildColors(ci2.data.strokes.length,ci2.cfg.mode,ci2.cfg.redRange);
+          ci2.data.strokes.forEach((stroke,si)=>drawStroke(stroke,colors[si],cx,cy,CELL,STROKE_PAD));
+        }else if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
           const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);
           const redIdx=[],blueIdx=[];for(let k=1;k<=ns;k++){(rs.has(k)?redIdx:blueIdx).push(k-1);}
-          const showRed=blueIdx.length===0||(redIdx.length>0&&Math.random()<.5);
+          const showRed=blueIdx.length===0||(redIdx.length>0&&((entry.order+ci)%2===0));
           const shown=showRed?redIdx:blueIdx;const col=showRed?'#dc2626':'#1d4ed8';
           shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL,STROKE_PAD));
         }
@@ -1845,10 +1887,10 @@ async function generateWorksheet(){
     });
     curY+=PINY+CELL+ROW_GAP;
   }
-  ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,WS.H-38);
+  ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,canvas.height-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
 }
-function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const grpName=(P.groupIds&&P.groupIds.length>1)?'多分组':((store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name);const a=document.createElement('a');a.download=`${grpName}_${P.mode==='simple'?'简单':'标准'}_练习纸.png`;a.href=canvas.toDataURL('image/png');a.click();}
+function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const mode=WS_STATE.variant==='complete'?'完整字词':`${P.mode==='simple'?'简单':'标准'}_练习纸`;const a=document.createElement('a');a.download=`${WS_STATE.grpName}_${mode}.png`;a.href=canvas.toDataURL('image/png');a.click();}
 
 /* ━━━━━ CLOUD SYNC ━━━━━ */
 let _toastTimer=null;
