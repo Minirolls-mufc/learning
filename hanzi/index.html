@@ -730,19 +730,19 @@ const CLOUD_BASE='https://api.jsonbin.io/v3/b';
 const DEFAULT_STORE={
   groups:[
     {id:'g1',name:'一年级·基础字',entries:[
-      {type:'char',hanzi:'山',pinyin:'shān',mode:'simple',redRange:''},
-      {type:'char',hanzi:'水',pinyin:'shuǐ',mode:'simple',redRange:''},
-      {type:'char',hanzi:'火',pinyin:'huǒ',mode:'simple',redRange:''},
-      {type:'word',hanzi:'大山',pinyin:'dà shān',charCfg:[{mode:'simple',redRange:''},{mode:'simple',redRange:''}]},
-      {type:'word',hanzi:'山水',pinyin:'shān shuǐ',charCfg:[{mode:'simple',redRange:''},{mode:'simple',redRange:''}]},
+      {type:'char',hanzi:'山'},
+      {type:'char',hanzi:'水'},
+      {type:'char',hanzi:'火'},
+      {type:'word',hanzi:'大山',pinyin:'dà shān'},
+      {type:'word',hanzi:'山水',pinyin:'shān shuǐ'},
     ]},
     {id:'g2',name:'认识结构',entries:[
-      {type:'char',hanzi:'明',pinyin:'míng',mode:'complex',redRange:'1-4'},
-      {type:'char',hanzi:'好',pinyin:'hǎo',mode:'complex',redRange:'1-3'},
-      {type:'word',hanzi:'明天',pinyin:'míng tiān',charCfg:[{mode:'complex',redRange:'1-4'},{mode:'simple',redRange:''}]},
+      {type:'char',hanzi:'明'},
+      {type:'char',hanzi:'好'},
+      {type:'word',hanzi:'明天',pinyin:'míng tiān'},
     ]}
   ],
-  charDefs:{},
+  charDefs:{'山':'','水':'','火':'','大':'','明':'1-4','好':'1-3','天':''},
   superGroups:[],
   ach:{learnedChars:[],mistakes:[],totalCorrect:0,sessions:0,streak:0,lastDate:null}
 };
@@ -763,59 +763,52 @@ function loadStore(){
       store._ts=p._ts||0;
     }
   }catch(e){}
-  bootstrapCharDefsIfEmpty();
+  migrateStoreToCharLibrary();
 }
 loadStore();
 
-function bootstrapCharDefsIfEmpty(){
-  if(store.charDefs && Object.keys(store.charDefs).length) return;
-  store.charDefs={};
+function normalizeCharCfg(cfg){
+  if(typeof cfg==='string')return{mode:'complex',redRange:cfg};
+  return{mode:(cfg&&cfg.mode)||'complex',redRange:(cfg&&cfg.redRange)||''};
+}
+function compactCharCfg(cfg){
+  const norm=normalizeCharCfg(cfg);
+  return norm.mode==='complex'?norm.redRange:{mode:'simple'};
+}
+function migrateStoreToCharLibrary(){
+  const defs={};
+  Object.entries(store.charDefs||{}).forEach(([ch,cfg])=>{defs[ch]=compactCharCfg(cfg);});
   store.groups.forEach(g=>{
     g.entries.forEach(e=>{
       if(e.type==='char'){
-        store.charDefs[e.hanzi]={mode:e.mode||'simple',redRange:e.redRange||''};
+        if(!Object.prototype.hasOwnProperty.call(defs,e.hanzi)){
+          defs[e.hanzi]=compactCharCfg({mode:e.mode||'complex',redRange:e.redRange||''});
+        }
+        delete e.mode;delete e.redRange;
       }else if(e.type==='word'){
         const chars=[...e.hanzi];
         const cfgs=e.charCfg||[];
         chars.forEach((ch,i)=>{
           const cfg=cfgs[i];
-          if(cfg) store.charDefs[ch]={mode:cfg.mode||'simple',redRange:cfg.redRange||''};
+          if(cfg&&!Object.prototype.hasOwnProperty.call(defs,ch))defs[ch]=compactCharCfg(cfg);
         });
+        delete e.charCfg;
       }
     });
   });
+  store.charDefs=defs;
 }
 
 function getCharDef(ch){
-  return store.charDefs[ch]||{mode:'simple',redRange:''};
+  if(Object.prototype.hasOwnProperty.call(store.charDefs||{},ch))return normalizeCharCfg(store.charDefs[ch]);
+  return{mode:'complex',redRange:''};
 }
 function setCharDef(ch,cfg){
-  store.charDefs[ch]={mode:cfg.mode||'simple',redRange:cfg.redRange||''};
+  if(!store.charDefs)store.charDefs={};
+  store.charDefs[ch]=compactCharCfg(cfg);
 }
-function normalizeCharCfg(cfg){
-  return {mode:(cfg&&cfg.mode)||'simple',redRange:(cfg&&cfg.redRange)||''};
-}
-function propagateCharCfg(ch,cfg){
-  const norm=normalizeCharCfg(cfg);
-  setCharDef(ch,norm);
-  store.groups.forEach(g=>{
-    g.entries.forEach(e=>{
-      if(e.type==='char'&&e.hanzi===ch){
-        e.mode=norm.mode;
-        e.redRange=norm.redRange;
-      }else if(e.type==='word'&&e.hanzi){
-        const chars=[...e.hanzi];
-        if(!e.charCfg)e.charCfg=[];
-        chars.forEach((c,i)=>{
-          if(c===ch){
-            e.charCfg[i]=normalizeCharCfg(norm);
-          }else if(!e.charCfg[i]){
-            e.charCfg[i]=normalizeCharCfg(getCharDef(c));
-          }
-        });
-      }
-    });
-  });
+function updateCharDef(ch,cfg){
+  setCharDef(ch,cfg);
 }
 
 /* achieve helpers */
@@ -934,11 +927,7 @@ function makeTzgSvg(style){
 function mkPath(d,color){const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',d);p.setAttribute('fill',color);p.setAttribute('transform',HW_TF);return p;}
 
 function resolveCfgForChar(entry,ci,ch){
-  if(entry.type==='char'){
-    return {mode:entry.mode||getCharDef(ch).mode,redRange:entry.redRange||getCharDef(ch).redRange};
-  }
-  const cfgs=entry.charCfg||[];
-  return cfgs[ci]||getCharDef(ch);
+  return getCharDef(ch);
 }
 
 function loadEntry(){
@@ -972,7 +961,7 @@ function loadEntry(){
 function fetchStudyChar(ch,ci,py){
   fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch)}.json`).then(r=>{if(!r.ok)throw 0;return r.json();}).then(data=>{const c=S.chars[ci];c.charData=data;c.strokeColors=buildColors(data.strokes.length,c.mode,c.redRange);c.stepIdx=data.strokes.length;renderSvg(ci,c.stepIdx);setSt(ci,`${data.strokes.length}笔`,'ok');achRecordLearned(ch,py);}).catch(()=>setSt(ci,'⚠️ 无数据','err'));
 }
-function buildColors(n,mode,rr){if(mode==='simple')return Array.from({length:n},(_,i)=>STROKE_PAL[i%STROKE_PAL.length]);const rs=parseRange(rr,n);return Array.from({length:n},(_,i)=>rs.has(i+1)?'#ef4444':'#3b82f6');}
+function buildColors(n,mode,rr){if(mode==='simple')return Array.from({length:n},(_,i)=>STROKE_PAL[i%STROKE_PAL.length]);if(!rr)return Array.from({length:n},()=>'#ef4444');const rs=parseRange(rr,n);return Array.from({length:n},(_,i)=>rs.has(i+1)?'#ef4444':'#3b82f6');}
 function parseRange(str,n){const s=new Set();if(!str)return s;str.split(',').forEach(p=>{p=p.trim();if(p.includes('-')){const[a,b]=p.split('-').map(Number);for(let i=a;i<=b&&i<=n;i++)s.add(i);}else{const v=parseInt(p);if(!isNaN(v)&&v>=1&&v<=n)s.add(v);}});return s;}
 function renderSvg(ci,upTo,animIdx,showOutline=true){const c=S.chars[ci];if(!c||!c.charData)return;const svg=document.getElementById(`svg-${ci}`);if(!svg)return;svg.innerHTML='';if(showOutline)c.charData.strokes.forEach(d=>svg.appendChild(mkPath(d,OUTLINE_COLOR)));for(let i=0;i<upTo;i++){const p=mkPath(c.charData.strokes[i],c.strokeColors[i]);if(i===animIdx){p.style.opacity='0';p.style.transition='opacity .35s ease';svg.appendChild(p);requestAnimationFrame(()=>requestAnimationFrame(()=>p.style.opacity='1'));}else svg.appendChild(p);}}
 function restoreStudyChar(ci,showCover){const c=S.chars[ci];if(!c||!c.charData)return;exitCharQuiz(ci);c.stepIdx=c.charData.strokes.length;const sv=document.getElementById(`svg-${ci}`);if(sv)sv.style.display=showCover?'none':'';renderSvg(ci,c.stepIdx,undefined,true);updSt(ci);const cv=document.getElementById(`cv-${ci}`);if(cv)cv.classList.toggle('show',!!showCover);}
@@ -1640,15 +1629,15 @@ function setupEntryDnD(){
 
 /* ━━━━━ MODAL: entry ━━━━━ */
 let ms={groupId:null,entryIdx:null,formMode:'simple',entryType:'char',editGroupId:null,editSgId:null};
-function openAddEntry(gid){ms.groupId=gid;ms.entryIdx=null;ms.formMode='simple';ms.entryType='char';document.getElementById('mentitle').textContent='添加字/词';document.getElementById('m-hanzi').value='';document.getElementById('m-hanzi').maxLength=1;document.getElementById('m-pinyin').value='';document.getElementById('m-red').value='';document.getElementById('m-del').style.display='none';document.getElementById('wcc-table').innerHTML='';setEntryType('char');setFormMode('simple');openModal('modal-entry');}
-function openEditEntry(gid,ei){const g=store.groups.find(x=>x.id===gid);if(!g)return;const e=g.entries[ei];ms.groupId=gid;ms.entryIdx=ei;ms.formMode=e.mode||'simple';ms.entryType=e.type||'char';document.getElementById('mentitle').textContent='编辑字/词';document.getElementById('m-hanzi').value=e.hanzi;document.getElementById('m-hanzi').maxLength=ms.entryType==='char'?1:10;document.getElementById('m-pinyin').value=e.pinyin||'';document.getElementById('m-red').value=e.redRange||'';document.getElementById('m-del').style.display='inline-flex';setEntryType(ms.entryType);setFormMode(ms.formMode);if(ms.entryType==='word')buildWccTable(e.hanzi,e.charCfg||[]);openModal('modal-entry');}
-function setEntryType(t){ms.entryType=t;document.getElementById('etype-char').classList.toggle('active',t==='char');document.getElementById('etype-word').classList.toggle('active',t==='word');document.getElementById('ehanzi-lbl').textContent=t==='char'?'汉字（单个）':'词语（多个字）';document.getElementById('m-hanzi').maxLength=t==='char'?1:10;document.getElementById('m-hanzi').placeholder=t==='char'?'如：爱':'如：大山';document.getElementById('char-cfg').style.display=t==='char'?'':'none';document.getElementById('word-cfg').style.display=t==='word'?'':'none';if(t==='word'){const h=document.getElementById('m-hanzi').value.trim();if(h)buildWccTable(h,[]);}}
+function openAddEntry(gid){ms.groupId=gid;ms.entryIdx=null;ms.formMode='complex';ms.entryType='char';document.getElementById('mentitle').textContent='添加字/词';document.getElementById('m-hanzi').value='';document.getElementById('m-hanzi').maxLength=1;document.getElementById('m-pinyin').value='';document.getElementById('m-red').value='';document.getElementById('m-del').style.display='none';document.getElementById('wcc-table').innerHTML='';setEntryType('char');setFormMode('complex');openModal('modal-entry');}
+function openEditEntry(gid,ei){const g=store.groups.find(x=>x.id===gid);if(!g)return;const e=g.entries[ei];const cfg=e.type==='char'?getCharDef(e.hanzi):null;ms.groupId=gid;ms.entryIdx=ei;ms.formMode=cfg?cfg.mode:'complex';ms.entryType=e.type||'char';document.getElementById('mentitle').textContent='编辑字/词';document.getElementById('m-hanzi').value=e.hanzi;document.getElementById('m-hanzi').maxLength=ms.entryType==='char'?1:10;document.getElementById('m-pinyin').value=e.pinyin||'';document.getElementById('m-red').value=cfg?cfg.redRange:'';document.getElementById('m-del').style.display='inline-flex';setEntryType(ms.entryType);setFormMode(ms.formMode);if(ms.entryType==='word')buildWccTable(e.hanzi);openModal('modal-entry');}
+function setEntryType(t){ms.entryType=t;document.getElementById('etype-char').classList.toggle('active',t==='char');document.getElementById('etype-word').classList.toggle('active',t==='word');document.getElementById('ehanzi-lbl').textContent=t==='char'?'汉字（单个）':'词语（多个字）';document.getElementById('m-hanzi').maxLength=t==='char'?1:10;document.getElementById('m-hanzi').placeholder=t==='char'?'如：爱':'如：大山';document.getElementById('char-cfg').style.display=t==='char'?'':'none';document.getElementById('word-cfg').style.display=t==='word'?'':'none';if(t==='word'){const h=document.getElementById('m-hanzi').value.trim();if(h)buildWccTable(h);}}
 function setFormMode(m){ms.formMode=m;document.getElementById('fmbtn-s').classList.toggle('active',m==='simple');document.getElementById('fmbtn-c').classList.toggle('active',m==='complex');document.getElementById('red-range-row').style.display=m==='complex'?'flex':'none';document.getElementById('red-range-row').style.flexDirection='column';document.getElementById('red-range-row').style.gap='4px';}
-function onHanziInput(){if(ms.entryType==='word'){const h=document.getElementById('m-hanzi').value.trim();if(h)buildWccTable(h,[]);}}
-function buildWccTable(hanzi,existing){const tbl=document.getElementById('wcc-table');tbl.innerHTML='';[...hanzi].forEach((ch,i)=>{const cfg=(existing||[])[i]||getCharDef(ch);const row=document.createElement('div');row.className='wcc-row';row.innerHTML=`<span class="wcc-ch">${ch}</span><div class="wcc-tabs"><button class="wcc-tab ${cfg.mode==='simple'?'active':''}" onclick="setWccMode(${i},'simple')">🎨 七彩</button><button class="wcc-tab ${cfg.mode==='complex'?'active':''}" onclick="setWccMode(${i},'complex')">🧩 红蓝</button></div><input class="wcc-range ${cfg.mode==='complex'?'show':''}" id="wcc-range-${i}" placeholder="红色笔画如1-3" value="${cfg.redRange||''}">`;tbl.appendChild(row);});}
+function onHanziInput(){if(ms.entryType==='word'){const h=document.getElementById('m-hanzi').value.trim();if(h)buildWccTable(h);}}
+function buildWccTable(hanzi){const tbl=document.getElementById('wcc-table');tbl.innerHTML='';[...hanzi].forEach((ch,i)=>{const cfg=getCharDef(ch);const row=document.createElement('div');row.className='wcc-row';row.innerHTML=`<span class="wcc-ch">${ch}</span><div class="wcc-tabs"><button class="wcc-tab ${cfg.mode==='simple'?'active':''}" onclick="setWccMode(${i},'simple')">🎨 七彩</button><button class="wcc-tab ${cfg.mode==='complex'?'active':''}" onclick="setWccMode(${i},'complex')">🧩 红蓝</button></div><input class="wcc-range ${cfg.mode==='complex'?'show':''}" id="wcc-range-${i}" placeholder="红色笔画如1-3" value="${cfg.redRange||''}">`;tbl.appendChild(row);});}
 function setWccMode(i,m){const rows=document.getElementById('wcc-table').querySelectorAll('.wcc-row');if(!rows[i])return;rows[i].querySelectorAll('.wcc-tab').forEach(t=>t.classList.remove('active'));rows[i].querySelectorAll('.wcc-tab')[m==='complex'?1:0].classList.add('active');const ri=rows[i].querySelector('.wcc-range');if(ri)ri.classList.toggle('show',m==='complex');}
 function getWccConfig(){return Array.from(document.getElementById('wcc-table').querySelectorAll('.wcc-row')).map(row=>{const active=row.querySelector('.wcc-tab.active');const mode=active&&active.textContent.includes('红蓝')?'complex':'simple';return{mode,redRange:(row.querySelector('.wcc-range')||{}).value||''};});}
-function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim();if(!hanzi){alert('请输入汉字');return;}let pinyin=document.getElementById('m-pinyin').value.trim();if(!pinyin)pinyin=autoPinyin(hanzi);const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;let obj;if(ms.entryType==='char'){const cfg={mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};obj={type:'char',hanzi,pinyin,mode:cfg.mode,redRange:cfg.redRange};propagateCharCfg(hanzi,cfg);}else{const cfgs=getWccConfig();obj={type:'word',hanzi,pinyin,charCfg:cfgs};[...hanzi].forEach((ch,i)=>propagateCharCfg(ch,cfgs[i]||getCharDef(ch)));}if(ms.entryIdx===null)g.entries.push(obj);else g.entries[ms.entryIdx]=obj;saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
+function saveEntry(){const hanzi=document.getElementById('m-hanzi').value.trim();if(!hanzi){alert('请输入汉字');return;}let pinyin=document.getElementById('m-pinyin').value.trim();const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;let obj;if(ms.entryType==='char'){const cfg={mode:ms.formMode,redRange:document.getElementById('m-red').value.trim()};obj={type:'char',hanzi};if(pinyin)obj.pinyin=pinyin;updateCharDef(hanzi,cfg);}else{if(!pinyin)pinyin=autoPinyin(hanzi);const cfgs=getWccConfig();obj={type:'word',hanzi,pinyin};[...hanzi].forEach((ch,i)=>updateCharDef(ch,cfgs[i]||getCharDef(ch)));}if(ms.entryIdx===null)g.entries.push(obj);else g.entries[ms.entryIdx]=obj;saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
 function deleteEntry(){if(!confirm('删除？'))return;const g=store.groups.find(x=>x.id===ms.groupId);if(!g)return;g.entries.splice(ms.entryIdx,1);saveStore();scheduleAutoSync();closeModal('modal-entry');renderManageBody();}
 
 /* ━━━━━ MODAL: group ━━━━━ */
@@ -1916,6 +1905,7 @@ function applyCloudPayload(payload){
   if(payload.charDefs)store.charDefs=payload.charDefs||{};
   if(payload.superGroups)store.superGroups=payload.superGroups||[];
   if(payload.ach)store.ach=Object.assign({},DEFAULT_STORE.ach,payload.ach);
+  migrateStoreToCharLibrary();
 }
 
 function hideLoadingScreen(){
