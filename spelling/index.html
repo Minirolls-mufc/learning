@@ -839,13 +839,13 @@ function renderTargetGroup(mode, groupKey) {
     };
     const items = data[groupKey] || [];
     targetSelectionWords = items.map(item => item.rawWord);
-    const checked = groupKey === 'allWords' ? '' : 'checked';
     const startFn = mode === 'learn' ? 'startTargetLearn()' : 'startTargetPractice()';
 
     const listHtml = items.map((entry, i) => {
       const w = entry.stats || {};
       const source = entry.setIds.length ? entry.setIds.join(' · ') : '不在当前词表中';
       const reason = entry.reason ? `${entry.reason} · ` : '';
+      const checked = groupKey === 'allWords' || (groupKey === 'consolidation' && i >= 10) ? '' : 'checked';
       return `<label class="target-word-row">
         <input type="checkbox" id="tchk-${i}" ${checked} style="width:20px;height:20px;accent-color:var(--primary);cursor:pointer;flex-shrink:0">
         <div class="target-word-main">
