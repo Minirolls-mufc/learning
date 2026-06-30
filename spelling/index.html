@@ -308,6 +308,24 @@ textarea:focus { border-color: var(--primary); outline: none; }
 const BIN_ID = '695b813c43b1c97be91a29d3';
 const API_KEY = '$2a$10$uEeLgIqeB1wImpeUneAhref2IXtkWjDsrQ1rh4tDTOdjMu8zDeYBC';
 const STATS_VERSION = 2;
+const WRONG_RECORD_DEFAULTS = {
+  statsVersion: STATS_VERSION,
+  legacyCorrectCount: 0,
+  legacyWrongCount: 0,
+  legacyLastPracticeAt: null,
+  correctCount: 0,
+  wrongCount: 0,
+  skipCount: 0,
+  lastPracticeAt: null,
+  lastCorrectAt: null,
+  lastWrongAt: null,
+  lastResult: null,
+  masteryStep: 0,
+  lastMasteryDate: null,
+  nextReviewDate: null,
+  masteredAt: null,
+  needsConsolidation: false
+};
 
 /* ==================== STATE ==================== */
 let db;
@@ -524,6 +542,25 @@ function normalizeWrongRecord(w, sourceVersion = 1) {
   };
 }
 
+function compactWrongRecord(w) {
+  const normalized = normalizeWrongRecord(w, STATS_VERSION);
+  const compact = { word: normalized.word };
+  Object.entries(WRONG_RECORD_DEFAULTS).forEach(([key, defaultValue]) => {
+    if (normalized[key] !== defaultValue) compact[key] = normalized[key];
+  });
+  return compact;
+}
+
+function buildPortableData(sets, groups, wrongs, logs) {
+  return {
+    statsVersion: STATS_VERSION,
+    wordSets: sets,
+    groups,
+    wrongBank: wrongs.map(compactWrongRecord),
+    practiceLogs: logs
+  };
+}
+
 function keepFocus() {
   const hidden = document.getElementById('hiddenInput');
   if (document.querySelector('.blanks-container') && !isProcessing) hidden.focus();
@@ -540,7 +577,7 @@ async function syncToCloud(isSilent = false) {
     getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
     getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
   ]);
-  const payload = { updatedAt: new Date(), data: { statsVersion: STATS_VERSION, wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs } };
+  const payload = { updatedAt: new Date(), data: buildPortableData(sets, groups, wrongs, logs) };
 
   let toast = null;
   if (isSilent) {
@@ -1735,7 +1772,7 @@ function exportAllData() {
     getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
     getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
   ]).then(([sets, groups, wrongs, logs]) => {
-    const data = { statsVersion: STATS_VERSION, wordSets: sets, groups, wrongBank: wrongs, practiceLogs: logs, exportDate: new Date().toISOString() };
+    const data = { ...buildPortableData(sets, groups, wrongs, logs), exportDate: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `romeo_backup_${new Date().toISOString().slice(0, 10)}.json`;
