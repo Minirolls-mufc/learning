@@ -1744,9 +1744,12 @@ function shuffleArr(arr) {
 function speak(text) {
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(text);
-  u.lang = 'en-US'; u.rate = 0.85;
+  u.lang = 'en-GB'; u.rate = 0.85;
   const all = speechSynthesis.getVoices();
-  const pref = all.find(v => v.name === 'Daniel') || all.find(v => v.name === 'Samantha') || all.find(v => v.lang.includes('en'));
+  const pref =
+    all.find(v => v.name === 'Daniel' && v.lang.startsWith('en-GB')) ||
+    all.find(v => v.lang.startsWith('en-GB')) ||
+    all.find(v => v.lang.startsWith('en'));
   if (pref) u.voice = pref;
   speechSynthesis.speak(u);
 }
