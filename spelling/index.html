@@ -785,7 +785,8 @@ function buildTargetData(bank, sets) {
     if (countDiff) return countDiff;
     return new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0);
   };
-  const canAdvanceToday = w => w.needsConsolidation || !w.nextReviewDate || w.nextReviewDate <= today;
+  const hasAdvancedToday = w => w.lastMasteryDate === today;
+  const canAdvanceToday = w => !hasAdvancedToday(w) && (w.needsConsolidation || !w.nextReviewDate || w.nextReviewDate <= today);
 
   const activeBank = bank.filter(w =>
     (w.correctCount || 0) > 0 || (w.wrongCount || 0) > 0 || (w.skipCount || 0) > 0 || w.lastPracticeAt
@@ -796,11 +797,11 @@ function buildTargetData(bank, sets) {
     .map(w => toEntry(w, '今天拼错'));
 
   const unresolved = activeBank
-    .filter(w => w.needsConsolidation && (w.masteryStep || 0) < 3)
+    .filter(w => !hasAdvancedToday(w) && w.needsConsolidation && (w.masteryStep || 0) < 3)
     .sort((a, b) => new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0));
   const unresolvedKeys = new Set(unresolved.map(w => w.word));
   const due = activeBank
-    .filter(w => !unresolvedKeys.has(w.word) && (w.masteryStep || 0) > 0 && (w.masteryStep || 0) < 3 && w.nextReviewDate && w.nextReviewDate <= today)
+    .filter(w => !hasAdvancedToday(w) && !unresolvedKeys.has(w.word) && (w.masteryStep || 0) > 0 && (w.masteryStep || 0) < 3 && w.nextReviewDate && w.nextReviewDate <= today)
     .sort((a, b) => a.nextReviewDate.localeCompare(b.nextReviewDate));
   const highFrequency = activeBank
     .filter(w => (w.wrongCount || 0) > 0 && (w.masteryStep || 0) < 3 && canAdvanceToday(w))
@@ -820,7 +821,6 @@ function buildTargetData(bank, sets) {
   for (const w of highFrequency) {
     if (consolidation.length >= 10) break;
     if (consolidationKeys.has(w.word)) continue;
-    if (w.lastMasteryDate === today) continue;
     consolidation.push(toEntry(w, '高频补充'));
     consolidationKeys.add(w.word);
   }
