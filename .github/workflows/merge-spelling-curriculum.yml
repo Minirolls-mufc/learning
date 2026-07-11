@@ -1,0 +1,159 @@
+name: Merge spelling curriculum
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Preview or merge the pending word-list changes
+        required: true
+        default: preview
+        type: choice
+        options:
+          - preview
+          - apply
+          - apply-large
+
+concurrency:
+  group: spelling-curriculum-merge
+  cancel-in-progress: false
+
+env:
+  JSONBIN_ID: 695b813c43b1c97be91a29d3
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      has_overrides: ${{ steps.merge.outputs.has_overrides }}
+      has_changes: ${{ steps.merge.outputs.has_changes }}
+      new_version: ${{ steps.merge.outputs.new_version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Test merge safeguards
+        run: node spelling/scripts/merge-curriculum.test.mjs
+
+      - name: Download cloud data
+        env:
+          JSONBIN_API_KEY: ${{ secrets.JSONBIN_API_KEY }}
+        run: |
+          test -n "$JSONBIN_API_KEY"
+          curl --fail-with-body --silent --show-error \
+            -H "X-Master-Key: $JSONBIN_API_KEY" \
+            "https://api.jsonbin.io/v3/b/$JSONBIN_ID/latest" \
+            --output /tmp/spelling-cloud.json
+
+      - name: Validate and merge overrides
+        id: merge
+        run: |
+          node spelling/scripts/merge-curriculum.mjs "${{ inputs.mode }}" \
+            --cloud /tmp/spelling-cloud.json \
+            --curriculum spelling/curriculum.json \
+            --snapshot /tmp/spelling-override-snapshot.json
+
+      - name: Save override snapshot
+        if: steps.merge.outputs.has_overrides == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: spelling-override-snapshot
+          path: /tmp/spelling-override-snapshot.json
+          retention-days: 1
+
+      - name: Commit merged curriculum
+        if: inputs.mode != 'preview' && steps.merge.outputs.has_changes == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add spelling/curriculum.json
+          git commit -m "Merge spelling curriculum overrides"
+          git push
+
+  deploy:
+    needs: merge
+    if: inputs.mode != 'preview' && needs.merge.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out merged repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: .
+
+      - name: Deploy site
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  finalize:
+    needs: [merge, deploy]
+    if: >-
+      always() &&
+      needs.merge.result == 'success' &&
+      inputs.mode != 'preview' &&
+      needs.merge.outputs.has_overrides == 'true' &&
+      (needs.merge.outputs.has_changes == 'false' || needs.deploy.result == 'success')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Download override snapshot
+        uses: actions/download-artifact@v4
+        with:
+          name: spelling-override-snapshot
+          path: /tmp
+
+      - name: Download latest cloud data
+        env:
+          JSONBIN_API_KEY: ${{ secrets.JSONBIN_API_KEY }}
+        run: |
+          test -n "$JSONBIN_API_KEY"
+          curl --fail-with-body --silent --show-error \
+            -H "X-Master-Key: $JSONBIN_API_KEY" \
+            "https://api.jsonbin.io/v3/b/$JSONBIN_ID/latest" \
+            --output /tmp/spelling-cloud-latest.json
+
+      - name: Prepare safe cloud cleanup
+        run: |
+          node spelling/scripts/merge-curriculum.mjs finalize \
+            --cloud /tmp/spelling-cloud-latest.json \
+            --snapshot /tmp/spelling-override-snapshot.json \
+            --output /tmp/spelling-cloud-update.json
+
+      - name: Update cloud data
+        env:
+          JSONBIN_API_KEY: ${{ secrets.JSONBIN_API_KEY }}
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --request PUT \
+            -H "Content-Type: application/json" \
+            -H "X-Master-Key: $JSONBIN_API_KEY" \
+            --data-binary @/tmp/spelling-cloud-update.json \
+            "https://api.jsonbin.io/v3/b/$JSONBIN_ID" \
+            --output /tmp/spelling-cloud-update-response.json
+          node -e '
+            const fs = require("fs");
+            const result = JSON.parse(fs.readFileSync("/tmp/spelling-cloud-update-response.json", "utf8"));
+            if (!result.record || !result.record.data) throw new Error("JSONBin did not return the updated data");
+          '
