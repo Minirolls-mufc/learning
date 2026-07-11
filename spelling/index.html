@@ -239,6 +239,10 @@ header {
 .blank-char.filled { border-bottom-color: #333; }
 .blank-char.correct { color: #fff; background: var(--green); border: none; border-radius: 12px; }
 .blank-char.wrong { color: #fff; background: var(--red); border: none; border-radius: 12px; }
+.blank-char.punctuation {
+  width: 18px; border: none; background: transparent; color: #333;
+  font-size: 34px; transform: none;
+}
 .blanks-container { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin: 20px 0 28px 0; }
 
 /* Manager */
@@ -324,16 +328,18 @@ const WRONG_RECORD_DEFAULTS = {
   lastMasteryDate: null,
   nextReviewDate: null,
   masteredAt: null,
-  needsConsolidation: false
+  needsConsolidation: false,
+  needsIndependentTest: false
 };
 
 /* ==================== STATE ==================== */
 let db;
 let currentSetDate = null;
-let practiceList = [], currentIndex = 0, sessionMasteredSet = new Set();
+let practiceList = [], currentIndex = 0, sessionMasteredSet = new Set(), sessionEasyCompletedSet = new Set();
 let sessionWrongSet = new Set(); // words that were wrong at least once this session
 let isProcessing = false;
 let currentWordHadWrong = false;
+let currentPracticeMode = null;
 let targetSelectionWords = [], currentTargetGroupKey = null;
 let pendingPracticeWords = null;
 
@@ -342,7 +348,7 @@ let learnList = [], learnIndex = 0, learnChunks = [], learnRevealedCount = 0, le
 // Easy practice state
 let easyAnswerArr = [], easyTileArr = [], easyTileOrder = [];
 // Normal practice state
-let targetWord = "", currentInput = "";
+let targetWord = "", targetLetters = "", currentInput = "";
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 function unlockAudio() {
@@ -479,6 +485,34 @@ function getAll(store) {
   return new Promise(r => { const req = store.getAll(); req.onsuccess = () => r(req.result); req.onerror = () => r([]); });
 }
 
+function getAllStrict(store) {
+  return new Promise((resolve, reject) => {
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => {
+      const error = new Error('Local database read failed');
+      error.name = 'LocalReadError';
+      reject(error);
+    };
+  });
+}
+
+function displayWord(rawWord) {
+  return String(rawWord || '').replace(/\//g, '');
+}
+
+function normalizeApostrophes(text) {
+  return String(text || '').replace(/[‘’]/g, "'");
+}
+
+function normalizeWordKey(rawWord) {
+  return normalizeApostrophes(displayWord(rawWord)).toLowerCase();
+}
+
+function spellingLetters(rawWord) {
+  return normalizeApostrophes(displayWord(rawWord)).replace(/[^a-zA-Z]/g, '').toLowerCase();
+}
+
 function localDateKey(date = new Date()) {
   const y = date.getFullYear();
   const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -514,7 +548,7 @@ function isNewStatsRecord(w, sourceVersion) {
 }
 
 function normalizeWrongRecord(w, sourceVersion = 1) {
-  const cleanWord = String(w.word || '').replace(/\//g, '').toLowerCase();
+  const cleanWord = normalizeWordKey(w.word);
   if (isNewStatsRecord(w, sourceVersion)) {
     const masteryStep = Math.min(3, Math.max(0, Number(w.masteryStep) || 0));
     const lastMasteryDate = w.lastMasteryDate || null;
@@ -535,7 +569,8 @@ function normalizeWrongRecord(w, sourceVersion = 1) {
       lastMasteryDate,
       nextReviewDate: normalizeNextReviewDateForStep(masteryStep, lastMasteryDate, w.nextReviewDate || null),
       masteredAt: w.masteredAt || null,
-      needsConsolidation: Boolean(w.needsConsolidation)
+      needsConsolidation: Boolean(w.needsConsolidation),
+      needsIndependentTest: Boolean(w.needsIndependentTest)
     };
   }
 
@@ -556,7 +591,8 @@ function normalizeWrongRecord(w, sourceVersion = 1) {
     lastMasteryDate: null,
     nextReviewDate: null,
     masteredAt: null,
-    needsConsolidation: false
+    needsConsolidation: false,
+    needsIndependentTest: false
   };
 }
 
@@ -590,13 +626,6 @@ document.addEventListener('click', (e) => {
 
 /* ==================== CLOUD SYNC ==================== */
 async function syncToCloud(isSilent = false) {
-  const tx = db.transaction(['wordSets', 'groups', 'wrongBank', 'practiceLogs'], 'readonly');
-  const [sets, groups, wrongs, logs] = await Promise.all([
-    getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
-    getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
-  ]);
-  const payload = { updatedAt: new Date(), data: buildPortableData(sets, groups, wrongs, logs) };
-
   let toast = null;
   if (isSilent) {
     toast = document.createElement('div');
@@ -605,6 +634,12 @@ async function syncToCloud(isSilent = false) {
     document.body.appendChild(toast);
   }
   try {
+    const tx = db.transaction(['wordSets', 'groups', 'wrongBank', 'practiceLogs'], 'readonly');
+    const [sets, groups, wrongs, logs] = await Promise.all([
+      getAllStrict(tx.objectStore('wordSets')), getAllStrict(tx.objectStore('groups')),
+      getAllStrict(tx.objectStore('wrongBank')), getAllStrict(tx.objectStore('practiceLogs'))
+    ]);
+    const payload = { updatedAt: new Date(), data: buildPortableData(sets, groups, wrongs, logs) };
     const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': API_KEY },
       body: JSON.stringify(payload)
@@ -615,8 +650,10 @@ async function syncToCloud(isSilent = false) {
       setTimeout(() => toast.remove(), 2000);
     } else alert("✅ 云端同步成功！");
   } catch (err) {
-    if (!isSilent) alert("同步失败，请检查网络");
-    else if (toast) { toast.textContent = '❌ 同步失败'; toast.style.background = '#c0392b'; setTimeout(() => toast.remove(), 3000); }
+    const localReadFailed = err && err.name === 'LocalReadError';
+    const message = localReadFailed ? '本地数据读取失败，本次未上传' : '同步失败，请检查网络';
+    if (!isSilent) alert(message);
+    else if (toast) { toast.textContent = `❌ ${message}`; toast.style.background = '#c0392b'; setTimeout(() => toast.remove(), 3000); }
   }
 }
 
@@ -755,28 +792,31 @@ function renderSetSelection(mode, activeTab) {
 /* ==================== TARGET SELECTION ==================== */
 function buildTargetData(bank, sets) {
   const today = localDateKey();
-  const statsByWord = new Map(bank.map(w => [w.word, w]));
+  const statsByWord = new Map(bank.map(w => [normalizeWordKey(w.word), w]));
   const catalog = new Map();
 
   [...sets].sort((a, b) => a.id.localeCompare(b.id)).forEach(s => {
     (s.words || []).forEach(rawWord => {
-      const clean = rawWord.replace(/\//g, '').toLowerCase();
-      const existing = catalog.get(clean);
+      const key = normalizeWordKey(rawWord);
+      const clean = displayWord(rawWord);
+      const existing = catalog.get(key);
       if (existing) {
         if (!existing.setIds.includes(s.id)) existing.setIds.push(s.id);
+        existing.clean = clean;
         existing.rawWord = rawWord;
       } else {
-        catalog.set(clean, { clean, rawWord, setIds: [s.id] });
+        catalog.set(key, { key, clean, rawWord, setIds: [s.id] });
       }
     });
   });
 
   bank.forEach(w => {
-    if (!catalog.has(w.word)) catalog.set(w.word, { clean: w.word, rawWord: w.word, setIds: [] });
+    const key = normalizeWordKey(w.word);
+    if (!catalog.has(key)) catalog.set(key, { key, clean: w.word, rawWord: w.word, setIds: [] });
   });
 
   const toEntry = (w, reason = '') => {
-    const source = catalog.get(w.word) || { clean: w.word, rawWord: w.word, setIds: [] };
+    const source = catalog.get(normalizeWordKey(w.word)) || { clean: w.word, rawWord: w.word, setIds: [] };
     return { ...source, stats: w, reason };
   };
   const isToday = timestamp => Boolean(timestamp) && localDateKey(new Date(timestamp)) === today;
@@ -800,6 +840,9 @@ function buildTargetData(bank, sets) {
     .filter(w => !hasAdvancedToday(w) && w.needsConsolidation && (w.masteryStep || 0) < 3)
     .sort((a, b) => new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0));
   const unresolvedKeys = new Set(unresolved.map(w => w.word));
+  const independentTest = activeBank
+    .filter(w => !hasAdvancedToday(w) && !w.needsConsolidation && w.needsIndependentTest && (w.masteryStep || 0) === 0)
+    .sort((a, b) => new Date(b.lastPracticeAt || 0) - new Date(a.lastPracticeAt || 0));
   const due = activeBank
     .filter(w => !hasAdvancedToday(w) && !unresolvedKeys.has(w.word) && (w.masteryStep || 0) > 0 && (w.masteryStep || 0) < 3 && w.nextReviewDate && w.nextReviewDate <= today)
     .sort((a, b) => a.nextReviewDate.localeCompare(b.nextReviewDate));
@@ -811,6 +854,10 @@ function buildTargetData(bank, sets) {
   const consolidationKeys = new Set();
   unresolved.forEach(w => {
     consolidation.push(toEntry(w, '待重新巩固'));
+    consolidationKeys.add(w.word);
+  });
+  independentTest.forEach(w => {
+    consolidation.push(toEntry(w, '待听写检测'));
     consolidationKeys.add(w.word);
   });
   due.forEach(w => {
@@ -832,7 +879,7 @@ function buildTargetData(bank, sets) {
     .map(w => toEntry(w, '已掌握'));
   const allWords = [...catalog.values()]
     .sort((a, b) => a.clean.localeCompare(b.clean))
-    .map(source => ({ ...source, stats: statsByWord.get(source.clean) || null, reason: '' }));
+    .map(source => ({ ...source, stats: statsByWord.get(source.key) || null, reason: '' }));
 
   return { todayWrong, consolidation, historical, mastered, allWords };
 }
@@ -853,7 +900,7 @@ function renderTargetSelection(mode) {
       groups.push({ key: 'todayWrong', icon: '✕', title: '今日错词', desc: '只包含今天实际拼错过的词，不添加其他内容', items: data.todayWrong });
     }
     groups.push(
-      { key: 'consolidation', icon: '✓', title: '今日巩固', desc: '待纠正、到期复习和可推进的高频补充', items: data.consolidation },
+      { key: 'consolidation', icon: '✓', title: '今日巩固', desc: '待纠正、待听写检测、到期复习和高频补充', items: data.consolidation },
       { key: 'historical', icon: '↻', title: '历史高频错词', desc: '只显示现在练了能推进的高频错词，最多10个', items: data.historical },
       { key: 'mastered', icon: '★', title: '已掌握', desc: '已在三个不同日期完成巩固', items: data.mastered },
       { key: 'allWords', icon: '≡', title: '全部词列表', desc: '查看全部词及新规则下的正确、错误次数', items: data.allWords }
@@ -1132,7 +1179,7 @@ function renderPracticeMode(setId, preloadedWords) {
 function startPracticeFromBtn(mode) {
   if (pendingPracticeWords) {
     practiceList = [...pendingPracticeWords];
-    currentIndex = 0; sessionMasteredSet = new Set(); sessionWrongSet = new Set();
+    currentIndex = 0; sessionMasteredSet = new Set(); sessionEasyCompletedSet = new Set(); sessionWrongSet = new Set();
     renderPracticeUI(mode);
   } else {
     startPractice(currentSetDate, mode);
@@ -1144,12 +1191,13 @@ function startPractice(setId, mode) {
   const tx = db.transaction('wordSets', 'readonly');
   tx.objectStore('wordSets').get(setId).onsuccess = (e) => {
     const data = e.target.result; if (!data) return;
-    practiceList = data.words; currentIndex = 0; sessionMasteredSet = new Set(); sessionWrongSet = new Set();
+    practiceList = data.words; currentIndex = 0; sessionMasteredSet = new Set(); sessionEasyCompletedSet = new Set(); sessionWrongSet = new Set();
     renderPracticeUI(mode);
   };
 }
 
 function renderPracticeUI(mode) {
+  currentPracticeMode = mode;
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="exitPracticeSession()">🏃 退出</button>`;
   const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
   document.getElementById('app').innerHTML = `
@@ -1230,10 +1278,10 @@ function handleTileClick(origIdx, cleanWord) {
       document.querySelectorAll('.answer-slot').forEach(s => { s.classList.remove('filled'); s.classList.add('correct'); });
       document.getElementById('feedback').innerHTML = `<span style="color:var(--green)">太棒了！🎉</span>`;
       playSuccessTone();
-      const wordKey = practiceList[currentIndex].replace(/\//g, '').toLowerCase();
+      const wordKey = normalizeWordKey(practiceList[currentIndex]);
+      sessionEasyCompletedSet.add(wordKey);
       if (!currentWordHadWrong) {
-        sessionMasteredSet.add(wordKey);
-        recordCorrectResult(practiceList[currentIndex]);
+        recordEasyCorrectResult(practiceList[currentIndex]);
       }
       setTimeout(() => { currentIndex++; loadPracticeWord('easy'); }, 900);
     }
@@ -1241,7 +1289,7 @@ function handleTileClick(origIdx, cleanWord) {
     // Wrong tap
     if (!currentWordHadWrong) {
       currentWordHadWrong = true;
-      const wordKey = practiceList[currentIndex].replace(/\//g, '').toLowerCase();
+      const wordKey = normalizeWordKey(practiceList[currentIndex]);
       sessionWrongSet.add(wordKey);
       recordWrongResult(practiceList[currentIndex]);
     }
@@ -1284,17 +1332,25 @@ function loadNormalWord(cleanWord, rawWord, mode) {
 }
 
 function setupNormalInput(word, mode) {
-  targetWord = word; currentInput = "";
+  targetWord = normalizeApostrophes(word); targetLetters = spellingLetters(word); currentInput = "";
   const blanks = document.getElementById('blanksArea');
   blanks.innerHTML = '';
-  for (let i = 0; i < word.length; i++) {
-    const b = document.createElement('div'); b.className = 'blank-char'; blanks.appendChild(b);
+  for (const char of targetWord) {
+    const b = document.createElement('div');
+    b.className = 'blank-char';
+    if (/[a-zA-Z]/.test(char)) {
+      b.dataset.letter = 'true';
+    } else {
+      b.textContent = char;
+      b.classList.add('punctuation');
+    }
+    blanks.appendChild(b);
   }
   const hidden = document.getElementById('hiddenInput');
   hidden.value = ''; hidden.focus();
   hidden.oninput = (e) => {
     if (isProcessing) return;
-    currentInput = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, targetWord.length);
+    currentInput = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, targetLetters.length);
     updateNormalBlanks();
   };
   hidden.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); checkNormal(mode); } };
@@ -1303,26 +1359,29 @@ function setupNormalInput(word, mode) {
 
 function updateNormalBlanks() {
   const chars = document.querySelectorAll('.blank-char');
-  for (let i = 0; i < targetWord.length; i++) {
-    const ch = chars[i]; const inp = currentInput[i] || '';
+  let inputIndex = 0;
+  chars.forEach(ch => {
+    if (ch.dataset.letter !== 'true') return;
+    const inp = currentInput[inputIndex] || '';
     ch.textContent = inp; ch.classList.remove('active', 'filled');
-    if (i === currentInput.length) ch.classList.add('active');
+    if (inputIndex === currentInput.length) ch.classList.add('active');
     if (inp) ch.classList.add('filled');
-  }
+    inputIndex++;
+  });
 }
 
 function checkNormal(mode) {
   if (isProcessing || !currentInput.trim()) return;
   const cleanInput = currentInput.trim().toLowerCase();
-  const cleanTarget = targetWord.trim().toLowerCase();
+  const cleanTarget = targetLetters;
   const fb = document.getElementById('feedback');
   if (cleanInput === cleanTarget) {
     isProcessing = true;
     fb.innerHTML = `<span style="color:var(--green)">太棒了！🎉</span>`;
     document.querySelectorAll('.blank-char').forEach(c => c.classList.add('correct'));
     playSuccessTone();
-    const wordKey = cleanTarget;
     const rawWord = practiceList[currentIndex];
+    const wordKey = normalizeWordKey(rawWord);
     if (!currentWordHadWrong) {
       sessionMasteredSet.add(wordKey);
       recordCorrectResult(rawWord);
@@ -1331,7 +1390,7 @@ function checkNormal(mode) {
   } else {
     fb.innerHTML = `<span style="color:var(--red)">正确: ${targetWord}</span>`;
     document.querySelectorAll('.blank-char').forEach(c => c.classList.add('wrong'));
-    const wordKey = targetWord.toLowerCase();
+    const wordKey = normalizeWordKey(targetWord);
     if (!currentWordHadWrong) {
       currentWordHadWrong = true;
       sessionWrongSet.add(wordKey);
@@ -1364,7 +1423,7 @@ function skipNormal(mode) {
 
 /* ==================== WRONG BANK RECORD KEEPING ==================== */
 function updateWordStats(rawWord, updater) {
-  const cleanKey = rawWord.replace(/\//g, '').toLowerCase();
+  const cleanKey = normalizeWordKey(rawWord);
   const tx = db.transaction('wrongBank', 'readwrite');
   const store = tx.objectStore('wrongBank');
   const req = store.get(cleanKey);
@@ -1373,6 +1432,17 @@ function updateWordStats(rawWord, updater) {
     updater(existing);
     store.put(existing);
   };
+}
+
+function recordEasyCorrectResult(rawWord) {
+  const now = new Date().toISOString();
+  updateWordStats(rawWord, record => {
+    record.lastPracticeAt = now;
+    record.lastResult = 'easy-correct';
+    if ((record.masteryStep || 0) === 0 && !record.needsConsolidation) {
+      record.needsIndependentTest = true;
+    }
+  });
 }
 
 function recordCorrectResult(rawWord) {
@@ -1384,6 +1454,7 @@ function recordCorrectResult(rawWord) {
     record.lastCorrectAt = now;
     record.lastResult = 'correct';
     record.needsConsolidation = false;
+    record.needsIndependentTest = false;
 
     const step = record.masteryStep || 0;
     const isDue = step === 0 || !record.nextReviewDate || record.nextReviewDate <= today;
@@ -1411,6 +1482,7 @@ function recordWrongResult(rawWord) {
     record.nextReviewDate = localDateKey();
     record.masteredAt = null;
     record.needsConsolidation = true;
+    record.needsIndependentTest = false;
   });
 }
 
@@ -1424,7 +1496,7 @@ function recordSkipResult(rawWord) {
 }
 
 function finishPractice() {
-  // Record all session wrongs (easy mode - wrongs recorded per-tap, but we need to finalize)
+  // Only first-try independent spellings earn achievement stars.
   const masteredCount = sessionMasteredSet.size;
   if (masteredCount > 0) {
     const tx = db.transaction('practiceLogs', 'readwrite');
@@ -1436,11 +1508,14 @@ function finishPractice() {
       source: currentSetDate
     });
   }
+  const resultText = currentPracticeMode === 'easy'
+    ? `本次完成字母拼图: <b style="color:#f59e0b">${sessionEasyCompletedSet.size} 个单词</b>`
+    : `本次独立拼对: <b style="color:#f59e0b">${masteredCount} ⭐</b>`;
   document.getElementById('headerBtn').innerHTML = '';
   document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
     <div style="font-size:70px;margin-bottom:12px">🎉</div>
     <h2 style="font-family:'Fredoka One',cursive;font-size:30px;margin-bottom:8px">练习完成！</h2>
-    <p style="color:var(--text-2);font-size:17px;font-weight:700">本次掌握: <b style="color:#f59e0b">${masteredCount} ⭐</b></p>
+    <p style="color:var(--text-2);font-size:17px;font-weight:700">${resultText}</p>
     <div style="height:20px"></div>
     <button class="btn btn-primary" onclick="renderHome()">🏠 返回首页</button>
     <button class="btn btn-yellow" onclick="renderRecords()">🏆 查看成就</button>
@@ -1785,18 +1860,21 @@ function playSuccessTone() {
   } catch (e) {}
 }
 
-function exportAllData() {
-  const tx = db.transaction(['wordSets', 'groups', 'wrongBank', 'practiceLogs'], 'readonly');
-  Promise.all([
-    getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups')),
-    getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('practiceLogs'))
-  ]).then(([sets, groups, wrongs, logs]) => {
+async function exportAllData() {
+  try {
+    const tx = db.transaction(['wordSets', 'groups', 'wrongBank', 'practiceLogs'], 'readonly');
+    const [sets, groups, wrongs, logs] = await Promise.all([
+      getAllStrict(tx.objectStore('wordSets')), getAllStrict(tx.objectStore('groups')),
+      getAllStrict(tx.objectStore('wrongBank')), getAllStrict(tx.objectStore('practiceLogs'))
+    ]);
     const data = { ...buildPortableData(sets, groups, wrongs, logs), exportDate: new Date().toISOString() };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `romeo_backup_${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  });
+  } catch (err) {
+    alert('本地数据读取失败，未生成备份文件');
+  }
 }
 
 function importData(inputEl) {
