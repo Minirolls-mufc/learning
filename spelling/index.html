@@ -493,6 +493,22 @@ function addDaysToDateKey(dateKey, days) {
   return localDateKey(date);
 }
 
+function reviewDelayForStep(step) {
+  if (step === 1) return 1;
+  if (step === 2) return 3;
+  return null;
+}
+
+function nextReviewDateForStep(step, dateKey) {
+  const delay = reviewDelayForStep(step);
+  return delay && dateKey ? addDaysToDateKey(dateKey, delay) : null;
+}
+
+function normalizeNextReviewDateForStep(step, lastMasteryDate, fallbackDate) {
+  if (step >= 3) return null;
+  return nextReviewDateForStep(step, lastMasteryDate) || fallbackDate || null;
+}
+
 function isNewStatsRecord(w, sourceVersion) {
   return Number(sourceVersion) >= STATS_VERSION || Number(w.statsVersion) >= STATS_VERSION || 'legacyWrongCount' in w;
 }
@@ -500,6 +516,8 @@ function isNewStatsRecord(w, sourceVersion) {
 function normalizeWrongRecord(w, sourceVersion = 1) {
   const cleanWord = String(w.word || '').replace(/\//g, '').toLowerCase();
   if (isNewStatsRecord(w, sourceVersion)) {
+    const masteryStep = Math.min(3, Math.max(0, Number(w.masteryStep) || 0));
+    const lastMasteryDate = w.lastMasteryDate || null;
     return {
       word: cleanWord,
       statsVersion: STATS_VERSION,
@@ -513,9 +531,9 @@ function normalizeWrongRecord(w, sourceVersion = 1) {
       lastCorrectAt: w.lastCorrectAt || null,
       lastWrongAt: w.lastWrongAt || null,
       lastResult: w.lastResult || null,
-      masteryStep: Math.min(3, Math.max(0, Number(w.masteryStep) || 0)),
-      lastMasteryDate: w.lastMasteryDate || null,
-      nextReviewDate: w.nextReviewDate || null,
+      masteryStep,
+      lastMasteryDate,
+      nextReviewDate: normalizeNextReviewDateForStep(masteryStep, lastMasteryDate, w.nextReviewDate || null),
       masteredAt: w.masteredAt || null,
       needsConsolidation: Boolean(w.needsConsolidation)
     };
@@ -767,6 +785,7 @@ function buildTargetData(bank, sets) {
     if (countDiff) return countDiff;
     return new Date(b.lastWrongAt || 0) - new Date(a.lastWrongAt || 0);
   };
+  const canAdvanceToday = w => w.needsConsolidation || !w.nextReviewDate || w.nextReviewDate <= today;
 
   const activeBank = bank.filter(w =>
     (w.correctCount || 0) > 0 || (w.wrongCount || 0) > 0 || (w.skipCount || 0) > 0 || w.lastPracticeAt
@@ -784,7 +803,7 @@ function buildTargetData(bank, sets) {
     .filter(w => !unresolvedKeys.has(w.word) && (w.masteryStep || 0) > 0 && (w.masteryStep || 0) < 3 && w.nextReviewDate && w.nextReviewDate <= today)
     .sort((a, b) => a.nextReviewDate.localeCompare(b.nextReviewDate));
   const highFrequency = activeBank
-    .filter(w => (w.wrongCount || 0) > 0 && (w.masteryStep || 0) < 3)
+    .filter(w => (w.wrongCount || 0) > 0 && (w.masteryStep || 0) < 3 && canAdvanceToday(w))
     .sort(byWrongPriority);
 
   const consolidation = [];
@@ -794,7 +813,7 @@ function buildTargetData(bank, sets) {
     consolidationKeys.add(w.word);
   });
   due.forEach(w => {
-    const reason = (w.masteryStep || 0) === 1 ? '3天复习到期' : '7天复习到期';
+    const reason = (w.masteryStep || 0) === 1 ? '1天复习到期' : '3天复习到期';
     consolidation.push(toEntry(w, reason));
     consolidationKeys.add(w.word);
   });
@@ -821,7 +840,7 @@ function buildTargetData(bank, sets) {
 function getTargetData() {
   const tx = db.transaction(['wrongBank', 'wordSets'], 'readonly');
   return Promise.all([getAll(tx.objectStore('wrongBank')), getAll(tx.objectStore('wordSets'))])
-    .then(([bank, sets]) => buildTargetData(bank, sets));
+    .then(([bank, sets]) => buildTargetData(bank.map(w => normalizeWrongRecord(w, STATS_VERSION)), sets));
 }
 
 function renderTargetSelection(mode) {
@@ -834,8 +853,8 @@ function renderTargetSelection(mode) {
       groups.push({ key: 'todayWrong', icon: '✕', title: '今日错词', desc: '只包含今天实际拼错过的词，不添加其他内容', items: data.todayWrong });
     }
     groups.push(
-      { key: 'consolidation', icon: '✓', title: '今日巩固', desc: '待纠正、到期复习和高频补充', items: data.consolidation },
-      { key: 'historical', icon: '↻', title: '历史高频错词', desc: '按新规则统计，最多10个词', items: data.historical },
+      { key: 'consolidation', icon: '✓', title: '今日巩固', desc: '待纠正、到期复习和可推进的高频补充', items: data.consolidation },
+      { key: 'historical', icon: '↻', title: '历史高频错词', desc: '只显示现在练了能推进的高频错词，最多10个', items: data.historical },
       { key: 'mastered', icon: '★', title: '已掌握', desc: '已在三个不同日期完成巩固', items: data.mastered },
       { key: 'allWords', icon: '≡', title: '全部词列表', desc: '查看全部词及新规则下的正确、错误次数', items: data.allWords }
     );
@@ -1371,11 +1390,8 @@ function recordCorrectResult(rawWord) {
     if (step < 3 && record.lastMasteryDate !== today && isDue) {
       record.masteryStep = step + 1;
       record.lastMasteryDate = today;
-      if (record.masteryStep === 1) {
-        record.nextReviewDate = addDaysToDateKey(today, 3);
-      } else if (record.masteryStep === 2) {
-        record.nextReviewDate = addDaysToDateKey(today, 7);
-      } else {
+      record.nextReviewDate = nextReviewDateForStep(record.masteryStep, today);
+      if (record.masteryStep === 3) {
         record.nextReviewDate = null;
         record.masteredAt = now;
       }
