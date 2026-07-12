@@ -1,8 +1,10 @@
 /* ==================== RECORDS ==================== */
 async function renderRecords() {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
+  const routeKey = currentRouteKey();
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="navigateRoute('home')">🏠 首页</button>`;
   try {
     const achievement = await getAchievementState();
+    if (routeKey !== currentRouteKey()) return;
     const logs = achievement.recentDailyLogs;
     const totalStars = achievement.totalCorrect;
     const allWords = new Set(achievement.wordWall);
@@ -157,7 +159,7 @@ function importData(inputEl) {
       baseCurriculum = curriculum;
       await replaceLocalState(state);
       alert('导入成功！');
-      renderHome();
+      replaceRoute('home');
       inputEl.value = '';
       await syncToCloud(true);
     } catch (err) { alert("文件格式错误"); inputEl.value = ''; }

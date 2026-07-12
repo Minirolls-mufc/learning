@@ -114,7 +114,7 @@ async function autoRestoreFromCloud() {
     await new Promise(r => setTimeout(r, 1200));
   }
   hideLoadingOverlay();
-  renderHome();
+  startRouter();
 }
 
 function migrateFromV6() {

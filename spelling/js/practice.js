@@ -4,7 +4,7 @@ function renderPracticeMode(setId, preloadedWords) {
   pendingPracticeWords = preloadedWords ? [...preloadedWords] : null;
   const backFn = preloadedWords && currentTargetGroupKey
     ? `renderTargetGroup('practice','${currentTargetGroupKey}')`
-    : `renderSetSelection('practice')`;
+    : `navigateBack('practice')`;
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="${backFn}">‹ 返回</button>`;
   document.getElementById('app').innerHTML = `
     <h3 style="margin:0 0 18px 0">选择练习方式</h3>
@@ -33,7 +33,8 @@ function startPracticeFromBtn(mode) {
 function startPractice(setId, mode) {
   const tx = db.transaction('wordSets', 'readonly');
   tx.objectStore('wordSets').get(setId).onsuccess = (e) => {
-    const data = e.target.result; if (!data) return;
+    const data = e.target.result;
+    if (!data) return replaceRoute('practice');
     practiceList = data.words; currentIndex = 0; sessionMasteredSet = new Set(); sessionEasyCompletedSet = new Set(); sessionWrongSet = new Set(); pendingStatWrites = [];
     renderPracticeUI(mode);
   };
@@ -41,6 +42,7 @@ function startPractice(setId, mode) {
 
 function renderPracticeUI(mode) {
   currentPracticeMode = mode;
+  setNavigationGuard('退出练习？');
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="exitPracticeSession()">🏃 退出</button>`;
   const modeLabel = mode === 'easy' ? '🎮 简单模式' : '✍️ 普通模式';
   document.getElementById('app').innerHTML = `
@@ -358,14 +360,15 @@ async function finishPractice() {
   const resultText = currentPracticeMode === 'easy'
     ? `本次完成字母拼图: <b style="color:#f59e0b">${sessionEasyCompletedSet.size} 个单词</b>`
     : `本次独立拼对: <b style="color:#f59e0b">${masteredCount} ⭐</b>`;
+  clearNavigationGuard();
   document.getElementById('headerBtn').innerHTML = '';
   document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
     <div style="font-size:70px;margin-bottom:12px">🎉</div>
     <h2 style="font-family:'Fredoka One',cursive;font-size:30px;margin-bottom:8px">练习完成！</h2>
     <p style="color:var(--text-2);font-size:17px;font-weight:700">${resultText}</p>
     <div style="height:20px"></div>
-    <button class="btn btn-primary" onclick="renderHome()">🏠 返回首页</button>
-    <button class="btn btn-yellow" onclick="renderRecords()">🏆 查看成就</button>
+    <button class="btn btn-primary" onclick="navigateTo('home',{replace:true})">🏠 返回首页</button>
+    <button class="btn btn-yellow" onclick="navigateTo('records',{replace:true})">🏆 查看成就</button>
   </div>`;
   await syncToCloud(true);
 }

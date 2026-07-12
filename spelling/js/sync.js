@@ -87,7 +87,7 @@ async function syncFromCloud() {
     baseCurriculum = state.baseCurriculum;
     await replaceLocalState(state);
     alert('✅ 恢复成功！');
-    renderHome();
+    replaceRoute('home');
   } catch (err) {
     alert('下载失败，请检查网络或刷新网站版本');
   }

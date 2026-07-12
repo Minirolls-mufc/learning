@@ -1,17 +1,51 @@
 /* ==================== WORD MANAGER ==================== */
+function managerFormState(activeTab) {
+  if (activeTab === 'groups') {
+    return JSON.stringify({
+      name: document.getElementById('newGroupName')?.value || '',
+      editingId: document.getElementById('editingGroupId')?.value || '',
+      setIds: [...document.querySelectorAll('[id^="gset-"]:checked')].map(cb => cb.dataset.setid).sort()
+    });
+  }
+  return JSON.stringify({
+    id: document.getElementById('newSetId')?.value || '',
+    words: document.getElementById('newWords')?.value || '',
+    groupId: document.getElementById('setGroupSelect')?.value || ''
+  });
+}
+
+function installManagerFormGuard(activeTab) {
+  const baseline = managerFormState(activeTab);
+  setNavigationGuard('当前修改还没有保存，确定离开吗？', () => managerFormState(activeTab) !== baseline);
+}
+
+function openSetEditor(id) {
+  if (!confirmRouteLeave()) return;
+  clearNavigationGuard();
+  editSet(id);
+}
+
+function openGroupEditor(id) {
+  if (!confirmRouteLeave()) return;
+  clearNavigationGuard();
+  editGroup(id);
+}
+
 function renderWordManager(activeTab, activeSetGroup) {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
+  const routeKey = currentRouteKey();
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="navigateRoute('home')">🏠 首页</button>`;
   activeTab = activeTab || 'sets';
   activeSetGroup = activeSetGroup || 'all';
   const tx = db.transaction(['wordSets', 'groups'], 'readonly');
   Promise.all([getAll(tx.objectStore('wordSets')), getAll(tx.objectStore('groups'))]).then(([sets, groups]) => {
+    if (routeKey !== currentRouteKey()) return;
     sets.sort((a, b) => a.id.localeCompare(b.id));
     groups.sort((a, b) => a.name.localeCompare(b.name));
 
     const tabsHtml = `
       <div class="tab-bar" style="margin-bottom:18px">
-        <button class="tab-btn ${activeTab === 'sets' ? 'active' : ''}" onclick="renderWordManager('sets')">📝 词组管理</button>
-        <button class="tab-btn ${activeTab === 'groups' ? 'active' : ''}" onclick="renderWordManager('groups')">🗂 分组管理</button>
+        <button class="tab-btn ${activeTab === 'sets' ? 'active' : ''}" onclick="navigateRoute('manager','sets')">📝 词组管理</button>
+        <button class="tab-btn ${activeTab === 'groups' ? 'active' : ''}" onclick="navigateRoute('manager','groups')">🗂 分组管理</button>
       </div>
     `;
 
@@ -37,6 +71,7 @@ function renderSetsTab(sets, groups, tabsHtml, activeSetGroup) {
   if (activeSetGroup && activeSetGroup.startsWith('group:')) {
     const gid = activeSetGroup.slice(6);
     const group = groups.find(g => String(g.id) === String(gid));
+    if (!group) return replaceRoute('manager', 'sets');
     const ids = new Set(group ? (group.setIds || []) : []);
     visibleSets = sets.filter(s => ids.has(s.id));
   }
@@ -44,7 +79,7 @@ function renderSetsTab(sets, groups, tabsHtml, activeSetGroup) {
   const groupTabsHtml = `
     <div class="tab-bar" style="margin:0 0 14px 0">
       ${filterTabs.map(t => `
-        <button class="tab-btn ${activeSetGroup === t.key ? 'active' : ''}" onclick="renderWordManager('sets','${esc(t.key)}')">
+        <button class="tab-btn ${activeSetGroup === t.key ? 'active' : ''}" onclick="${t.key === 'all' ? "navigateRoute('manager','sets')" : `navigateRoute('manager','sets','group','${esc(t.key.slice(6))}')`}">
           ${t.label} <span style="opacity:.55">${t.count}</span>
         </button>
       `).join('')}
@@ -55,7 +90,7 @@ function renderSetsTab(sets, groups, tabsHtml, activeSetGroup) {
     const preview = s.words.map(w => w.replace(/\//g, '')).slice(0, 6).join('　');
     const grpName = setGroupMap[s.id];
     return `
-    <div class="manage-item" onclick="editSet('${esc(s.id)}')">
+    <div class="manage-item" onclick="openSetEditor('${esc(s.id)}')">
       <div style="flex:1;min-width:0">
         <div style="font-weight:800;color:#333;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
           ${s.id}
@@ -90,12 +125,13 @@ function renderSetsTab(sets, groups, tabsHtml, activeSetGroup) {
         <button class="btn btn-primary" style="flex:2" onclick="saveSet()">💾 保存 / 更新</button>
         <button class="btn btn-red" id="delBtn" style="flex:1;display:none" onclick="deleteSet()">🗑️ 删除</button>
       </div>
-      <button id="cancelBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="renderWordManager('sets')">取消编辑</button>
+      <button id="cancelBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="navigateTo(currentRouteKey())">取消编辑</button>
     </div>
     <h4 style="margin:0 0 10px 6px;color:var(--text-2)">所有词组</h4>
     ${groupTabsHtml}
     <div class="card" style="padding:0">${listHtml}</div>
   `;
+  installManagerFormGuard('sets');
 }
 
 function renderGroupsTab(sets, groups, tabsHtml) {
@@ -103,7 +139,7 @@ function renderGroupsTab(sets, groups, tabsHtml) {
     const setCount = (g.setIds || []).length;
     const setNames = (g.setIds || []).slice(0, 3).join('、');
     return `
-    <div class="manage-item" onclick="editGroup(${g.id})">
+    <div class="manage-item" onclick="openGroupEditor(${g.id})">
       <div style="flex:1;min-width:0">
         <div style="font-weight:800;color:#333;display:flex;align-items:center;gap:8px">
           📁 ${g.name}
@@ -138,11 +174,12 @@ function renderGroupsTab(sets, groups, tabsHtml) {
         <button class="btn btn-primary" style="flex:2;background:#7c3aed;box-shadow:0 5px 0 #5b21b6" onclick="saveGroup()">💾 保存分组</button>
         <button class="btn btn-red" id="delGrpBtn" style="flex:1;display:none" onclick="deleteGroup()">🗑️ 删除</button>
       </div>
-      <button id="cancelGrpBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="renderWordManager('groups')">取消编辑</button>
+      <button id="cancelGrpBtn" style="display:none;margin-top:10px;width:100%;padding:10px;background:#f1f3f7;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer" onclick="navigateTo(currentRouteKey())">取消编辑</button>
     </div>
     <h4 style="margin-left:6px;color:var(--text-2)">所有分组</h4>
     <div class="card" style="padding:0">${listHtml}</div>
   `;
+  installManagerFormGuard('groups');
 }
 
 function editSet(id) {
@@ -165,6 +202,7 @@ function editSet(id) {
       const ownerGroup = groups.find(g => (g.setIds || []).includes(id));
       grpSelect.value = ownerGroup ? ownerGroup.id : '';
     }
+    installManagerFormGuard('sets');
     document.getElementById('app').scrollTop = 0;
   });
 }
@@ -188,7 +226,7 @@ function saveSet() {
       if (groupId && String(g.id) === String(groupId)) newSetIds.push(id);
       grpStore.put({ ...g, setIds: newSetIds });
     });
-    writeTx.oncomplete = () => { renderWordManager('sets'); syncToCloud(true); };
+    writeTx.oncomplete = () => { renderCurrentRoute(); syncToCloud(true); };
   });
 }
 
@@ -204,7 +242,7 @@ function deleteSet() {
       const newSetIds = (g.setIds || []).filter(sid => sid !== id);
       grpStore.put({ ...g, setIds: newSetIds });
     });
-    writeTx.oncomplete = () => { renderWordManager('sets'); syncToCloud(true); };
+    writeTx.oncomplete = () => { renderCurrentRoute(); syncToCloud(true); };
   });
 }
 
@@ -221,6 +259,7 @@ function editGroup(gid) {
     document.querySelectorAll('[id^="gset-"]').forEach(cb => {
       cb.checked = (g.setIds || []).includes(cb.dataset.setid);
     });
+    installManagerFormGuard('groups');
     document.getElementById('app').scrollTop = 0;
   };
 }
@@ -235,7 +274,7 @@ function saveGroup() {
   const tx = db.transaction('groups', 'readwrite');
   const rec = editingId ? { id: parseInt(editingId), name, setIds } : { name, setIds };
   tx.objectStore('groups').put(rec);
-  tx.oncomplete = () => { renderWordManager('groups'); syncToCloud(true); };
+  tx.oncomplete = () => { renderCurrentRoute(); syncToCloud(true); };
 }
 
 function deleteGroup() {
@@ -243,6 +282,5 @@ function deleteGroup() {
   if (!editingId || !confirm("确认删除此分组？（词组不会被删除）")) return;
   const tx = db.transaction('groups', 'readwrite');
   tx.objectStore('groups').delete(parseInt(editingId));
-  tx.oncomplete = () => { renderWordManager('groups'); syncToCloud(true); };
+  tx.oncomplete = () => { renderCurrentRoute(); syncToCloud(true); };
 }
-

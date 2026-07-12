@@ -10,18 +10,31 @@ function parseChunks(rawWord) {
 }
 
 function startLearn(id) {
+  const routeKey = currentRouteKey();
   const tx = db.transaction('wordSets', 'readonly');
   tx.objectStore('wordSets').get(id).onsuccess = (e) => {
-    const data = e.target.result; if (!data) return;
+    if (routeKey !== currentRouteKey()) return;
+    const data = e.target.result;
+    if (!data) return replaceRoute('learn');
     currentSetDate = id; learnList = data.words; learnIndex = 0;
     renderLearnUI();
   };
 }
 
-function exitLearn() { if (confirm('退出学习？')) renderHome(); }
-function exitPracticeSession() { if (confirm('退出练习？')) renderHome(); }
+function exitLearn() {
+  if (!confirm('退出学习？')) return;
+  clearNavigationGuard();
+  navigateTo('home', { replace: true, skipGuard: true });
+}
+
+function exitPracticeSession() {
+  if (!confirm('退出练习？')) return;
+  clearNavigationGuard();
+  navigateTo('home', { replace: true, skipGuard: true });
+}
 
 function renderLearnUI() {
+  setNavigationGuard('退出学习？');
   document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="exitLearn()">🏃 退出</button>`;
   document.getElementById('app').innerHTML = `<div id="learnContainer"></div>`;
   loadLearnWord();
@@ -29,14 +42,15 @@ function renderLearnUI() {
 
 function loadLearnWord() {
   if (learnIndex >= learnList.length) {
+    clearNavigationGuard();
     document.getElementById('headerBtn').innerHTML = '';
     document.getElementById('app').innerHTML = `<div class="card" style="text-align:center;padding:50px 20px;margin-top:40px">
       <div style="font-size:70px;margin-bottom:12px">🎓</div>
       <h2 style="font-family:'Fredoka One',cursive;font-size:30px;margin-bottom:8px">学习完成！</h2>
       <p style="color:var(--text-2);font-size:16px;font-weight:600">所有单词都学过啦，可以去练习了！</p>
       <div style="height:20px"></div>
-      <button class="btn btn-primary" onclick="renderHome()">🏠 返回首页</button>
-      <button class="btn btn-yellow" onclick="renderSetSelection('practice')">✏️ 开始练习</button>
+      <button class="btn btn-primary" onclick="navigateTo('home',{replace:true})">🏠 返回首页</button>
+      <button class="btn btn-yellow" onclick="navigateTo('practice',{replace:true})">✏️ 开始练习</button>
     </div>`;
     return;
   }
@@ -157,4 +171,3 @@ function learnRevealNext() {
   }
   renderLearnStepControls();
 }
-

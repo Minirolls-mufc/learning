@@ -7,19 +7,19 @@ function renderHome() {
       <div style="font-size:14px;color:var(--text-2);font-weight:700">今天想做点什么？</div>
     </div>
     <div class="home-grid">
-      <div class="mode-card learn" onclick="renderSetSelection('learn')">
+      <div class="mode-card learn" onclick="navigateRoute('learn')">
         <div class="mode-icon">📖</div>
         <div class="mode-info"><h3 style="color:#3563d4">单词学习</h3><p>认读、拼读、逐步揭示</p></div>
       </div>
-      <div class="mode-card practice" onclick="renderSetSelection('practice')">
+      <div class="mode-card practice" onclick="navigateRoute('practice')">
         <div class="mode-icon">✏️</div>
         <div class="mode-info"><h3 style="color:#b45309">拼写练习</h3><p>字母拼图 / 听写输入</p></div>
       </div>
-      <div class="mode-card records" onclick="renderRecords()">
+      <div class="mode-card records" onclick="navigateRoute('records')">
         <div class="mode-icon">🏆</div>
         <div class="mode-info"><h3 style="color:#059669">成就记录</h3><p>星星、火箭、足迹</p></div>
       </div>
-      <div class="mode-card manage" onclick="renderWordManager()">
+      <div class="mode-card manage" onclick="navigateRoute('manager','sets')">
         <div class="mode-icon">📂</div>
         <div class="mode-info"><h3 style="color:#7c3aed">单词管理</h3><p>词组、分组、编辑</p></div>
       </div>
@@ -38,7 +38,8 @@ function renderHome() {
 
 /* ==================== SET SELECTION ==================== */
 function renderSetSelection(mode, activeTab) {
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderHome()">🏠 首页</button>`;
+  const routeKey = currentRouteKey();
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="navigateRoute('home')">🏠 首页</button>`;
   const stores = ['wordSets', 'groups', 'wrongBank'];
   const tx = db.transaction(stores, 'readonly');
   Promise.all([
@@ -46,6 +47,7 @@ function renderSetSelection(mode, activeTab) {
     getAll(tx.objectStore('groups')),
     getAll(tx.objectStore('wrongBank'))
   ]).then(([sets, groups, wrongBank]) => {
+    if (routeKey !== currentRouteKey()) return;
     sets.sort((a, b) => a.id.localeCompare(b.id));
     groups.sort((a, b) => a.name.localeCompare(b.name));
     activeTab = activeTab || 'all';
@@ -54,16 +56,17 @@ function renderSetSelection(mode, activeTab) {
     const modeIcon = mode === 'learn' ? '📖' : '✏️';
 
     // Build tab bar: All + each group
-    let tabsHtml = `<button class="tab-btn ${activeTab === 'all' ? 'active' : ''}" onclick="renderSetSelection('${mode}','all')">全部</button>`;
+    let tabsHtml = `<button class="tab-btn ${activeTab === 'all' ? 'active' : ''}" onclick="navigateRoute('${mode}')">全部</button>`;
     groups.forEach(g => {
       const gid = g.id;
-      tabsHtml += `<button class="tab-btn ${activeTab == gid ? 'active' : ''}" onclick="renderSetSelection('${mode}',${gid})">${g.name}</button>`;
+      tabsHtml += `<button class="tab-btn ${activeTab == gid ? 'active' : ''}" onclick="navigateRoute('${mode}','group','${gid}')">${g.name}</button>`;
     });
 
     // Filter sets by active tab
     let filteredSets = sets;
     if (activeTab !== 'all') {
       const grp = groups.find(g => g.id == activeTab);
+      if (!grp) return replaceRoute(mode);
       const setIds = grp ? (grp.setIds || []) : [];
       filteredSets = sets.filter(s => setIds.includes(s.id));
     }
@@ -71,7 +74,7 @@ function renderSetSelection(mode, activeTab) {
     // Target entry card
     const targetLabel = mode === 'learn' ? '🎯 针对复习' : '🎯 针对练习';
     const targetDesc = mode === 'learn' ? '按掌握程度排序，选择要加强的词' : '按掌握程度排序，选择要攻克的词';
-    const targetFn = mode === 'learn' ? `renderTargetSelection('learn')` : `renderTargetSelection('practice')`;
+    const targetFn = `navigateRoute('target','${mode}')`;
 
     let html = `
       <div style="margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
@@ -98,7 +101,7 @@ function renderSetSelection(mode, activeTab) {
     } else {
       filteredSets.forEach(s => {
         const preview = s.words.map(w => w.replace(/\//g, '')).slice(0, 4).join('  ');
-        const fn = mode === 'learn' ? `startLearn('${esc(s.id)}')` : `renderPracticeMode('${esc(s.id)}')`;
+        const fn = `navigateRoute('${mode}','set','${esc(s.id)}')`;
         html += `<div class="card" style="cursor:pointer;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:12px" onclick="${fn}">
           <div style="min-width:0;flex:1">
             <div style="font-weight:800;font-size:17px;margin-bottom:4px">${s.id}</div>
@@ -215,8 +218,10 @@ function getTargetData() {
 
 function renderTargetSelection(mode) {
   currentTargetGroupKey = null;
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderSetSelection('${mode}')">‹ 返回</button>`;
+  const routeKey = currentRouteKey();
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="navigateBack('${mode}')">‹ 返回</button>`;
   getTargetData().then(data => {
+    if (routeKey !== currentRouteKey()) return;
     const title = mode === 'learn' ? '🎯 针对复习' : '🎯 针对练习';
     const groups = [];
     if (mode === 'practice') {
@@ -229,7 +234,7 @@ function renderTargetSelection(mode) {
       { key: 'allWords', icon: '≡', title: '全部词列表', desc: '查看全部词及新规则下的正确、错误次数', items: data.allWords }
     );
 
-    const cards = groups.map(group => `<div class="card target-group-card" onclick="renderTargetGroup('${mode}','${group.key}')">
+    const cards = groups.map(group => `<div class="card target-group-card" onclick="navigateRoute('target','${mode}','${group.key}')">
       <div class="target-group-icon">${group.icon}</div>
       <div style="min-width:0;flex:1">
         <div style="font-size:17px;font-weight:800;margin-bottom:3px">${group.title}</div>
@@ -257,8 +262,10 @@ function targetStatusText(entry) {
 
 function renderTargetGroup(mode, groupKey) {
   currentTargetGroupKey = groupKey;
-  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="renderTargetSelection('${mode}')">‹ 返回</button>`;
+  const routeKey = currentRouteKey();
+  document.getElementById('headerBtn').innerHTML = `<button class="btn btn-gray btn-sm" onclick="navigateBack('${routePath('target', mode)}')">‹ 返回</button>`;
   getTargetData().then(data => {
+    if (routeKey !== currentRouteKey()) return;
     const labels = {
       todayWrong: '今日错词', consolidation: '今日巩固', historical: '历史高频错词',
       mastered: '已掌握', allWords: '全部词列表'
@@ -317,4 +324,3 @@ function startTargetPractice() {
   currentSetDate = 'target';
   renderPracticeMode('target', selected);
 }
-
