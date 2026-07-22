@@ -160,8 +160,8 @@ function skipEasy() {
 function loadNormalWord(cleanWord, rawWord, mode) {
   document.getElementById('practiceCard').innerHTML = `
     <div style="text-align:center;margin-bottom:18px">
-      <button class="btn btn-outline" style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px"
-        ontouchstart="event.preventDefault();speak('${cleanWord}')" onclick="speak('${cleanWord}')">
+      <button class="btn btn-outline" id="normalSpeakBtn" type="button"
+        style="display:inline-flex;width:auto;padding:10px 22px;border-radius:30px">
         🔊 <span style="font-weight:800">听发音</span>
       </button>
     </div>
@@ -173,6 +173,10 @@ function loadNormalWord(cleanWord, rawWord, mode) {
       ontouchstart="event.preventDefault();skipNormal('${mode}')" onclick="skipNormal('${mode}')">跳过 ›</button>
   `;
   setupNormalInput(cleanWord, mode);
+  document.getElementById('normalSpeakBtn').addEventListener('click', () => {
+    speak(cleanWord);
+    restoreTypingFocus();
+  });
   setTimeout(() => speak(cleanWord), 350);
 }
 
@@ -192,7 +196,7 @@ function setupNormalInput(word, mode) {
     blanks.appendChild(b);
   }
   const hidden = document.getElementById('hiddenInput');
-  hidden.value = ''; hidden.focus();
+  hidden.value = '';
   hidden.oninput = (e) => {
     if (isProcessing) return;
     currentInput = e.target.value.replace(/[^a-zA-Z]/g, '').slice(0, targetLetters.length);
@@ -200,6 +204,7 @@ function setupNormalInput(word, mode) {
   };
   hidden.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); checkNormal(mode); } };
   updateNormalBlanks();
+  restoreTypingFocus();
 }
 
 function updateNormalBlanks() {

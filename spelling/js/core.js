@@ -552,7 +552,16 @@ function buildCloudData(sets, groups, wrongs, achievement, syncMeta, curriculum)
 
 function keepFocus() {
   const hidden = document.getElementById('hiddenInput');
-  if (document.querySelector('.blanks-container') && !isProcessing) hidden.focus();
+  if (!hidden || !document.querySelector('.blanks-container') || isProcessing) return;
+  try {
+    hidden.focus({ preventScroll: true });
+  } catch (error) {
+    hidden.focus();
+  }
+}
+
+function restoreTypingFocus() {
+  requestAnimationFrame(keepFocus);
 }
 document.addEventListener('click', (e) => {
   if (['INPUT', 'TEXTAREA', 'BUTTON'].includes(e.target.tagName)) return;
