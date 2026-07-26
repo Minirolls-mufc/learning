@@ -27,6 +27,7 @@
       masteryStep: 0,
       correctCount: 0,
       almostCount: 0,
+      lastAlmostDate: null,
       lastReviewDate: null,
       lastCountedCorrectDate: null,
       nextReviewDate: null,
@@ -45,6 +46,7 @@
       masteryStep,
       correctCount: Math.max(0, Number(value.correctCount) || 0),
       almostCount: Math.max(0, Number(value.almostCount) || 0),
+      lastAlmostDate: value.lastAlmostDate || null,
       lastReviewDate: value.lastReviewDate || null,
       lastCountedCorrectDate: value.lastCountedCorrectDate || null,
       nextReviewDate: masteryStep >= 3 ? null : value.nextReviewDate || null,
@@ -89,6 +91,7 @@
 
     if (record.lastResult === 'almost') {
       record.almostCount += 1;
+      record.lastAlmostDate = today;
       if (record.masteryStep === 3) record.masteryStep = 2;
       record.masteredAt = null;
       record.nextReviewDate = addDays(today, 1);
@@ -121,6 +124,7 @@
       if (record.masteryStep) value.s = record.masteryStep;
       if (record.correctCount) value.c = record.correctCount;
       if (record.almostCount) value.a = record.almostCount;
+      if (record.lastAlmostDate) value.d = record.lastAlmostDate;
       if (record.lastReviewDate) value.r = record.lastReviewDate;
       if (record.lastCountedCorrectDate) value.k = record.lastCountedCorrectDate;
       if (record.nextReviewDate) value.n = record.nextReviewDate;
@@ -147,6 +151,7 @@
         masteryStep: value.s,
         correctCount: value.c,
         almostCount: value.a,
+        lastAlmostDate: value.d,
         lastReviewDate: value.r,
         lastCountedCorrectDate: value.k,
         nextReviewDate: value.n,

@@ -489,6 +489,46 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .learn-complete .learn-controls{width:100%;display:flex;justify-content:center;flex-wrap:wrap}
 .learn-complete .learn-controls .btn{width:auto;min-width:120px}
 .review-actions{display:flex;align-items:center;justify-content:center;gap:10px;min-height:42px}
+.review-source-bar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:12px 16px 2px}
+#review-group-source{flex:1;min-height:0;display:flex;flex-direction:column}
+.review-source-btn{border:1.5px solid var(--border);border-radius:8px;background:#fff;padding:9px 14px;font:800 .76rem inherit;color:var(--ink2);cursor:pointer}
+.review-source-btn.active{background:#fff1e6;border-color:var(--o1);color:var(--o1)}
+.review-smart-panel{padding:22px 18px;display:none;justify-content:center;flex:1;min-height:0;overflow-y:auto}
+.review-smart-summary{width:min(620px,100%);background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:20px;text-align:center}
+.review-smart-count{font-size:2rem;font-weight:900;color:var(--o1)}
+.review-smart-chars{margin-top:12px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
+.review-smart-char{min-width:36px;padding:5px 8px;border:1px solid #ead8c6;border-radius:7px;background:#fffdfa;font-size:1.15rem;font-weight:800}
+.review-method-footer{padding:12px 16px 16px;border-top:1px solid var(--border);background:#fff;display:flex;gap:9px;justify-content:center;flex-wrap:wrap;flex-shrink:0;z-index:2}
+.review-method-footer .btn{min-width:132px}
+.review-word-nav,.learn-word-nav{width:100%;display:grid;grid-template-columns:130px minmax(0,1fr) 130px;align-items:center;gap:14px}
+.review-word-nav>.btn,.learn-word-nav>.btn{width:100%;min-height:46px}
+.review-word-nav .review-word,.learn-word-nav .learn-word{min-width:0;justify-self:center}
+.review-rating-space{min-height:42px}
+.review-mode-board{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
+.recognition-options{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.recognition-choice{width:116px;height:116px;border:2px solid #ded7cf;border-radius:8px;background:#fff;font:800 3.5rem 'Noto Sans SC',sans-serif;cursor:pointer}
+.recognition-choice:active{transform:scale(.97)}
+.match-board{width:min(820px,100%);display:grid;grid-template-columns:1fr 1fr;gap:18px 38px;align-items:stretch;position:relative}
+.match-column{display:flex;flex-direction:column;gap:10px}
+.match-card{min-height:92px;border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;position:relative}
+.match-card.selected{border-color:var(--o1);box-shadow:0 0 0 3px rgba(255,107,0,.12)}
+.match-card.locked{border-color:var(--green);background:#f0fdf4}
+.match-card.wrong{border-color:#f59e0b;background:#fffbeb}
+.match-prompt-pinyin{font-size:1rem;font-weight:900;color:var(--o1)}
+.match-prompt-word{font-size:1.55rem;font-weight:800;color:var(--ink)}
+.match-index{position:absolute;top:5px;right:7px;width:24px;height:24px;border-radius:50%;background:var(--o1);color:#fff;font-size:.68rem;font-weight:900;display:flex;align-items:center;justify-content:center}
+.match-structure{width:76px;height:76px}
+.match-structure svg{width:100%;height:100%}
+.char-manager-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.char-manager-search,.char-manager-filter{border:1.5px solid var(--border);border-radius:8px;background:#fff;padding:9px 11px;font:700 .76rem inherit;color:var(--ink);min-height:40px}
+.char-manager-search{flex:1;min-width:180px}
+.char-manager-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
+.char-manager-item{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:10px;display:grid;grid-template-columns:48px 72px minmax(0,1fr);gap:9px;align-items:center}
+.char-manager-glyph{font-size:2rem;font-weight:800;text-align:center}
+.char-manager-preview{width:68px;height:68px}
+.char-manager-preview svg{width:100%;height:100%}
+.char-manager-input{width:100%;min-width:0;border:1.5px solid var(--border);border-radius:7px;padding:8px;font:700 .72rem inherit}
+.char-manager-status{font-size:.62rem;color:var(--muted);margin-top:4px}
 .rating-toggle{display:grid;grid-template-columns:1fr 1fr;border:1.5px solid #d8dce2;border-radius:7px;overflow:hidden;width:100%}
 .rating-toggle button{border:0;background:#fff;padding:7px 4px;font:700 .7rem inherit;color:#4b5563;cursor:pointer;white-space:nowrap}
 .rating-toggle button+button{border-left:1px solid #e5e7eb}
@@ -540,6 +580,13 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   .rating-toggle{grid-template-columns:1fr}
   .rating-toggle button+button{border-left:0;border-top:1px solid #e5e7eb}
   .rating-toggle button{font-size:.64rem;padding:6px 2px}
+  .review-word-nav,.learn-word-nav{grid-template-columns:74px minmax(0,1fr) 74px;gap:6px}
+  .review-word-nav>.btn,.learn-word-nav>.btn{font-size:.7rem;padding:6px 3px}
+  .match-board{gap:10px}
+  .match-card{min-height:78px;padding:7px}
+  .match-structure{width:62px;height:62px}
+  .match-prompt-word{font-size:1.2rem}
+  .char-manager-grid{grid-template-columns:1fr}
   .learn-target-controls .btn,.review-nav .btn{min-width:0}
   .grid-fallback-glyph{font-size:2.8rem}
 }
@@ -583,7 +630,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         <div class="nav-badge">推荐</div>
       </div>
       <div class="nav-card" onclick="openReviewPicker()">
-        <span class="nav-icon">✏️</span><span class="nav-name">复 习</span><span class="nav-desc">纸笔听写·家长确认</span>
+        <span class="nav-icon">✏️</span><span class="nav-name">复 习</span><span class="nav-desc">练习纸·认字·结构·写字</span>
       </div>
       <div class="nav-card" onclick="openPinyin()">
         <span class="nav-icon">🔤</span><span class="nav-name">拼 音</span><span class="nav-desc">对对碰·拼音输入</span>
@@ -701,11 +748,10 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
     <div class="learning-shell" id="learning-shell">
       <div class="flow-head"><span class="flow-step" id="learn-stage"></span><div class="flow-dots" id="learn-dots"></div></div>
       <div class="pronunciation-row"><div class="learn-pinyin" id="learn-pinyin"></div><button class="speak-icon-btn" id="learn-speak" aria-label="朗读" title="朗读">🔊</button></div>
-      <div class="learn-word" id="learn-word"></div>
+      <div class="learn-word-nav"><button class="btn btn-ghost" id="learn-prev-target">上一个</button><div class="learn-word" id="learn-word"></div><button class="btn btn-primary" id="learn-next-target">下一个</button></div>
       <div class="learn-options" id="learn-options"></div>
       <div class="learn-feedback" id="learn-feedback"></div>
       <div class="learn-controls" id="learn-controls"></div>
-      <div class="learn-target-controls" id="learn-target-controls"></div>
       <div class="learn-success-celebration" id="learn-success" role="status" aria-live="polite" aria-hidden="true"></div>
     </div>
   </div>
@@ -716,20 +762,31 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   <div id="prac-step1" class="prac-step active">
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
-      <div class="tb-title">选择分组</div>
+      <div class="tb-title">选择复习内容</div>
       <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
     </div>
-    <div class="sg-tabbar" id="prac-tabbar"></div>
-    <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
-    <div class="prac-grp-footer">
-      <button class="btn btn-ghost" onclick="generateWorksheetForReview()">📄 生成练习纸</button>
-      <button class="btn btn-primary" onclick="startReview()">开始复习 →</button>
+    <div class="review-source-bar">
+      <button class="review-source-btn active" data-source="groups" onclick="selectReviewSource('groups')">按组复习</button>
+      <button class="review-source-btn" data-source="todayAlmost" onclick="selectReviewSource('todayAlmost')">今日差一点</button>
+      <button class="review-source-btn" data-source="due" onclick="selectReviewSource('due')">到期复习</button>
+      <button class="review-source-btn" data-source="historical" onclick="selectReviewSource('historical')">历史高频</button>
+    </div>
+    <div id="review-group-source">
+      <div class="sg-tabbar" id="prac-tabbar"></div>
+      <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
+    </div>
+    <div class="review-smart-panel" id="review-smart-source"></div>
+    <div class="review-method-footer">
+      <button class="btn btn-ghost" onclick="openWorksheetReview()">生成练习纸</button>
+      <button class="btn btn-ghost" onclick="startRecognitionReview()">形近字挑选</button>
+      <button class="btn btn-ghost" onclick="startStructureReview()">结构连连看</button>
+      <button class="btn btn-primary" onclick="startReview()">写字练习</button>
     </div>
   </div>
   <div id="prac-step2" class="prac-step">
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
-      <div class="tb-title">选择模式</div>
+      <div class="tb-title">生成练习纸</div>
       <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">‹ 返回</button></div>
     </div>
     <div class="prac-sel-body">
@@ -742,8 +799,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         </div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-        <button class="btn btn-ghost" onclick="generateWorksheet()">📄 生成练习纸</button>
-        <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="startPractice()">开始练习 →</button>
+        <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="generateWorksheet()">生成练习纸</button>
       </div>
     </div>
   </div>
@@ -790,6 +846,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
     <button class="manage-tab" id="mtab-grouped" onclick="switchManageTab('grouped')">📚 分组字词</button>
     <button class="manage-tab" id="mtab-sg" onclick="switchManageTab('sg')">🗂 分组设置</button>
     <button class="manage-tab" id="mtab-similar" onclick="switchManageTab('similar')">形近字库</button>
+    <button class="manage-tab" id="mtab-chars" onclick="switchManageTab('chars')">字形管理</button>
   </div>
   <div class="manage-body" id="manage-body"></div>
 </div>
@@ -1013,7 +1070,8 @@ function achRecordMistake(ch,py){}
 function achRecordCorrect(){store.ach.totalCorrect++;const today=new Date().toDateString();if(store.ach.lastDate!==today){const yest=new Date(Date.now()-86400000).toDateString();store.ach.streak=(store.ach.lastDate===yest)?store.ach.streak+1:1;store.ach.lastDate=today;}saveStore();}
 
 /* ━━━━━ NAV ━━━━━ */
-function stopSpeech(){if('speechSynthesis'in window){try{window.speechSynthesis.cancel();}catch(e){}}}
+let speechTimer=null;
+function stopSpeech(){clearTimeout(speechTimer);speechTimer=null;if('speechSynthesis'in window){try{window.speechSynthesis.cancel();}catch(e){}}}
 function showPage(id){stopSpeech();if(id!=='study'&&typeof clearLearnTimers==='function')clearLearnTimers();document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-'+id).classList.add('active');}
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
@@ -1079,8 +1137,10 @@ function renderGpick(containerId){
     card.onclick=()=>{
       if(containerId==='gpick'){startStudy(g.id);}
       else{
-        P.groupIds=[g.id];
-        P.groupId=g.id;
+        if(!Array.isArray(P.groupIds))P.groupIds=[];
+        if(P.groupIds.includes(g.id))P.groupIds=P.groupIds.filter(id=>id!==g.id);
+        else P.groupIds.push(g.id);
+        P.groupId=P.groupIds[0]||null;
         renderGpick('prac');
       }
     };
@@ -1196,7 +1256,7 @@ function toggleCover(){S.coverMode=!S.coverMode;S.chars.forEach((c,ci)=>{const c
 document.addEventListener('keydown',e=>{if(!document.getElementById('page-study').classList.contains('active'))return;if(document.querySelector('.modal-overlay.open'))return;if(e.key==='Enter')learningPrimaryAction();});
 
 /* ━━━━━ PRACTICE ━━━━━ */
-let P={mode:'simple',groupId:null,groupIds:[],queue:[],idx:0,chars:[]};
+let P={mode:'simple',groupId:null,groupIds:[],queue:[],idx:0,chars:[],reviewSource:'groups',reviewEntries:null,reviewLabel:null};
 function pracGoStep(n){
   document.querySelectorAll('.prac-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('prac-step'+n).classList.add('active');
@@ -1695,15 +1755,20 @@ function renderAchieve(){
 let manageTab='groups';
 let manageSgFilterId=null;
 let manageGroupFilterId=null;
+let manageCharSearch='';
+let manageCharGroupId='all';
 function switchManageTab(t){
   manageTab=t;
   document.getElementById('mtab-groups').classList.toggle('active',t==='groups');
   document.getElementById('mtab-grouped').classList.toggle('active',t==='grouped');
   document.getElementById('mtab-sg').classList.toggle('active',t==='sg');
   document.getElementById('mtab-similar').classList.toggle('active',t==='similar');
+  document.getElementById('mtab-chars').classList.toggle('active',t==='chars');
   const rightEl=document.getElementById('manage-tb-right');
   if(t==='similar'){
     rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddSimilarGroup()">＋ 形近字组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
+  } else if(t==='chars'){
+    rightEl.innerHTML='<button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   } else if(t!=='sg'){
     rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   } else {
@@ -1720,6 +1785,7 @@ function renderManage(){
   document.getElementById('mtab-grouped').classList.remove('active');
   document.getElementById('mtab-sg').classList.remove('active');
   document.getElementById('mtab-similar').classList.remove('active');
+  document.getElementById('mtab-chars').classList.remove('active');
   const rightEl=document.getElementById('manage-tb-right');
   rightEl.innerHTML='<button class="btn btn-primary btn-sm" onclick="openAddGroup()">＋ 词组</button><button class="tb-btn" onclick="showPage(\'home\')">🏠 首页</button>';
   renderManageBody();
@@ -1728,7 +1794,8 @@ function renderManageBody(){
   if(manageTab==='groups') renderManageGroups();
   else if(manageTab==='grouped') renderManageGrouped();
   else if(manageTab==='sg')renderManageSG();
-  else renderManageSimilar();
+  else if(manageTab==='similar')renderManageSimilar();
+  else renderManageChars();
 }
 function renderManageGroups(){
   const body=document.getElementById('manage-body');body.innerHTML='';
@@ -1813,6 +1880,58 @@ function renderManageSimilar(){
       renderRedBluePreview(item.lastElementChild,ch,62);
     });
     list.appendChild(card);
+  });
+}
+
+function setManageCharSearch(value){manageCharSearch=value.trim();renderManageChars();}
+function setManageCharGroup(value){manageCharGroupId=value;renderManageChars();}
+function managedChars(){
+  const chars=[];const add=ch=>{if(ch&&!chars.includes(ch))chars.push(ch);};
+  Object.keys(store.charDefs||{}).forEach(add);
+  store.groups.forEach(group=>(group.entries||[]).forEach(entry=>[...entry.hanzi].forEach(add)));
+  return chars;
+}
+function updateManagedChar(ch,value,input){
+  setCharDef(ch,{mode:'complex',redRange:String(value||'').trim()});
+  saveStore();scheduleAutoSync();
+  const item=input&&input.closest('.char-manager-item');
+  if(!item)return;
+  const preview=item.querySelector('.char-manager-preview');
+  if(preview){preview.innerHTML='';renderRedBluePreview(preview,ch,68);}
+  const status=item.querySelector('.char-manager-status');
+  if(status)status.textContent=value.trim()?`红色：${value.trim()}`:'全红';
+}
+let charPreviewObserver=null;
+function observeManagedCharPreview(container,ch){
+  container.dataset.previewChar=ch;
+  if(!('IntersectionObserver'in window)){renderRedBluePreview(container,ch,68);return;}
+  if(!charPreviewObserver)charPreviewObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
+    if(!entry.isIntersecting)return;
+    charPreviewObserver.unobserve(entry.target);
+    renderRedBluePreview(entry.target,entry.target.dataset.previewChar,68);
+  }),{rootMargin:'180px 0px'});
+  charPreviewObserver.observe(container);
+}
+function renderManageChars(){
+  if(charPreviewObserver){charPreviewObserver.disconnect();charPreviewObserver=null;}
+  const body=document.getElementById('manage-body');body.innerHTML='';
+  const tools=document.createElement('div');tools.className='char-manager-tools';
+  const options=['<option value="all">全部分组</option>'].concat(store.groups.map(group=>`<option value="${escapeHtml(group.id)}"${manageCharGroupId===group.id?' selected':''}>${escapeHtml(group.name)}</option>`)).join('');
+  tools.innerHTML=`<input class="char-manager-search" value="${escapeHtml(manageCharSearch)}" placeholder="搜索汉字" oninput="setManageCharSearch(this.value)"><select class="char-manager-filter" onchange="setManageCharGroup(this.value)">${options}</select>`;
+  body.appendChild(tools);
+  let allowed=null;
+  if(manageCharGroupId!=='all'){
+    const group=store.groups.find(item=>item.id===manageCharGroupId);
+    allowed=new Set((group&&group.entries||[]).flatMap(entry=>[...entry.hanzi]));
+  }
+  const chars=managedChars().filter(ch=>(!allowed||allowed.has(ch))&&(!manageCharSearch||ch.includes(manageCharSearch)));
+  if(!chars.length){const empty=document.createElement('div');empty.className='empty-state';empty.innerHTML='<strong>没有匹配的汉字</strong>';body.appendChild(empty);return;}
+  const grid=document.createElement('div');grid.className='char-manager-grid';body.appendChild(grid);
+  chars.forEach(ch=>{
+    const redRange=getCharDef(ch).redRange||'';
+    const item=document.createElement('div');item.className='char-manager-item';
+    item.innerHTML=`<div class="char-manager-glyph">${escapeHtml(ch)}</div><div class="char-manager-preview"></div><div><input class="char-manager-input" value="${escapeHtml(redRange)}" placeholder="全红" aria-label="${escapeHtml(ch)}的红色笔画" onchange="updateManagedChar('${escapeHtml(ch)}',this.value,this)"><div class="char-manager-status">${redRange?`红色：${escapeHtml(redRange)}`:'全红'}</div></div>`;
+    grid.appendChild(item);observeManagedCharPreview(item.querySelector('.char-manager-preview'),ch);
   });
 }
 
@@ -2079,8 +2198,16 @@ function escapeHtml(value){return String(value==null?'':value).replace(/[&<>'"]/
 function cssId(value){return [...String(value||'')].map(ch=>ch.codePointAt(0).toString(16)).join('-');}
 function speakChinese(text){
   if(!('speechSynthesis'in window))return;
-  try{speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(String(text||''));utterance.lang='zh-CN';utterance.rate=.78;speechSynthesis.speak(utterance);}catch(e){}
+  try{
+    speechSynthesis.cancel();const utterance=new SpeechSynthesisUtterance(String(text||''));utterance.lang='zh-CN';utterance.rate=.68;
+    const voices=speechSynthesis.getVoices();
+    const mainland=voices.filter(voice=>/^zh[-_]CN$/i.test(voice.lang));
+    utterance.voice=mainland.find(voice=>/premium|enhanced|tingting|xiaoxiao|yunxi|mandarin/i.test(`${voice.name} ${voice.voiceURI}`))
+      ||mainland[0]||voices.find(voice=>/^zh/i.test(voice.lang))||null;
+    speechSynthesis.speak(utterance);
+  }catch(e){}
 }
+function scheduleChinese(text,delay=1000){stopSpeech();speechTimer=setTimeout(()=>{speechTimer=null;speakChinese(text);},delay);}
 
 const CHAR_DATA_BASE='https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0';
 const charDataCache=new Map();
@@ -2147,7 +2274,7 @@ function fillHanziGrid(grid,ch,data,layers,showFallback){
   }
 }
 function createLearningTargetState(){
-  return{initialized:false,ready:false,stage:'intro',stageDone:false,doneStages:new Set(),targetData:null,recognition:null,component:null,selectedParts:new Set(),strokeIndex:0,strokeOptions:null,animating:false,completed:false};
+  return{initialized:false,ready:false,stage:'intro',stageDone:false,doneStages:new Set(),targetData:null,recognition:null,component:null,selectedParts:new Set(),strokeIndex:0,strokeOptions:null,animating:false,celebrating:false,completed:false};
 }
 const LEARN_STROKE_INTERVAL=850;
 let Learn={groupId:null,targets:[],targetStates:[],index:0,token:0,dataMap:{},timers:[]};
@@ -2162,7 +2289,7 @@ function currentLearnTarget(){return Learn.targets[Learn.index]||null;}
 function resetLearningShell(){
   const shell=document.getElementById('learning-shell');
   if(document.getElementById('learn-stage'))return;
-  shell.innerHTML='<div class="flow-head"><span class="flow-step" id="learn-stage"></span><div class="flow-dots" id="learn-dots"></div></div><div class="pronunciation-row"><div class="learn-pinyin" id="learn-pinyin"></div><button class="speak-icon-btn" id="learn-speak" aria-label="朗读" title="朗读">🔊</button></div><div class="learn-word" id="learn-word"></div><div class="learn-options" id="learn-options"></div><div class="learn-feedback" id="learn-feedback"></div><div class="learn-controls" id="learn-controls"></div><div class="learn-target-controls" id="learn-target-controls"></div><div class="learn-success-celebration" id="learn-success" role="status" aria-live="polite" aria-hidden="true"></div>';
+  shell.innerHTML='<div class="flow-head"><span class="flow-step" id="learn-stage"></span><div class="flow-dots" id="learn-dots"></div></div><div class="pronunciation-row"><div class="learn-pinyin" id="learn-pinyin"></div><button class="speak-icon-btn" id="learn-speak" aria-label="朗读" title="朗读">🔊</button></div><div class="learn-word-nav"><button class="btn btn-ghost" id="learn-prev-target">上一个</button><div class="learn-word" id="learn-word"></div><button class="btn btn-primary" id="learn-next-target">下一个</button></div><div class="learn-options" id="learn-options"></div><div class="learn-feedback" id="learn-feedback"></div><div class="learn-controls" id="learn-controls"></div><div class="learn-success-celebration" id="learn-success" role="status" aria-live="polite" aria-hidden="true"></div>';
 }
 function startLearning(gid){
   const group=store.groups.find(item=>item.id===gid);if(!group)return;
@@ -2178,7 +2305,7 @@ function renderLearningEmpty(title,detail){
 }
 async function prepareLearnTarget(){
   clearLearnTimers();const target=currentLearnTarget();const state=currentLearnState();if(!target||!state){renderLearningComplete();return;}
-  speakLearningContext();renderLearning();
+  renderLearning();scheduleChinese(target.context.entry.hanzi||target.hanzi);
   if(state.initialized)return;
   state.ready=false;
   const token=++Learn.token;const group=store.groups.find(item=>item.id===Learn.groupId);
@@ -2273,7 +2400,7 @@ function renderLearning(){
   renderLearningHeader();renderLearningPinyin();renderLearningWord();
   const options=document.getElementById('learn-options');options.className='learn-options';options.innerHTML='';
   document.getElementById('learn-feedback').textContent=state.completed?'正确':state.ready?'':'正在准备…';
-  document.getElementById('learn-controls').innerHTML='';document.getElementById('learn-target-controls').innerHTML='';
+  document.getElementById('learn-controls').innerHTML='';
   renderLearningCelebration(state);
   if(!state.ready){renderLearningStageControls();renderLearningTargetNavigation();return;}
   if(state.stage==='intro')renderLearningIntro();
@@ -2294,11 +2421,12 @@ function canAdvanceLearningStage(state){
   if(!state||!state.ready||state.animating)return false;
   if(state.completed)return true;
   if(!nextLearningStage(state))return false;
-  return state.stage==='intro'||state.stageDone;
+  return state.stage==='intro'||state.stageDone||(state.stage==='structure'&&state.selectedParts.size===2);
 }
 function useLearningNextControl(){
   const state=currentLearnState();if(!state||!canAdvanceLearningStage(state))return;
   if(state.completed){moveLearningTarget(1);return;}
+  if(state.stage==='structure'&&!state.stageDone){checkLearningStructure();return;}
   advanceLearningStage();
 }
 function renderLearningStageControls(){
@@ -2317,7 +2445,7 @@ function renderLearningStageControls(){
 function renderLearningCelebration(state){
   const celebration=document.getElementById('learn-success');if(!celebration)return;
   celebration.classList.remove('show');celebration.innerHTML='';celebration.setAttribute('aria-hidden','true');
-  if(!state||!state.completed)return;
+  if(!state||(!state.completed&&!state.celebrating))return;
   celebration.innerHTML='<span class="learn-success-check">✓</span><strong>太棒了</strong>';
   celebration.setAttribute('aria-hidden','false');
   requestAnimationFrame(()=>celebration.classList.add('show'));
@@ -2367,11 +2495,14 @@ function toggleComponent(option){
   const state=currentLearnState();if(!state||state.stageDone)return;
   if(state.selectedParts.has(option.id)){state.selectedParts.delete(option.id);renderLearning();return;}
   if(state.selectedParts.size>=2)return;
-  state.selectedParts.add(option.id);
-  if(state.selectedParts.size<2){renderLearning();return;}
+  state.selectedParts.add(option.id);renderLearning();
+}
+function checkLearningStructure(){
+  const state=currentLearnState();if(!state||state.stageDone||state.selectedParts.size!==2)return;
   const chosen=[...state.selectedParts].sort().join('|');const correct=[...state.component.correctIds].sort().join('|');
   if(chosen===correct){
-    state.stageDone=true;state.doneStages.add('structure');renderLearning();
+    state.stageDone=true;state.celebrating=true;state.doneStages.add('structure');renderLearning();
+    learnLater(()=>{state.celebrating=false;advanceLearningStage();},1250);
   }else{
     renderLearning();document.getElementById('learn-feedback').textContent='再试一次';
     learnLater(()=>{state.selectedParts.clear();renderLearning();},750);
@@ -2417,10 +2548,9 @@ function markLearningTargetComplete(){
   state.completed=true;state.stageDone=true;state.doneStages.add('stroke');charProgress[target.hanzi]=HanziProgress.markLearned(charProgress[target.hanzi]);saveStore();scheduleAutoSync();
 }
 function renderLearningTargetNavigation(){
-  const container=document.getElementById('learn-target-controls');if(!container)return;
-  const previous=addLearnButton('上一个',()=>moveLearningTarget(-1),'btn-ghost',container);previous.disabled=Learn.index<=0;
-  const spacer=document.createElement('span');spacer.className='flow-nav-spacer';spacer.setAttribute('aria-hidden','true');container.appendChild(spacer);
-  addLearnButton(Learn.index>=Learn.targets.length-1?'完成学习':'下一个',()=>moveLearningTarget(1),'btn-primary',container);
+  const previous=document.getElementById('learn-prev-target');const next=document.getElementById('learn-next-target');if(!previous||!next)return;
+  previous.disabled=Learn.index<=0;previous.onclick=()=>moveLearningTarget(-1);
+  next.textContent=Learn.index>=Learn.targets.length-1?'完成学习':'下一个';next.onclick=()=>moveLearningTarget(1);
 }
 function moveLearningTarget(direction){
   if(direction<0&&Learn.index<=0)return;
@@ -2434,39 +2564,177 @@ function renderLearningComplete(){
 
 /* ━━━━━ PRODUCT V2: REVIEW ━━━━━ */
 function createReviewTaskState(){return{revealed:false,assessed:false,ratings:{}};}
-let ReviewState={groupId:null,tasks:[],taskStates:[],index:0,status:null,renderToken:0};
-function openReviewPicker(){
-  showPage('practice');document.querySelectorAll('.prac-step').forEach(step=>step.classList.remove('active'));document.getElementById('prac-step1').classList.add('active');
-  if(!P.groupId&&store.groups.length){P.groupId=null;P.groupIds=[];}
-  renderGpick('prac');
+let ReviewState={mode:null,label:'复习',tasks:[],taskStates:[],items:[],batches:[],batchStates:[],index:0,status:null,renderToken:0,timers:[]};
+function clearReviewTimers(){(ReviewState.timers||[]).forEach(clearTimeout);ReviewState.timers=[];stopSpeech();}
+function reviewLater(fn,delay){const timer=setTimeout(fn,delay);ReviewState.timers.push(timer);return timer;}
+function reviewSourceData(){return HanziReview.buildSmartSources(store.groups,charProgress,HanziProgress.localDateKey());}
+function reviewSourceLabel(source){
+  return{groups:'按组复习',todayAlmost:'今日差一点',due:'到期复习',historical:'历史高频'}[source]||'复习';
 }
-function generateWorksheetForReview(){
-  if(!P.groupId){alert('请先选择一个分组');return;}
-  P.groupIds=[P.groupId];P.mode='standard';generateWorksheet();
+function selectReviewSource(source){
+  P.reviewSource=source;
+  document.querySelectorAll('.review-source-btn').forEach(button=>button.classList.toggle('active',button.dataset.source===source));
+  const grouped=document.getElementById('review-group-source');const smart=document.getElementById('review-smart-source');
+  grouped.style.display=source==='groups'?'flex':'none';smart.style.display=source==='groups'?'none':'flex';
+  if(source==='groups'){renderGpick('prac');return;}
+  const chars=reviewSourceData()[source]||[];
+  smart.innerHTML=`<div class="review-smart-summary"><div class="review-smart-count">${chars.length}</div><div>${escapeHtml(reviewSourceLabel(source))}重点字</div><div class="review-smart-chars">${chars.map(ch=>`<span class="review-smart-char">${escapeHtml(ch)}</span>`).join('')}</div>${chars.length?'':'<div class="fhint" style="margin-top:12px">暂时没有需要复习的字</div>'}</div>`;
+}
+function currentReviewSelection(showAlert=true){
+  const source=P.reviewSource||'groups';let groups=[];let targetChars=null;
+  if(source==='groups'){
+    const ids=P.groupIds||[];groups=store.groups.filter(group=>ids.includes(group.id));
+    if(!groups.length){if(showAlert)alert('请至少选择一个分组');return null;}
+  }else{
+    groups=store.groups;targetChars=reviewSourceData()[source]||[];
+    if(!targetChars.length){if(showAlert)alert('当前范围暂时没有需要复习的字');return null;}
+  }
+  const built=HanziReview.buildReviewTasks(groups,targetChars);
+  const label=source==='groups'?(groups.length===1?groups[0].name:`${groups.length}个分组`):reviewSourceLabel(source);
+  return{source,groups,targetChars,built,label};
+}
+function openReviewPicker(){
+  clearReviewTimers();
+  showPage('practice');document.querySelectorAll('.prac-step').forEach(step=>step.classList.remove('active'));document.getElementById('prac-step1').classList.add('active');
+  if(!Array.isArray(P.groupIds))P.groupIds=[];
+  P.groupId=P.groupIds[0]||null;P.reviewEntries=null;P.reviewLabel=null;
+  selectReviewSource(P.reviewSource||'groups');
+}
+function openWorksheetReview(){
+  const selection=currentReviewSelection();if(!selection)return;
+  P.reviewEntries=selection.source==='groups'
+    ?selection.groups.flatMap(group=>group.entries||[])
+    :[...new Map(selection.built.tasks.map(task=>[`${task.groupId}:${task.entryIndex}`,task.entry])).values()];
+  P.reviewLabel=selection.label;pracGoStep(2);
 }
 function showReviewStep(){
   document.querySelectorAll('.prac-step').forEach(step=>step.classList.remove('active'));document.getElementById('prac-step3').classList.add('active');
 }
-function resetReviewShell(){
-  const shell=document.getElementById('review-shell');
-  shell.innerHTML='<div class="flow-head"><span class="flow-step">复习</span><div class="flow-dots" id="review-dots"></div></div><div class="pronunciation-row"><div class="review-pinyin" id="review-pinyin"></div><button class="speak-icon-btn" id="review-speak" aria-label="朗读" title="朗读">🔊</button></div><div class="review-word" id="review-word"></div><div class="review-actions" id="review-actions"></div><div class="review-nav" id="review-nav"></div>';
+function resetReviewShell(stage='写字练习'){
+  document.getElementById('review-shell').innerHTML=`<div class="flow-head"><span class="flow-step" id="review-stage">${escapeHtml(stage)}</span><div class="flow-dots" id="review-dots"></div></div><div class="review-mode-board" id="review-mode-board"></div><div class="learn-success-celebration" id="review-success" role="status" aria-live="polite" aria-hidden="true"></div>`;
+}
+function showReviewCelebration(onDone){
+  const celebration=document.getElementById('review-success');if(!celebration){if(onDone)onDone();return;}
+  celebration.innerHTML='<span class="learn-success-check">✓</span><strong>太棒了</strong>';celebration.setAttribute('aria-hidden','false');
+  requestAnimationFrame(()=>celebration.classList.add('show'));reviewLater(()=>{if(onDone)onDone();},1250);
+}
+function renderMethodDots(count,index,done){
+  const dots=document.getElementById('review-dots');if(!dots)return;dots.innerHTML='';
+  for(let i=0;i<count;i+=1){const dot=document.createElement('span');dot.className='flow-dot'+(done&&done(i)?' done':i===index?' active':'');dots.appendChild(dot);}
+}
+function renderReviewEmpty(title,detail,stage='复习'){
+  resetReviewShell(stage);document.getElementById('review-mode-board').innerHTML=`<div class="empty-state"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(detail)}</span><div style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">返回复习</button></div></div>`;
+}
+function setReviewTitle(method,label){
+  document.getElementById('prac-quiz-title').textContent=`${method} · ${label}`;showReviewStep();resetReviewShell(method);
+}
+function wordPinyinRow(entry,currentPosition){
+  const row=document.createElement('div');row.className='pronunciation-row';
+  const py=document.createElement('div');py.className='review-pinyin';
+  const chars=[...entry.hanzi];const tokens=HanziReview.pinyinTokens(entry,autoPinyin);
+  chars.forEach((ch,index)=>{const span=document.createElement('span');span.textContent=tokens[index]||autoPinyin(ch);if(index===currentPosition)span.className='target';py.appendChild(span);});
+  const speak=document.createElement('button');speak.className='speak-icon-btn';speak.textContent='🔊';speak.ariaLabel='朗读';speak.onclick=()=>speakChinese(entry.hanzi);
+  row.append(py,speak);return row;
+}
+function renderPracticeWord(container,item,hiddenPosition){
+  const chars=[...item.entry.hanzi];const word=document.createElement('div');word.className='review-word';configureHanziWordRow(word,chars.length);
+  const token=++ReviewState.renderToken;
+  chars.forEach((ch,index)=>{
+    const grid=createHanziGrid('',index===hiddenPosition);const unit=document.createElement('div');unit.className='word-grid-unit';
+    fillHanziGrid(grid,ch,null,[],index!==hiddenPosition);unit.appendChild(grid);word.appendChild(unit);
+    loadCharData(ch).then(data=>{if(token!==ReviewState.renderToken||!grid.isConnected)return;fillHanziGrid(grid,ch,data,index===hiddenPosition?[]:neutralLayers(data),index!==hiddenPosition);});
+  });
+  container.appendChild(word);
+}
+function practiceComplete(method,detail){
+  resetReviewShell(method);document.getElementById('review-mode-board').innerHTML=`<div class="learn-complete"><div class="learn-complete-title">${escapeHtml(method)}完成</div><div class="learn-complete-meta">${escapeHtml(detail)}<br>本次练习不修改正式复习进度</div><div class="learn-controls" style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">选择其他方式</button><button class="btn btn-primary" onclick="showPage('home')">回到首页</button></div></div>`;
+}
+
+function startRecognitionReview(){
+  const selection=currentReviewSelection();if(!selection)return;
+  const items=HanziReview.expandTargetTasks(selection.built.tasks).map(item=>({...item,question:HanziLearning.buildRecognitionQuestion(item.ch,store.similarGroups||[])})).filter(item=>item.question);
+  ReviewState={mode:'recognition',label:selection.label,items,index:0,renderToken:0,timers:[]};
+  setReviewTitle('形近字挑选',selection.label);
+  if(!items.length){renderReviewEmpty('没有可用的形近字题','请先在形近字库中配置当前重点字的形近字。','形近字挑选');return;}
+  renderRecognitionReview();
+}
+function renderRecognitionReview(){
+  const item=ReviewState.items[ReviewState.index];if(!item){practiceComplete('形近字挑选','全部题目已完成');return;}
+  resetReviewShell('形近字挑选');renderMethodDots(ReviewState.items.length,ReviewState.index);
+  const board=document.getElementById('review-mode-board');const position=item.positions[0]||0;
+  board.appendChild(wordPinyinRow(item.entry,position));renderPracticeWord(board,item,position);
+  const options=document.createElement('div');options.className='recognition-options';
+  item.question.options.forEach(ch=>{const button=document.createElement('button');button.className='recognition-choice';button.textContent=ch;button.onclick=()=>answerRecognitionReview(ch,button);options.appendChild(button);});
+  board.appendChild(options);const feedback=document.createElement('div');feedback.className='learn-feedback';feedback.id='review-feedback';board.appendChild(feedback);
+  scheduleChinese(item.entry.hanzi);
+}
+function answerRecognitionReview(ch,button){
+  const item=ReviewState.items[ReviewState.index];if(!item)return;
+  if(ch!==item.ch){button.classList.add('selected');document.getElementById('review-feedback').textContent='再试一次';reviewLater(()=>{button.classList.remove('selected');const el=document.getElementById('review-feedback');if(el)el.textContent='';},650);return;}
+  document.querySelectorAll('.recognition-choice').forEach(choice=>choice.disabled=true);
+  showReviewCelebration(()=>{ReviewState.index+=1;renderRecognitionReview();});
+}
+
+function startStructureReview(){
+  const selection=currentReviewSelection();if(!selection)return;
+  const items=HanziReview.expandTargetTasks(selection.built.tasks);
+  if(items.length<2){setReviewTitle('结构连连看',selection.label);renderReviewEmpty('重点字数量不足','结构连连看至少需要两个当前范围内的重点字。','结构连连看');return;}
+  const batches=[];for(let i=0;i<items.length;i+=6)batches.push(items.slice(i,i+6));
+  const batchStates=batches.map(batch=>({links:{},locked:new Set(),selected:null,options:shuffleArr(batch.map(item=>item.ch))}));
+  ReviewState={mode:'structure',label:selection.label,batches,batchStates,index:0,renderToken:0,timers:[]};
+  setReviewTitle('结构连连看',selection.label);renderStructureReview();
+}
+function structurePromptText(item){
+  const chars=[...item.entry.hanzi];const positions=new Set(item.positions);return chars.map((ch,index)=>positions.has(index)?'□':ch).join('');
+}
+function renderStructureReview(){
+  const batch=ReviewState.batches[ReviewState.index];const state=ReviewState.batchStates[ReviewState.index];
+  if(!batch){practiceComplete('结构连连看','全部连线已完成');return;}
+  resetReviewShell('结构连连看');renderMethodDots(ReviewState.batches.length,ReviewState.index,index=>ReviewState.batchStates[index].locked.size===ReviewState.batches[index].length);
+  const board=document.getElementById('review-mode-board');const match=document.createElement('div');match.className='match-board';
+  const prompts=document.createElement('div');prompts.className='match-column';const structures=document.createElement('div');structures.className='match-column';
+  batch.forEach(item=>{
+    const linked=state.links[item.ch];const card=document.createElement('button');card.className='match-card'+(state.selected===item.ch?' selected':'')+(state.locked.has(item.ch)?' locked':'');card.onclick=()=>selectStructurePrompt(item.ch);
+    const tokens=HanziReview.pinyinTokens(item.entry,autoPinyin);card.innerHTML=`<div><div class="match-prompt-pinyin">${escapeHtml(tokens.join(' '))}</div><div class="match-prompt-word">${escapeHtml(structurePromptText(item))}</div></div>${linked?`<span class="match-index">${state.options.indexOf(linked)+1}</span>`:''}`;
+    prompts.appendChild(card);
+  });
+  state.options.forEach((ch,index)=>{
+    const owner=Object.keys(state.links).find(key=>state.links[key]===ch);const card=document.createElement('button');card.className='match-card'+(owner&&state.locked.has(owner)?' locked':'');card.onclick=()=>selectStructureCard(ch);
+    card.innerHTML=`<span class="match-index">${index+1}</span><span class="match-structure"></span>`;structures.appendChild(card);renderRedBluePreview(card.querySelector('.match-structure'),ch,76);
+  });
+  match.append(prompts,structures);board.appendChild(match);
+  const feedback=document.createElement('div');feedback.className='learn-feedback';feedback.id='review-feedback';board.appendChild(feedback);
+  const check=document.createElement('button');check.className='btn btn-primary';check.textContent='检查';check.disabled=Object.keys(state.links).length<batch.length;check.onclick=checkStructureReview;board.appendChild(check);
+}
+function selectStructurePrompt(ch){
+  const state=ReviewState.batchStates[ReviewState.index];if(!state||state.locked.has(ch))return;
+  if(state.links[ch])delete state.links[ch];
+  state.selected=state.selected===ch?null:ch;renderStructureReview();
+}
+function selectStructureCard(ch){
+  const state=ReviewState.batchStates[ReviewState.index];if(!state||!state.selected)return;
+  const lockedOwner=Object.keys(state.links).find(key=>state.links[key]===ch&&state.locked.has(key));if(lockedOwner)return;
+  Object.keys(state.links).forEach(key=>{if(state.links[key]===ch&&!state.locked.has(key))delete state.links[key];});
+  state.links[state.selected]=ch;state.selected=null;renderStructureReview();
+}
+function checkStructureReview(){
+  const batch=ReviewState.batches[ReviewState.index];const state=ReviewState.batchStates[ReviewState.index];if(!batch||!state)return;
+  const wrong=batch.filter(item=>state.links[item.ch]!==item.ch);batch.forEach(item=>{if(state.links[item.ch]===item.ch)state.locked.add(item.ch);});
+  if(!wrong.length){showReviewCelebration(()=>{ReviewState.index+=1;renderStructureReview();});return;}
+  const feedback=document.getElementById('review-feedback');if(feedback)feedback.textContent='再试一次';
+  reviewLater(()=>{wrong.forEach(item=>delete state.links[item.ch]);renderStructureReview();},850);
 }
 function startReview(){
-  const group=store.groups.find(item=>item.id===P.groupId);if(!group){alert('请先选择一个分组');return;}
-  const built=HanziReview.buildReviewTasks(group);
-  ReviewState={groupId:group.id,tasks:built.tasks,taskStates:built.tasks.map(createReviewTaskState),index:0,status:built.status,renderToken:0};
-  document.getElementById('prac-quiz-title').textContent=`复习 · ${group.name}`;showReviewStep();resetReviewShell();
-  if(built.status==='no-focus-words'){renderReviewEmpty('本组暂时没有重点字词语','请先在字词管理中为词语勾选重点字。');return;}
+  const selection=currentReviewSelection();if(!selection)return;const built=selection.built;
+  ReviewState={mode:'writing',label:selection.label,tasks:built.tasks,taskStates:built.tasks.map(createReviewTaskState),index:0,status:built.status,renderToken:0,timers:[]};
+  setReviewTitle('写字练习',selection.label);
+  if(built.status==='no-focus-words'){renderReviewEmpty('本组暂时没有重点字词语','请先在字词管理中为词语勾选重点字。','写字练习');return;}
   renderReviewTask();
-}
-function renderReviewEmpty(title,detail){
-  document.getElementById('review-shell').innerHTML=`<div class="empty-state"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(detail)}</span><div style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">返回分组</button></div></div>`;
 }
 function currentReviewTask(){return ReviewState.tasks[ReviewState.index]||null;}
 function currentReviewTaskState(){return ReviewState.taskStates[ReviewState.index]||null;}
 function renderReviewProgress(){
-  const dots=document.getElementById('review-dots');dots.innerHTML='';
-  ReviewState.tasks.forEach((_,index)=>{const dot=document.createElement('span');dot.className='flow-dot'+(ReviewState.taskStates[index].assessed?' done':index===ReviewState.index?' active':'');dots.appendChild(dot);});
+  renderMethodDots(ReviewState.tasks.length,ReviewState.index,index=>ReviewState.taskStates[index].assessed);
 }
 function renderReviewPinyin(task){
   const chars=[...task.entry.hanzi];const tokens=HanziReview.pinyinTokens(task.entry,autoPinyin);
@@ -2490,7 +2758,8 @@ function renderReviewWord(task,state){
     const target=reviewTargetAtPosition(task,index);const hidden=Boolean(target)&&!state.revealed;
     const unit=document.createElement('div');unit.className='word-grid-unit';
     const grid=createHanziGrid(`review-grid-${ReviewState.index}-${index}`,Boolean(target));fillHanziGrid(grid,ch,null,[],!hidden);unit.appendChild(grid);
-    if(target&&state.revealed)unit.appendChild(createInlineRating(target.ch,state.ratings[target.ch]));
+    if(target&&target.positions[0]===index)unit.appendChild(createInlineRating(target.ch,state.ratings[target.ch]));
+    else{const space=document.createElement('div');space.className='review-rating-space';unit.appendChild(space);}
     word.appendChild(unit);
     loadCharData(ch).then(data=>{
       if(token!==ReviewState.renderToken||!grid.isConnected)return;
@@ -2500,29 +2769,27 @@ function renderReviewWord(task,state){
 }
 function renderReviewTask(shouldSpeak=true){
   const task=currentReviewTask();const state=currentReviewTaskState();if(!task||!state)return;
-  resetReviewShell();renderReviewProgress();renderReviewPinyin(task);renderReviewWord(task,state);
-  const speak=document.getElementById('review-speak');speak.onclick=()=>speakChinese(task.entry.hanzi);
-  const actions=document.getElementById('review-actions');const reveal=document.createElement('button');reveal.className=`btn ${state.revealed?'btn-ghost':'btn-primary'}`;reveal.textContent=state.revealed?'隐藏':'展示';reveal.onclick=toggleReviewAnswer;actions.appendChild(reveal);
-  renderReviewNavigation();if(shouldSpeak)speakChinese(task.entry.hanzi);
+  resetReviewShell('写字练习');renderReviewProgress();const board=document.getElementById('review-mode-board');
+  const pronunciation=document.createElement('div');pronunciation.className='pronunciation-row';pronunciation.innerHTML='<div class="review-pinyin" id="review-pinyin"></div><button class="speak-icon-btn" id="review-speak" aria-label="朗读" title="朗读">🔊</button>';board.appendChild(pronunciation);renderReviewPinyin(task);
+  const nav=document.createElement('div');nav.className='review-word-nav';
+  const previous=document.createElement('button');previous.className='btn btn-ghost';previous.textContent='上一个';previous.disabled=ReviewState.index<=0;previous.onclick=()=>moveReviewTask(-1);
+  const word=document.createElement('div');word.className='review-word';word.id='review-word';
+  const next=document.createElement('button');next.className='btn btn-primary';next.textContent=ReviewState.index>=ReviewState.tasks.length-1?'完成':'下一个';next.onclick=()=>moveReviewTask(1);
+  nav.append(previous,word,next);board.appendChild(nav);renderReviewWord(task,state);
+  const actions=document.createElement('div');actions.className='review-actions';actions.id='review-actions';const reveal=document.createElement('button');reveal.className=`btn ${state.revealed?'btn-ghost':'btn-primary'}`;reveal.textContent=state.revealed?'隐藏':'展示';reveal.onclick=toggleReviewAnswer;actions.appendChild(reveal);board.appendChild(actions);
+  document.getElementById('review-speak').onclick=()=>speakChinese(task.entry.hanzi);
+  if(shouldSpeak)scheduleChinese(task.entry.hanzi);
 }
 function toggleReviewAnswer(){
   const task=currentReviewTask();const state=currentReviewTaskState();if(!task||!state)return;
   state.revealed=!state.revealed;
-  if(state.revealed){state.assessed=true;task.targets.forEach(target=>{if(!state.ratings[target.ch])state.ratings[target.ch]='correct';});}
   renderReviewTask(false);
 }
 function setReviewRating(ch,result){
-  const state=currentReviewTaskState();if(!state)return;state.ratings[ch]=result;
-  document.querySelectorAll('.rating-toggle').forEach(toggle=>{
-    if(toggle.dataset.char!==ch)return;
-    toggle.querySelectorAll('button').forEach(button=>{const active=button.dataset.result===result;button.classList.toggle('active',active);button.classList.toggle('correct',active&&result==='correct');button.classList.toggle('almost',active&&result==='almost');});
-  });
-}
-function renderReviewNavigation(){
-  const nav=document.getElementById('review-nav');
-  const previous=document.createElement('button');previous.className='btn btn-ghost';previous.textContent='上一个';previous.disabled=ReviewState.index<=0;previous.onclick=()=>moveReviewTask(-1);nav.appendChild(previous);
-  const spacer=document.createElement('span');spacer.className='flow-nav-spacer';spacer.setAttribute('aria-hidden','true');nav.appendChild(spacer);
-  const next=document.createElement('button');next.className='btn btn-primary';next.textContent=ReviewState.index>=ReviewState.tasks.length-1?'完成复习':'下一个';next.onclick=()=>moveReviewTask(1);nav.appendChild(next);
+  const state=currentReviewTaskState();const task=currentReviewTask();if(!state||!task)return;
+  if(state.ratings[ch]===result)delete state.ratings[ch];else state.ratings[ch]=result;
+  state.assessed=task.targets.every(target=>['correct','almost'].includes(state.ratings[target.ch]));
+  renderReviewTask(false);
 }
 function moveReviewTask(direction){
   if(direction<0&&ReviewState.index<=0)return;
@@ -2537,18 +2804,18 @@ function finishReviewSession(){
 }
 function renderReviewComplete(recordedTasks,recordedChars){
   const summary=HanziProgress.summarize(charProgress);
-  document.getElementById('review-shell').innerHTML=`<div class="learn-complete"><div class="learn-complete-title">本组复习完成</div><div class="learn-complete-meta">本次记录 ${recordedTasks||0} 个词语、${recordedChars||0} 个重点字<br>当前已掌握 ${summary.mastered} 个重点字</div><div class="learn-controls" style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">选择其他分组</button><button class="btn btn-primary" onclick="showPage('home')">回到首页</button></div></div>`;
+  resetReviewShell('写字练习');document.getElementById('review-mode-board').innerHTML=`<div class="learn-complete"><div class="learn-complete-title">写字练习完成</div><div class="learn-complete-meta">本次记录 ${recordedTasks||0} 个词语、${recordedChars||0} 个重点字<br>当前已掌握 ${summary.mastered} 个重点字</div><div class="learn-controls" style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">选择其他方式</button><button class="btn btn-primary" onclick="showPage('home')">回到首页</button></div></div>`;
 }
 
 /* ━━━━━ WORKSHEET ━━━━━ */
 const WS={W:1240,H:1754,MX:64,MY:64,TITLE_H:82,FOOTER_H:56,MAX_CELL:102,MIN_CELL:48};
 const WS_STATE={variant:'practice',entryItems:null,grpName:'练习',token:0};
 function getSelectedPracticeEntries(){
+  if(Array.isArray(P.reviewEntries))return P.reviewEntries;
   const ids=(P.groupIds&&P.groupIds.length)?P.groupIds:[P.groupId].filter(Boolean);
   let entries=[];
-  ids.forEach(id=>{
-    const g=store.groups.find(x=>x.id===id);
-    if(g&&g.entries&&g.entries.length)entries=entries.concat(g.entries);
+  store.groups.filter(group=>ids.includes(group.id)).forEach(g=>{
+    if(g.entries&&g.entries.length)entries=entries.concat(g.entries);
   });
   return entries;
 }
@@ -2566,9 +2833,9 @@ function setWorksheetVariant(variant){
 async function generateWorksheet(){
   const entries=getSelectedPracticeEntries();
   if(!entries.length){alert('所选分组暂无内容');return;}
-  const grpName=entries.length===store.groups.reduce((s,g)=>s+(g.entries?g.entries.length:0),0)
+  const grpName=P.reviewLabel||(entries.length===store.groups.reduce((s,g)=>s+(g.entries?g.entries.length:0),0)
     ?'全部'
-    :((P.groupIds&&P.groupIds.length>1)?'多分组':(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name);
+    :((P.groupIds&&P.groupIds.length>1)?'多分组':(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name));
   openModal('modal-worksheet');const stEl=document.getElementById('ws-status');const canvas=document.getElementById('ws-canvas');const saveBtn=document.getElementById('ws-save-btn');
   WS_STATE.entryItems=null;WS_STATE.grpName=grpName;setWorksheetVariant(WS_STATE.variant);
   stEl.textContent='正在加载字形数据，请稍候…';stEl.style.display='block';canvas.style.display='none';saveBtn.style.display='none';

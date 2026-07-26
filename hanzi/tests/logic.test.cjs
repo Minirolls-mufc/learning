@@ -163,6 +163,7 @@ test('almost keeps an active stage and rolls mastered back to 2/3', () => {
   active = Progress.applyReviewResult(active, 'almost', { today: '2026-07-08', now: 'a' });
   assert.equal(active.masteryStep, 1);
   assert.equal(active.nextReviewDate, '2026-07-09');
+  assert.equal(active.lastAlmostDate, '2026-07-08');
   let mastered = Progress.normalizeRecord({ learningCompleted: true, masteryStep: 3, masteredAt: 'old' });
   mastered = Progress.applyReviewResult(mastered, 'almost', { today: '2026-07-08', now: 'b' });
   assert.equal(mastered.masteryStep, 2);
@@ -222,4 +223,33 @@ test('review session records assessed tasks only and keeps ratings after hiding'
     { ch: '叶', result: 'almost' },
     { ch: '花', result: 'correct' }
   ]);
+});
+
+test('review sources combine groups and select today, due and high-frequency characters', () => {
+  const groups = Content.normalizeContent({ groups: [
+    { id: 'a', name: 'A', entries: [{ type: 'word', hanzi: '荷叶', focusIndices: [0, 1] }] },
+    { id: 'b', name: 'B', entries: [{ type: 'word', hanzi: '荷花', focusIndices: [0, 1] }] }
+  ] }).groups;
+  const progress = {
+    荷: Progress.normalizeRecord({ almostCount: 2, lastAlmostDate: '2026-07-10', masteryStep: 1, nextReviewDate: '2026-07-10' }),
+    叶: Progress.normalizeRecord({ almostCount: 4, lastAlmostDate: '2026-07-09', masteryStep: 2, nextReviewDate: '2026-07-12' }),
+    花: Progress.normalizeRecord({ almostCount: 1, lastAlmostDate: '2026-07-10', masteryStep: 0, nextReviewDate: '2026-07-10' }),
+    山: Progress.normalizeRecord({ almostCount: 9, lastAlmostDate: '2026-07-10' })
+  };
+  const sources = Review.buildSmartSources(groups, progress, '2026-07-10');
+  assert.deepEqual(sources.todayAlmost, ['荷', '花']);
+  assert.deepEqual(sources.due, ['荷', '花']);
+  assert.deepEqual(sources.historical, ['叶', '荷', '花']);
+  const review = Review.buildReviewTasks(groups, ['花', '荷']);
+  assert.deepEqual(review.tasks.map(task => task.targets.map(target => target.ch)), [['荷'], ['花']]);
+});
+
+test('partially rated review tasks still record selected characters only', () => {
+  const session = Review.collectSessionResults([
+    { targets: [{ ch: '荷' }, { ch: '叶' }] }
+  ], [
+    { assessed: false, ratings: { 荷: 'correct' } }
+  ]);
+  assert.equal(session.taskCount, 1);
+  assert.deepEqual(session.results, [{ ch: '荷', result: 'correct' }]);
 });
