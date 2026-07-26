@@ -1,0 +1,20 @@
+{
+  "name": "Romeo 汉字课堂",
+  "short_name": "汉字课堂",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fdf6ee",
+  "theme_color": "#ff7b23",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
