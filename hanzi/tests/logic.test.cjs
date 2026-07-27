@@ -122,6 +122,27 @@ test('component question keeps red and blue as separate positioned instances', (
   assert.equal(Learning.buildComponentQuestion('好', { 好: data(6), 林: data(8) }, ['好', '林'], { 好: '', 林: '1-4' }), null);
 });
 
+test('component matching creates two unique positioned parts for each splittable focus character', () => {
+  const data = strokes => ({ strokes: Array.from({ length: strokes }, (_, index) => `M${index} 0`) });
+  const items = Learning.buildComponentMatchItems([
+    { ch: '诗', entry: { hanzi: '古诗' }, positions: [1] },
+    { ch: '童', entry: { hanzi: '儿童' }, positions: [1] },
+    { ch: '必', entry: { hanzi: '必须' }, positions: [0] }
+  ], {
+    诗: data(8),
+    童: data(12),
+    必: data(5)
+  }, {
+    诗: '1-2',
+    童: '1-6',
+    必: ''
+  });
+  assert.deepEqual(items.map(item => item.ch), ['诗', '童']);
+  assert.ok(items.every(item => item.components.length === 2));
+  assert.equal(new Set(items.flatMap(item => item.components.map(part => part.id))).size, 4);
+  assert.deepEqual(items[0].components.map(part => part.role), ['red', 'blue']);
+});
+
 test('stroke questions show every target stroke while keeping the current answer', () => {
   const step = Learning.buildStrokeStep(5, 2, () => 0);
   assert.equal(step.correctIndex, 2);

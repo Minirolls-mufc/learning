@@ -432,7 +432,7 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .flow-dot.active{background:var(--o1);border-color:var(--o1);transform:scale(1.2)}
 .flow-dot.done{background:var(--green);border-color:var(--green)}
 .pronunciation-row{display:flex;align-items:center;justify-content:center;gap:14px;min-height:74px}
-.learn-pinyin,.review-pinyin{display:flex;justify-content:center;align-items:center;gap:16px;min-height:64px;flex-wrap:wrap;font-size:3.1rem;font-weight:800;color:#777b84;line-height:1.15}
+.learn-pinyin,.review-pinyin{display:flex;justify-content:center;align-items:center;gap:16px;min-height:64px;flex-wrap:wrap;font-size:3.1rem;font-weight:800;color:var(--o1);line-height:1.15}
 .learn-pinyin span.current,.review-pinyin span.target{color:var(--o1);background:#fff1e6;border-radius:7px;padding:1px 5px}
 .speak-icon-btn{width:52px;height:52px;display:inline-flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:8px;background:#fff;color:var(--o1);font-size:1.25rem;cursor:pointer;flex:0 0 auto}
 .speak-icon-btn:hover{border-color:var(--o2);background:#fff5ec}
@@ -467,16 +467,16 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .learn-target-controls .btn:first-child,.review-nav .btn:first-child{justify-self:start}
 .learn-target-controls .btn:last-child,.review-nav .btn:last-child{justify-self:end}
 .flow-nav-spacer{display:block;min-height:44px}
-.learn-success-celebration{position:fixed;z-index:80;left:50%;top:18%;display:flex;align-items:center;gap:12px;padding:13px 22px;border:2px solid #86efac;border-radius:16px;background:rgba(240,253,244,.97);color:#15803d;box-shadow:0 14px 34px rgba(21,128,61,.2);font-size:2rem;font-weight:900;line-height:1;pointer-events:none;opacity:0;transform:translate(-50%,-12px) scale(.72)}
+.learn-success-celebration{position:fixed;z-index:80;left:50%;top:50%;display:flex;align-items:center;gap:12px;padding:13px 22px;border:2px solid #86efac;border-radius:16px;background:rgba(240,253,244,.97);color:#15803d;box-shadow:0 14px 34px rgba(21,128,61,.2);font-size:2rem;font-weight:900;line-height:1;pointer-events:none;opacity:0;transform:translate(-50%,-50%) scale(.72)}
 .learn-success-celebration.show{animation:learnSuccessPop 1.45s cubic-bezier(.2,.8,.2,1) forwards}
 .learn-success-check{width:42px;height:42px;border-radius:13px;background:#22c55e;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:1.55rem;box-shadow:0 5px 12px rgba(34,197,94,.25)}
 .hanzi-grid.current.success{animation:learnGridSuccess .8s ease-out}
 @keyframes learnSuccessPop{
-  0%{opacity:0;transform:translate(-50%,-12px) scale(.72)}
-  20%{opacity:1;transform:translate(-50%,0) scale(1.1)}
-  38%{transform:translate(-50%,0) scale(1)}
-  78%{opacity:1;transform:translate(-50%,0) scale(1)}
-  100%{opacity:0;transform:translate(-50%,-8px) scale(.96)}
+  0%{opacity:0;transform:translate(-50%,-58%) scale(.72)}
+  20%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+  38%{transform:translate(-50%,-50%) scale(1)}
+  78%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-54%) scale(.96)}
 }
 @keyframes learnGridSuccess{
   0%{box-shadow:0 0 0 0 rgba(34,197,94,.3)}
@@ -506,8 +506,10 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .review-rating-space{min-height:42px}
 .review-mode-board{width:100%;display:flex;flex-direction:column;align-items:center;gap:16px}
 .recognition-options{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
-.recognition-choice{width:116px;height:116px;border:2px solid #ded7cf;border-radius:8px;background:#fff;font:800 3.5rem 'Noto Sans SC',sans-serif;cursor:pointer}
+.recognition-choice{width:116px;height:116px;border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:0;cursor:pointer;overflow:hidden}
 .recognition-choice:active{transform:scale(.97)}
+.recognition-choice .hanzi-grid,.glyph-grid-option .hanzi-grid{width:100%;height:100%;border:0;border-radius:0}
+.glyph-grid-option{width:108px;height:108px;min-height:108px;padding:0;overflow:hidden}
 .match-board{width:min(820px,100%);display:grid;grid-template-columns:1fr 1fr;gap:18px 38px;align-items:stretch;position:relative}
 .match-column{display:flex;flex-direction:column;gap:10px}
 .match-card{min-height:92px;border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:10px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;position:relative}
@@ -519,6 +521,22 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .match-index{position:absolute;top:5px;right:7px;width:24px;height:24px;border-radius:50%;background:var(--o1);color:#fff;font-size:.68rem;font-weight:900;display:flex;align-items:center;justify-content:center}
 .match-structure{width:76px;height:76px}
 .match-structure svg{width:100%;height:100%}
+.component-match-board{width:min(900px,100%);display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:34px;position:relative;align-items:start}
+.component-match-prompts{display:flex;flex-direction:column;gap:14px;position:relative;z-index:2}
+.component-match-pool{display:grid;grid-template-columns:repeat(2,minmax(96px,1fr));gap:12px;position:relative;z-index:2}
+.component-prompt{border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px}
+.component-prompt.selected{border-color:var(--o1);box-shadow:0 0 0 3px rgba(255,107,0,.12)}
+.component-prompt.locked{border-color:var(--green);background:#f0fdf4}
+.component-prompt-pinyin{font-size:1.12rem;font-weight:900;color:var(--o1)}
+.component-prompt-word{display:grid;gap:7px;justify-content:center;width:100%}
+.component-prompt-word .hanzi-grid{max-width:94px}
+.component-part{min-height:112px;border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.component-part.used{border-color:var(--o1);background:#fff8f1}
+.component-part.locked{border-color:var(--green);background:#f0fdf4}
+.component-part svg{width:94px;height:94px}
+.component-match-lines{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
+.component-match-lines line{stroke:var(--o1);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 1px 1px rgba(255,107,0,.18))}
+.component-match-lines line.locked{stroke:var(--green)}
 .char-manager-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
 .char-manager-search,.char-manager-filter{border:1.5px solid var(--border);border-radius:8px;background:#fff;padding:9px 11px;font:700 .76rem inherit;color:var(--ink);min-height:40px}
 .char-manager-search{flex:1;min-width:180px}
@@ -585,6 +603,12 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   .match-board{gap:10px}
   .match-card{min-height:78px;padding:7px}
   .match-structure{width:62px;height:62px}
+  .component-match-board{grid-template-columns:minmax(0,1.35fr) minmax(168px,.8fr);gap:16px}
+  .component-match-pool{grid-template-columns:repeat(2,minmax(74px,1fr));gap:7px}
+  .component-prompt{padding:8px}
+  .component-prompt-word .hanzi-grid{max-width:72px}
+  .component-part{min-height:84px;padding:4px}
+  .component-part svg{width:70px;height:70px}
   .match-prompt-word{font-size:1.2rem}
   .char-manager-grid{grid-template-columns:1fr}
   .learn-target-controls .btn,.review-nav .btn{min-width:0}
@@ -2367,7 +2391,7 @@ function renderLearningWord(){
     const grid=createHanziGrid(`learn-grid-${Learn.index}-${index}`,current);const data=Learn.dataMap[ch]||(current?state.targetData:null);
     if(current&&state.completed)grid.classList.add('success');
     if(!current){
-      fillHanziGrid(grid,ch,data,neutralLayers(data),true);
+      fillHanziGrid(grid,ch,data,data?redBlueLayers(ch,data):[],true);
     }else if(state.stage==='structure'&&!state.stageDone){
       fillComponentGrid(grid,state);
     }else if(state.stage==='recognition'&&!state.stageDone){
@@ -2469,7 +2493,9 @@ function renderLearningUnavailable(){
 function retryLearnTarget(){const state=currentLearnState();if(!state)return;state.initialized=false;state.ready=false;prepareLearnTarget();}
 function renderRecognitionStage(){
   const state=currentLearnState();state.recognition.options.forEach(ch=>{
-    const button=document.createElement('button');button.className='learn-option glyph'+(state.stageDone&&ch===state.recognition.target?' correct':'');button.textContent=ch;button.disabled=state.stageDone;button.onclick=()=>answerRecognition(ch,button);document.getElementById('learn-options').appendChild(button);
+    const button=document.createElement('button');button.className='learn-option glyph-grid-option'+(state.stageDone&&ch===state.recognition.target?' correct':'');button.disabled=state.stageDone;button.onclick=()=>answerRecognition(ch,button);
+    const grid=createHanziGrid('',false);button.appendChild(grid);document.getElementById('learn-options').appendChild(button);
+    fillHanziGrid(grid,ch,null,[],true);loadCharData(ch).then(data=>{if(!grid.isConnected)return;fillHanziGrid(grid,ch,data,data?redBlueLayers(ch,data):[],true);});
   });
 }
 function answerRecognition(ch,button){
@@ -2642,7 +2668,7 @@ function renderPracticeWord(container,item,hiddenPosition){
   chars.forEach((ch,index)=>{
     const grid=createHanziGrid('',index===hiddenPosition);const unit=document.createElement('div');unit.className='word-grid-unit';
     fillHanziGrid(grid,ch,null,[],index!==hiddenPosition);unit.appendChild(grid);word.appendChild(unit);
-    loadCharData(ch).then(data=>{if(token!==ReviewState.renderToken||!grid.isConnected)return;fillHanziGrid(grid,ch,data,index===hiddenPosition?[]:neutralLayers(data),index!==hiddenPosition);});
+    loadCharData(ch).then(data=>{if(token!==ReviewState.renderToken||!grid.isConnected)return;fillHanziGrid(grid,ch,data,index===hiddenPosition?[]:redBlueLayers(ch,data),index!==hiddenPosition);});
   });
   container.appendChild(word);
 }
@@ -2664,7 +2690,11 @@ function renderRecognitionReview(){
   const board=document.getElementById('review-mode-board');const position=item.positions[0]||0;
   board.appendChild(wordPinyinRow(item.entry,position));renderPracticeWord(board,item,position);
   const options=document.createElement('div');options.className='recognition-options';
-  item.question.options.forEach(ch=>{const button=document.createElement('button');button.className='recognition-choice';button.textContent=ch;button.onclick=()=>answerRecognitionReview(ch,button);options.appendChild(button);});
+  item.question.options.forEach(ch=>{
+    const button=document.createElement('button');button.className='recognition-choice';button.onclick=()=>answerRecognitionReview(ch,button);
+    const grid=createHanziGrid('',false);button.appendChild(grid);options.appendChild(button);fillHanziGrid(grid,ch,null,[],true);
+    loadCharData(ch).then(data=>{if(!grid.isConnected)return;fillHanziGrid(grid,ch,data,data?redBlueLayers(ch,data):[],true);});
+  });
   board.appendChild(options);const feedback=document.createElement('div');feedback.className='learn-feedback';feedback.id='review-feedback';board.appendChild(feedback);
   scheduleChinese(item.entry.hanzi);
 }
@@ -2675,54 +2705,94 @@ function answerRecognitionReview(ch,button){
   showReviewCelebration(()=>{ReviewState.index+=1;renderRecognitionReview();});
 }
 
-function startStructureReview(){
+async function startStructureReview(){
   const selection=currentReviewSelection();if(!selection)return;
-  const items=HanziReview.expandTargetTasks(selection.built.tasks);
-  if(items.length<2){setReviewTitle('结构连连看',selection.label);renderReviewEmpty('重点字数量不足','结构连连看至少需要两个当前范围内的重点字。','结构连连看');return;}
+  const sourceItems=HanziReview.expandTargetTasks(selection.built.tasks);const token=Date.now();
+  ReviewState={mode:'structure-loading',label:selection.label,token,renderToken:0,timers:[]};setReviewTitle('结构连连看',selection.label);
+  document.getElementById('review-mode-board').innerHTML='<div class="empty-state"><strong>正在准备部件…</strong></div>';
+  const loaded=await Promise.all([...new Set(sourceItems.map(item=>item.ch))].map(async ch=>[ch,await loadCharData(ch)]));
+  if(ReviewState.token!==token)return;
+  const dataMap={};loaded.forEach(([ch,data])=>{if(data)dataMap[ch]=data;});
+  const items=HanziLearning.buildComponentMatchItems(sourceItems,dataMap,store.charDefs||{});
+  if(items.length<2){renderReviewEmpty('可拆分重点字不足','结构连连看需要至少两个已设置红蓝部件的重点字。','结构连连看');return;}
   const batches=[];for(let i=0;i<items.length;i+=6)batches.push(items.slice(i,i+6));
-  const batchStates=batches.map(batch=>({links:{},locked:new Set(),selected:null,options:shuffleArr(batch.map(item=>item.ch))}));
-  ReviewState={mode:'structure',label:selection.label,batches,batchStates,index:0,renderToken:0,timers:[]};
+  const batchStates=batches.map(batch=>({assignments:{},locked:new Set(),selected:null,options:shuffleArr(batch.flatMap(item=>item.components))}));
+  ReviewState={mode:'structure',label:selection.label,batches,batchStates,index:0,dataMap,renderToken:0,timers:[]};
   setReviewTitle('结构连连看',selection.label);renderStructureReview();
 }
-function structurePromptText(item){
-  const chars=[...item.entry.hanzi];const positions=new Set(item.positions);return chars.map((ch,index)=>positions.has(index)?'□':ch).join('');
+function assignedStructureParts(state,key){
+  const ids=state.assignments[key]||[];return state.options.filter(option=>ids.includes(option.id));
 }
+function fillStructureAssembly(grid,item,state){
+  grid.innerHTML='';const svg=createStrokeSvg(null,[],true);grid.appendChild(svg);
+  const locked=state.locked.has(item.matchKey);
+  assignedStructureParts(state,item.matchKey).forEach(part=>{
+    const data=ReviewState.dataMap[part.sourceChar];if(!data)return;
+    const color=locked?(part.role==='red'?'#dc2626':'#2563eb'):'#3f3f46';
+    part.indices.forEach(index=>{if(data.strokes[index])svg.appendChild(svgElement('path',{d:data.strokes[index],fill:color,transform:HW_TF}));});
+  });
+}
+function renderStructurePrompt(item,state){
+  const card=document.createElement('button');card.className='component-prompt'+(state.selected===item.matchKey?' selected':'')+(state.locked.has(item.matchKey)?' locked':'');
+  card.onclick=()=>selectStructurePrompt(item.matchKey);
+  const tokens=HanziReview.pinyinTokens(item.entry,autoPinyin);const pinyin=document.createElement('div');pinyin.className='component-prompt-pinyin';pinyin.textContent=tokens.join(' ');
+  const chars=[...item.entry.hanzi];const positions=new Set(item.positions);const word=document.createElement('div');word.className='component-prompt-word';configureHanziWordRow(word,chars.length);
+  chars.forEach((ch,index)=>{
+    const target=positions.has(index);const grid=createHanziGrid('',target);grid.dataset.matchTarget=target?item.matchKey:'';
+    if(target)fillStructureAssembly(grid,item,state);
+    else{const data=ReviewState.dataMap[ch];fillHanziGrid(grid,ch,data,data?redBlueLayers(ch,data):[],true);if(!data)loadCharData(ch).then(loaded=>{if(grid.isConnected)fillHanziGrid(grid,ch,loaded,loaded?redBlueLayers(ch,loaded):[],true);});}
+    word.appendChild(grid);
+  });
+  card.append(pinyin,word);return card;
+}
+function drawStructureMatchLines(){
+  const board=document.querySelector('.component-match-board');const svg=document.querySelector('.component-match-lines');if(!board||!svg)return;
+  const bounds=board.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${bounds.width} ${bounds.height}`);svg.innerHTML='';
+  const state=ReviewState.batchStates[ReviewState.index];if(!state)return;
+  Object.entries(state.assignments).forEach(([key,ids])=>{
+    const target=board.querySelector(`[data-match-target="${CSS.escape(key)}"]`);if(!target)return;const tr=target.getBoundingClientRect();
+    ids.forEach(id=>{const source=board.querySelector(`[data-part-id="${CSS.escape(id)}"]`);if(!source)return;const sr=source.getBoundingClientRect();
+      const line=svgElement('line',{x1:sr.left-bounds.left,y1:sr.top+sr.height/2-bounds.top,x2:tr.right-bounds.left,y2:tr.top+tr.height/2-bounds.top,class:state.locked.has(key)?'locked':''});svg.appendChild(line);
+    });
+  });
+}
+window.addEventListener('resize',()=>{if(ReviewState.mode==='structure')requestAnimationFrame(drawStructureMatchLines);});
 function renderStructureReview(){
   const batch=ReviewState.batches[ReviewState.index];const state=ReviewState.batchStates[ReviewState.index];
   if(!batch){practiceComplete('结构连连看','全部连线已完成');return;}
   resetReviewShell('结构连连看');renderMethodDots(ReviewState.batches.length,ReviewState.index,index=>ReviewState.batchStates[index].locked.size===ReviewState.batches[index].length);
-  const board=document.getElementById('review-mode-board');const match=document.createElement('div');match.className='match-board';
-  const prompts=document.createElement('div');prompts.className='match-column';const structures=document.createElement('div');structures.className='match-column';
-  batch.forEach(item=>{
-    const linked=state.links[item.ch];const card=document.createElement('button');card.className='match-card'+(state.selected===item.ch?' selected':'')+(state.locked.has(item.ch)?' locked':'');card.onclick=()=>selectStructurePrompt(item.ch);
-    const tokens=HanziReview.pinyinTokens(item.entry,autoPinyin);card.innerHTML=`<div><div class="match-prompt-pinyin">${escapeHtml(tokens.join(' '))}</div><div class="match-prompt-word">${escapeHtml(structurePromptText(item))}</div></div>${linked?`<span class="match-index">${state.options.indexOf(linked)+1}</span>`:''}`;
-    prompts.appendChild(card);
+  const board=document.getElementById('review-mode-board');const match=document.createElement('div');match.className='component-match-board';
+  const prompts=document.createElement('div');prompts.className='component-match-prompts';const pool=document.createElement('div');pool.className='component-match-pool';
+  batch.forEach(item=>prompts.appendChild(renderStructurePrompt(item,state)));
+  state.options.forEach(part=>{
+    const owner=Object.keys(state.assignments).find(key=>(state.assignments[key]||[]).includes(part.id));const card=document.createElement('button');
+    card.className='component-part'+(owner?' used':'')+(owner&&state.locked.has(owner)?' locked':'');card.dataset.partId=part.id;card.onclick=()=>selectStructurePart(part.id);
+    const data=ReviewState.dataMap[part.sourceChar];card.appendChild(createStrokeSvg(data,[{indices:part.indices,color:'#3f3f46'}],false));pool.appendChild(card);
   });
-  state.options.forEach((ch,index)=>{
-    const owner=Object.keys(state.links).find(key=>state.links[key]===ch);const card=document.createElement('button');card.className='match-card'+(owner&&state.locked.has(owner)?' locked':'');card.onclick=()=>selectStructureCard(ch);
-    card.innerHTML=`<span class="match-index">${index+1}</span><span class="match-structure"></span>`;structures.appendChild(card);renderRedBluePreview(card.querySelector('.match-structure'),ch,76);
-  });
-  match.append(prompts,structures);board.appendChild(match);
+  const lines=svgElement('svg',{class:'component-match-lines','aria-hidden':'true'});match.append(prompts,pool,lines);board.appendChild(match);
   const feedback=document.createElement('div');feedback.className='learn-feedback';feedback.id='review-feedback';board.appendChild(feedback);
-  const check=document.createElement('button');check.className='btn btn-primary';check.textContent='检查';check.disabled=Object.keys(state.links).length<batch.length;check.onclick=checkStructureReview;board.appendChild(check);
+  const check=document.createElement('button');check.className='btn btn-primary';check.textContent='检查';check.disabled=!batch.every(item=>(state.assignments[item.matchKey]||[]).length===2);check.onclick=checkStructureReview;board.appendChild(check);
+  requestAnimationFrame(drawStructureMatchLines);
 }
-function selectStructurePrompt(ch){
-  const state=ReviewState.batchStates[ReviewState.index];if(!state||state.locked.has(ch))return;
-  if(state.links[ch])delete state.links[ch];
-  state.selected=state.selected===ch?null:ch;renderStructureReview();
+function selectStructurePrompt(key){
+  const state=ReviewState.batchStates[ReviewState.index];if(!state||state.locked.has(key))return;
+  state.selected=state.selected===key?null:key;renderStructureReview();
 }
-function selectStructureCard(ch){
-  const state=ReviewState.batchStates[ReviewState.index];if(!state||!state.selected)return;
-  const lockedOwner=Object.keys(state.links).find(key=>state.links[key]===ch&&state.locked.has(key));if(lockedOwner)return;
-  Object.keys(state.links).forEach(key=>{if(state.links[key]===ch&&!state.locked.has(key))delete state.links[key];});
-  state.links[state.selected]=ch;state.selected=null;renderStructureReview();
+function selectStructurePart(partId){
+  const state=ReviewState.batchStates[ReviewState.index];if(!state)return;
+  const owner=Object.keys(state.assignments).find(key=>(state.assignments[key]||[]).includes(partId));
+  if(owner){if(state.locked.has(owner))return;state.assignments[owner]=state.assignments[owner].filter(id=>id!==partId);state.selected=owner;renderStructureReview();return;}
+  if(!state.selected||state.locked.has(state.selected))return;
+  const assigned=state.assignments[state.selected]||[];if(assigned.length>=2)return;
+  state.assignments[state.selected]=[...assigned,partId];renderStructureReview();
 }
 function checkStructureReview(){
   const batch=ReviewState.batches[ReviewState.index];const state=ReviewState.batchStates[ReviewState.index];if(!batch||!state)return;
-  const wrong=batch.filter(item=>state.links[item.ch]!==item.ch);batch.forEach(item=>{if(state.links[item.ch]===item.ch)state.locked.add(item.ch);});
+  const correct=item=>[...(state.assignments[item.matchKey]||[])].sort().join('|')===[...item.correctPartIds].sort().join('|');
+  const wrong=batch.filter(item=>!correct(item));batch.forEach(item=>{if(correct(item))state.locked.add(item.matchKey);});
   if(!wrong.length){showReviewCelebration(()=>{ReviewState.index+=1;renderStructureReview();});return;}
   const feedback=document.getElementById('review-feedback');if(feedback)feedback.textContent='再试一次';
-  reviewLater(()=>{wrong.forEach(item=>delete state.links[item.ch]);renderStructureReview();},850);
+  reviewLater(()=>{wrong.forEach(item=>delete state.assignments[item.matchKey]);state.selected=null;renderStructureReview();},850);
 }
 function startReview(){
   const selection=currentReviewSelection();if(!selection)return;const built=selection.built;

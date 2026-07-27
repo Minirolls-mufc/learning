@@ -145,6 +145,26 @@
     };
   }
 
+  function buildComponentMatchItems(items, charDataMap, charDefs) {
+    return (items || []).map((item, index) => {
+      const data = charDataMap && charDataMap[item.ch];
+      if (!data || !Array.isArray(data.strokes)) return null;
+      const parts = partitionStrokes(charDefs && charDefs[item.ch], data.strokes.length);
+      if (!parts.red.length || !parts.blue.length) return null;
+      const matchKey = `${item.ch}:${index}`;
+      const components = [
+        fragment(`${matchKey}:red`, item.ch, 'red', parts.red, true),
+        fragment(`${matchKey}:blue`, item.ch, 'blue', parts.blue, true)
+      ];
+      return {
+        ...item,
+        matchKey,
+        components,
+        correctPartIds: components.map(component => component.id)
+      };
+    }).filter(Boolean);
+  }
+
   return {
     shuffle,
     sample,
@@ -154,6 +174,7 @@
     parseStrokeRange,
     partitionStrokes,
     buildComponentQuestion,
+    buildComponentMatchItems,
     buildStrokeStep
   };
 });
