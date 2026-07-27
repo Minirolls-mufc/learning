@@ -22,12 +22,23 @@ test('static content preserves the complete current local baseline', () => {
   const content = Content.normalizeContent(raw);
   assert.equal(content.groups.length, 101);
   assert.equal(content.superGroups.length, 2);
-  assert.equal(Object.keys(content.charDefs).length, 807);
+  assert.equal(Object.keys(raw.charDefs).length, 807);
+  assert.equal(Object.keys(content.charDefs).length, 809);
   assert.equal(content.groups.flatMap(group => group.entries).length, 1057);
-  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'char').length, 798);
-  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'word').length, 259);
-  assert.ok(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'word')
-    .every(entry => entry.focusIndices.length === 0));
+  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'char').length, 748);
+  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'word').length, 309);
+
+  const expandedGroups = content.groups.filter(group =>
+    ['c21', 'c22', 'c23', 'c24', 'c25'].includes(group.id));
+  assert.equal(expandedGroups.flatMap(group => group.entries).length, 50);
+  assert.ok(expandedGroups.flatMap(group => group.entries)
+    .every(entry => entry.type === 'word' && entry.focusIndices.length === 1));
+  assert.deepEqual(expandedGroups.find(group => group.id === 'c25').entries.at(-1), {
+    type: 'word',
+    hanzi: '共同',
+    pinyin: 'gòng tóng',
+    focusIndices: [0]
+  });
 });
 
 test('content overrides round-trip additions, edits, deletions and ordering', () => {
