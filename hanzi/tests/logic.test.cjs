@@ -23,16 +23,32 @@ test('static content preserves the complete current local baseline', () => {
   assert.equal(content.groups.length, 101);
   assert.equal(content.superGroups.length, 2);
   assert.equal(Object.keys(raw.charDefs).length, 807);
-  assert.equal(Object.keys(content.charDefs).length, 809);
+  assert.equal(Object.keys(content.charDefs).length, 826);
   assert.equal(content.groups.flatMap(group => group.entries).length, 1057);
-  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'char').length, 748);
-  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'word').length, 309);
+  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'char').length, 0);
+  assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'word').length, 1057);
 
   const expandedGroups = content.groups.filter(group =>
-    ['c21', 'c22', 'c23', 'c24', 'c25'].includes(group.id));
-  assert.equal(expandedGroups.flatMap(group => group.entries).length, 50);
+    /^c(?:0[1-9]|[1-7][0-9]|80)$/.test(group.id));
+  assert.equal(expandedGroups.length, 80);
+  assert.equal(expandedGroups.flatMap(group => group.entries).length, 798);
   assert.ok(expandedGroups.flatMap(group => group.entries)
-    .every(entry => entry.type === 'word' && entry.focusIndices.length === 1));
+    .every(entry => entry.type === 'word' && entry.focusIndices.length >= 1));
+  assert.deepEqual(expandedGroups.find(group => group.id === 'c01').entries[5], {
+    type: 'word',
+    hanzi: '没了',
+    focusIndices: [1]
+  });
+  assert.deepEqual(expandedGroups.find(group => group.id === 'c03').entries[0], {
+    type: 'word',
+    hanzi: '时间',
+    focusIndices: [0]
+  });
+  assert.deepEqual(expandedGroups.find(group => group.id === 'c03').entries[6], {
+    type: 'word',
+    hanzi: '作业',
+    focusIndices: [0]
+  });
   assert.deepEqual(expandedGroups.find(group => group.id === 'c25').entries.at(-1), {
     type: 'word',
     hanzi: '共同',
