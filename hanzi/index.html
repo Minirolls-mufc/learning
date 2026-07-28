@@ -537,13 +537,17 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .component-match-lines{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
 .component-match-lines line{stroke:var(--o1);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 1px 1px rgba(255,107,0,.18))}
 .component-match-lines line.locked{stroke:var(--green)}
-.char-manager-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.char-manager-initials{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:12px;padding:10px;background:#fff;border:1.5px solid var(--border);border-radius:8px}
+.char-manager-initial{width:34px;height:36px;border:1.5px solid var(--border);border-radius:7px;background:#fff;color:var(--ink2);font:800 .72rem inherit;cursor:pointer}
+.char-manager-initial.all{width:auto;padding:0 12px}
+.char-manager-initial.active{border-color:var(--o1);background:var(--o1);color:#fff;box-shadow:0 3px 8px rgba(255,107,0,.18)}
+.char-manager-tools{display:flex;gap:10px;align-items:center;justify-content:flex-end;flex-wrap:wrap;margin-bottom:14px}
 .char-manager-search,.char-manager-filter{border:1.5px solid var(--border);border-radius:8px;background:#fff;padding:9px 11px;font:700 .76rem inherit;color:var(--ink);min-height:40px}
-.char-manager-search{flex:1;min-width:180px}
-.char-manager-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-.char-manager-item{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:10px;display:grid;grid-template-columns:48px 72px minmax(0,1fr);gap:9px;align-items:center}
-.char-manager-glyph{font-size:2rem;font-weight:800;text-align:center}
-.char-manager-preview{width:68px;height:68px}
+.char-manager-search{width:190px}
+.char-manager-filter{width:190px}
+.char-manager-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px}
+.char-manager-item{background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:10px;display:grid;grid-template-columns:86px minmax(0,1fr);gap:10px;align-items:center}
+.char-manager-preview{width:82px;height:82px}
 .char-manager-preview svg{width:100%;height:100%}
 .char-manager-input{width:100%;min-width:0;border:1.5px solid var(--border);border-radius:7px;padding:8px;font:700 .72rem inherit}
 .char-manager-status{font-size:.62rem;color:var(--muted);margin-top:4px}
@@ -575,9 +579,8 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .similar-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .similar-name{font-weight:900;flex:1}.similar-count{font-size:.7rem;color:var(--muted)}
 .similar-previews{display:flex;gap:9px;flex-wrap:wrap}
-.similar-char{width:82px;border:1px solid #eadbc9;border-radius:7px;padding:6px;text-align:center;background:#fffdfa}
-.similar-char-text{font-size:1.8rem;font-weight:700;line-height:1.15}
-.similar-char svg{width:62px;height:62px;display:block;margin:auto}
+.similar-char{width:98px;height:98px;border:1px solid #eadbc9;border-radius:7px;padding:7px;text-align:center;background:#fffdfa;display:flex;align-items:center;justify-content:center}
+.similar-char svg{width:82px;height:82px;display:block;margin:auto}
 .similar-form-chars{font-size:.78rem;color:var(--muted);line-height:1.5}
 @media(max-width:600px){
   .learning-body,.review-body{padding:12px 12px 22px}
@@ -610,6 +613,10 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   .component-part{min-height:84px;padding:4px}
   .component-part svg{width:70px;height:70px}
   .match-prompt-word{font-size:1.2rem}
+  .char-manager-initials{gap:5px;padding:8px}
+  .char-manager-initial{width:33px;height:33px}
+  .char-manager-tools{display:grid;grid-template-columns:1fr 1fr}
+  .char-manager-search,.char-manager-filter{width:100%;min-width:0}
   .char-manager-grid{grid-template-columns:1fr}
   .learn-target-controls .btn,.review-nav .btn{min-width:0}
   .grid-fallback-glyph{font-size:2.8rem}
@@ -1781,6 +1788,8 @@ let manageSgFilterId=null;
 let manageGroupFilterId=null;
 let manageCharSearch='';
 let manageCharGroupId='all';
+let manageCharInitial='all';
+const managePinyinInitialCache=new Map();
 function switchManageTab(t){
   manageTab=t;
   document.getElementById('mtab-groups').classList.toggle('active',t==='groups');
@@ -1899,9 +1908,10 @@ function renderManageSimilar(){
     const previews=document.createElement('div');previews.className='similar-previews';card.appendChild(previews);
     group.chars.forEach(ch=>{
       const item=document.createElement('div');item.className='similar-char';
-      item.innerHTML=`<div class="similar-char-text">${escapeHtml(ch)}</div><div id="similar-preview-${cssId(group.id)}-${cssId(ch)}"></div>`;
+      item.setAttribute('aria-label',`${ch}的红蓝结构`);
+      item.innerHTML=`<div id="similar-preview-${cssId(group.id)}-${cssId(ch)}"></div>`;
       previews.appendChild(item);
-      renderRedBluePreview(item.lastElementChild,ch,62);
+      renderRedBluePreview(item.lastElementChild,ch,82);
     });
     list.appendChild(card);
   });
@@ -1909,6 +1919,14 @@ function renderManageSimilar(){
 
 function setManageCharSearch(value){manageCharSearch=value.trim();renderManageChars();}
 function setManageCharGroup(value){manageCharGroupId=value;renderManageChars();}
+function setManageCharInitial(value){manageCharInitial=value;renderManageChars();}
+function managedCharInitial(ch){
+  if(managePinyinInitialCache.has(ch))return managePinyinInitialCache.get(ch);
+  const match=autoPinyin(ch).match(/[a-z]/i);
+  const initial=match?match[0].toUpperCase():'#';
+  if(match)managePinyinInitialCache.set(ch,initial);
+  return initial;
+}
 function managedChars(){
   const chars=[];const add=ch=>{if(ch&&!chars.includes(ch))chars.push(ch);};
   Object.keys(store.charDefs||{}).forEach(add);
@@ -1921,40 +1939,43 @@ function updateManagedChar(ch,value,input){
   const item=input&&input.closest('.char-manager-item');
   if(!item)return;
   const preview=item.querySelector('.char-manager-preview');
-  if(preview){preview.innerHTML='';renderRedBluePreview(preview,ch,68);}
+  if(preview){preview.innerHTML='';renderRedBluePreview(preview,ch,82);}
   const status=item.querySelector('.char-manager-status');
   if(status)status.textContent=value.trim()?`红色：${value.trim()}`:'全红';
 }
 let charPreviewObserver=null;
 function observeManagedCharPreview(container,ch){
   container.dataset.previewChar=ch;
-  if(!('IntersectionObserver'in window)){renderRedBluePreview(container,ch,68);return;}
+  if(!('IntersectionObserver'in window)){renderRedBluePreview(container,ch,82);return;}
   if(!charPreviewObserver)charPreviewObserver=new IntersectionObserver(entries=>entries.forEach(entry=>{
     if(!entry.isIntersecting)return;
     charPreviewObserver.unobserve(entry.target);
-    renderRedBluePreview(entry.target,entry.target.dataset.previewChar,68);
+    renderRedBluePreview(entry.target,entry.target.dataset.previewChar,82);
   }),{rootMargin:'180px 0px'});
   charPreviewObserver.observe(container);
 }
 function renderManageChars(){
   if(charPreviewObserver){charPreviewObserver.disconnect();charPreviewObserver=null;}
   const body=document.getElementById('manage-body');body.innerHTML='';
+  const initials=document.createElement('div');initials.className='char-manager-initials';
+  initials.innerHTML=['all',...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'].map(initial=>`<button type="button" class="char-manager-initial${initial==='all'?' all':''}${manageCharInitial===initial?' active':''}" onclick="setManageCharInitial('${initial}')">${initial==='all'?'全部':initial}</button>`).join('');
+  body.appendChild(initials);
   const tools=document.createElement('div');tools.className='char-manager-tools';
   const options=['<option value="all">全部分组</option>'].concat(store.groups.map(group=>`<option value="${escapeHtml(group.id)}"${manageCharGroupId===group.id?' selected':''}>${escapeHtml(group.name)}</option>`)).join('');
-  tools.innerHTML=`<input class="char-manager-search" value="${escapeHtml(manageCharSearch)}" placeholder="搜索汉字" oninput="setManageCharSearch(this.value)"><select class="char-manager-filter" onchange="setManageCharGroup(this.value)">${options}</select>`;
+  tools.innerHTML=`<select class="char-manager-filter" aria-label="选择分组" onchange="setManageCharGroup(this.value)">${options}</select><input class="char-manager-search" value="${escapeHtml(manageCharSearch)}" placeholder="搜索汉字" aria-label="搜索汉字" oninput="setManageCharSearch(this.value)">`;
   body.appendChild(tools);
   let allowed=null;
   if(manageCharGroupId!=='all'){
     const group=store.groups.find(item=>item.id===manageCharGroupId);
     allowed=new Set((group&&group.entries||[]).flatMap(entry=>[...entry.hanzi]));
   }
-  const chars=managedChars().filter(ch=>(!allowed||allowed.has(ch))&&(!manageCharSearch||ch.includes(manageCharSearch)));
+  const chars=managedChars().filter(ch=>(!allowed||allowed.has(ch))&&(!manageCharSearch||ch.includes(manageCharSearch))&&(manageCharInitial==='all'||managedCharInitial(ch)===manageCharInitial));
   if(!chars.length){const empty=document.createElement('div');empty.className='empty-state';empty.innerHTML='<strong>没有匹配的汉字</strong>';body.appendChild(empty);return;}
   const grid=document.createElement('div');grid.className='char-manager-grid';body.appendChild(grid);
   chars.forEach(ch=>{
     const redRange=getCharDef(ch).redRange||'';
     const item=document.createElement('div');item.className='char-manager-item';
-    item.innerHTML=`<div class="char-manager-glyph">${escapeHtml(ch)}</div><div class="char-manager-preview"></div><div><input class="char-manager-input" value="${escapeHtml(redRange)}" placeholder="全红" aria-label="${escapeHtml(ch)}的红色笔画" onchange="updateManagedChar('${escapeHtml(ch)}',this.value,this)"><div class="char-manager-status">${redRange?`红色：${escapeHtml(redRange)}`:'全红'}</div></div>`;
+    item.innerHTML=`<div class="char-manager-preview" aria-label="${escapeHtml(ch)}的红蓝结构"></div><div><input class="char-manager-input" value="${escapeHtml(redRange)}" placeholder="全红" aria-label="${escapeHtml(ch)}的红色笔画" onchange="updateManagedChar('${escapeHtml(ch)}',this.value,this)"><div class="char-manager-status">${redRange?`红色：${escapeHtml(redRange)}`:'全红'}</div></div>`;
     grid.appendChild(item);observeManagedCharPreview(item.querySelector('.char-manager-preview'),ch);
   });
 }
