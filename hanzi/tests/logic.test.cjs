@@ -22,8 +22,9 @@ test('static content preserves the complete current local baseline', () => {
   const content = Content.normalizeContent(raw);
   assert.equal(content.groups.length, 101);
   assert.equal(content.superGroups.length, 2);
-  assert.equal(Object.keys(raw.charDefs).length, 807);
+  assert.equal(Object.keys(raw.charDefs).length, 812);
   assert.equal(Object.keys(content.charDefs).length, 826);
+  assert.equal(content.similarGroups.length, 1);
   assert.equal(content.groups.flatMap(group => group.entries).length, 1057);
   assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'char').length, 0);
   assert.equal(content.groups.flatMap(group => group.entries).filter(entry => entry.type === 'word').length, 1057);

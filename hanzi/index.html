@@ -103,36 +103,36 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .nav-desc{font-size:.72rem;color:var(--muted);line-height:1.45}
 .nav-badge{position:absolute;top:9px;right:9px;background:var(--o4);color:var(--ink);font-size:.55rem;font-weight:900;padding:2px 7px;border-radius:99px;}
 
-/* ── SUPER GROUP TAB BAR (shared between gpick / prac-grp) ── */
-.sg-tabbar{
-  flex-shrink:0;display:flex;gap:4px;padding:10px 16px 0;
-  background:var(--bg);border-bottom:none;
-  overflow-x:auto;-webkit-overflow-scrolling:touch;
-}
-.sg-tabbar::-webkit-scrollbar{height:3px}
-.sg-tab{
-  flex-shrink:0;padding:7px 16px;border:none;border-radius:99px;
-  font-family:inherit;font-size:.76rem;font-weight:700;cursor:pointer;
-  background:transparent;color:var(--muted);transition:all .15s;white-space:nowrap;
-}
-.sg-tab.active{color:var(--o1);background:var(--paper);box-shadow:0 1px 6px rgba(255,107,0,.12);}
-.sg-tab:hover:not(.active){color:var(--ink2);background:rgba(0,0,0,.04);}
-
 /* ── GROUP PICKER ── */
-.gpick-body{flex:1;overflow-y:auto;padding:20px 16px 32px}
-.gpick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
-.gpick-card{background:var(--paper);border:1.5px solid var(--border);border-radius:18px;padding:22px 18px 18px;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:10px;box-shadow:0 3px 12px rgba(255,107,0,.07);position:relative;overflow:hidden;}
-.gpick-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--grad-hero);border-radius:16px 16px 0 0}
-.gpick-card:hover{transform:translateY(-3px);box-shadow:0 10px 26px rgba(255,107,0,.13)}
-.gpick-card:active{transform:scale(.97)}
-.gpick-card.selected{border-color:var(--o1);box-shadow:0 0 0 3px rgba(255,107,0,.15),0 4px 16px rgba(255,107,0,.1)}
-.gpick-card.selected .gpick-name{color:var(--o1)}
-.gpick-card-top{display:flex;align-items:center;gap:8px}
-.gpick-name{font-weight:900;font-size:.92rem;flex:1;color:var(--ink)}
-.gpick-arrow{font-size:1rem;color:var(--muted)}
-.gpick-meta{font-size:.72rem;color:var(--muted);font-weight:600}
-.gpick-sg-badge{font-size:.62rem;color:var(--o2);font-weight:700;background:#fff5ec;border:1px solid var(--o4);border-radius:99px;padding:1px 7px;display:inline-block;}
-.gpick-empty{text-align:center;padding:44px 20px;color:var(--muted);grid-column:1/-1;font-size:.85rem}
+.gpick-body{flex:1;min-height:0;overflow:hidden;padding:16px}
+.gpick-layout{height:100%;display:grid;grid-template-columns:210px minmax(0,1fr);gap:16px;max-width:1180px;margin:0 auto}
+.gpick-categories,.gpick-main{background:#fff;border:1.5px solid var(--border);border-radius:8px;min-height:0}
+.gpick-categories{padding:12px;display:flex;flex-direction:column;gap:7px;overflow-y:auto}
+.gpick-category{width:100%;border:1.5px solid transparent;border-radius:7px;background:transparent;padding:12px;text-align:left;font:800 .8rem inherit;color:var(--ink2);cursor:pointer}
+.gpick-category:hover{background:#fff7ef}
+.gpick-category.active{background:#fff1e6;border-color:var(--o3);color:var(--o1)}
+.gpick-main{display:flex;flex-direction:column;overflow:hidden}
+.gpick-toolbar{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.gpick-heading{font-size:1rem;font-weight:900;color:var(--ink);flex:1}
+.gpick-range{border:1.5px solid var(--border);border-radius:7px;background:#fff;padding:7px 30px 7px 10px;font:700 .72rem inherit;color:var(--ink2)}
+.gpick-scroll{overflow-y:auto;padding:14px 16px 24px}
+.gpick-continue{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;border:1.5px solid #fdba74;border-radius:8px;background:#fff7ed;padding:13px 15px;margin-bottom:14px;cursor:pointer}
+.gpick-continue:hover{border-color:var(--o1)}
+.gpick-continue-title{font-size:.65rem;font-weight:800;color:var(--o2);margin-bottom:3px}
+.gpick-continue-name{font-size:.9rem;font-weight:900;color:var(--ink)}
+.gpick-list{display:flex;flex-direction:column;gap:8px}
+.gpick-row{width:100%;display:grid;grid-template-columns:minmax(180px,1.4fr) minmax(190px,1fr) 70px 22px;align-items:center;gap:14px;border:1.5px solid var(--border);border-radius:8px;background:#fff;padding:12px 14px;text-align:left;cursor:pointer;color:var(--ink)}
+.gpick-row:hover{border-color:var(--o3);background:#fffdfa}
+.gpick-name{font-weight:900;font-size:.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gpick-meta{font-size:.66rem;color:var(--muted);font-weight:700;margin-top:3px}
+.gpick-progress{display:flex;align-items:center;gap:8px}
+.gpick-progress-track{height:7px;flex:1;border-radius:99px;background:#f1e6da;overflow:hidden}
+.gpick-progress-fill{height:100%;border-radius:99px;background:var(--grad-btn)}
+.gpick-progress-text{font-size:.64rem;color:var(--muted);font-weight:700;white-space:nowrap}
+.gpick-status{font-size:.64rem;font-weight:800;color:var(--muted);text-align:right}
+.gpick-status.done{color:var(--green)}
+.gpick-arrow{font-size:1rem;color:var(--muted);text-align:right}
+.gpick-empty{text-align:center;padding:44px 20px;color:var(--muted);font-size:.85rem}
 
 /* ── STUDY ── */
 #page-study{background:var(--bg)}
@@ -187,6 +187,9 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .prac-mode-card .pm-name{font-weight:900;font-size:.95rem;color:var(--ink);display:block}
 .prac-mode-card .pm-desc{font-size:.7rem;color:var(--muted);line-height:1.5;margin-top:5px;display:block}
 .prac-mode-card.active .pm-name{color:var(--o1)}
+.worksheet-preview-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:4px;border:1px solid var(--border);border-radius:8px;background:#f8f3ed}
+.worksheet-preview-tab{min-height:38px;border:0;border-radius:6px;background:transparent;color:var(--muted);font:800 .68rem inherit;cursor:pointer;white-space:nowrap}
+.worksheet-preview-tab.active{background:#fff;color:var(--o1);box-shadow:0 2px 8px rgba(79,45,14,.1)}
 .prac-grp-body{flex:1;overflow-y:auto;padding:20px 16px 80px}
 .prac-grp-footer{flex-shrink:0;padding:10px 14px;background:var(--paper);border-top:1.5px solid var(--border);display:flex;justify-content:center;gap:10px;}
 .prac-quiz-body{flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 58px;gap:8px;position:relative;}
@@ -364,9 +367,6 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .sg-grp-item input[type=checkbox]{width:16px;height:16px;accent-color:var(--o1);cursor:pointer;flex-shrink:0;}
 .sg-grp-item-name{font-size:.82rem;font-weight:700;color:var(--ink);flex:1;}
 .sg-grp-item-cnt{font-size:.64rem;color:var(--muted);}
-.ws-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px}
-.ws-mode-btn{border:none;border-radius:7px;background:transparent;padding:8px 10px;font-family:inherit;font-size:.76rem;font-weight:800;color:var(--muted);cursor:pointer;transition:all .15s}
-.ws-mode-btn.active{background:var(--paper);color:var(--o1);box-shadow:0 2px 8px rgba(255,107,0,.12)}
 
 /* ── CLOUD SYNC ── */
 .sync-section{background:var(--paper);border:1.5px solid var(--border);border-radius:16px;margin:12px 14px 0;padding:14px 16px;box-shadow:0 2px 7px rgba(255,107,0,.05);}
@@ -489,17 +489,51 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .learn-complete .learn-controls{width:100%;display:flex;justify-content:center;flex-wrap:wrap}
 .learn-complete .learn-controls .btn{width:auto;min-width:120px}
 .review-actions{display:flex;align-items:center;justify-content:center;gap:10px;min-height:42px}
-.review-source-bar{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;padding:12px 16px 2px}
-#review-group-source{flex:1;min-height:0;display:flex;flex-direction:column}
-.review-source-btn{border:1.5px solid var(--border);border-radius:8px;background:#fff;padding:9px 14px;font:800 .76rem inherit;color:var(--ink2);cursor:pointer}
-.review-source-btn.active{background:#fff1e6;border-color:var(--o1);color:var(--o1)}
-.review-smart-panel{padding:22px 18px;display:none;justify-content:center;flex:1;min-height:0;overflow-y:auto}
-.review-smart-summary{width:min(620px,100%);background:#fff;border:1.5px solid var(--border);border-radius:8px;padding:20px;text-align:center}
-.review-smart-count{font-size:2rem;font-weight:900;color:var(--o1)}
-.review-smart-chars{margin-top:12px;display:flex;gap:7px;justify-content:center;flex-wrap:wrap}
-.review-smart-char{min-width:36px;padding:5px 8px;border:1px solid #ead8c6;border-radius:7px;background:#fffdfa;font-size:1.15rem;font-weight:800}
-.review-method-footer{padding:12px 16px 16px;border-top:1px solid var(--border);background:#fff;display:flex;gap:9px;justify-content:center;flex-wrap:wrap;flex-shrink:0;z-index:2}
-.review-method-footer .btn{min-width:132px}
+.review-source-home,.review-select-body,.review-method-body{flex:1;min-height:0;overflow-y:auto;padding:18px 20px 30px}
+.review-source-list,.review-method-list{width:min(760px,100%);margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.review-source-row,.review-method-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto 24px;align-items:center;gap:14px;width:100%;border:1.5px solid var(--border);border-radius:8px;background:#fff;padding:14px 16px;text-align:left;cursor:pointer;color:var(--ink)}
+.review-source-row:hover,.review-method-row:hover{border-color:var(--o3);background:#fffdfa}
+.review-source-icon,.review-method-icon{width:42px;height:42px;border-radius:8px;background:#fff1e6;color:var(--o1);display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:900}
+.review-source-name,.review-method-name{font-size:.92rem;font-weight:900}
+.review-source-desc,.review-method-desc{font-size:.68rem;color:var(--muted);font-weight:600;margin-top:3px}
+.review-source-count{font-size:.68rem;font-weight:800;color:var(--o2);white-space:nowrap}
+.review-source-arrow{font-size:1.1rem;color:var(--muted)}
+.review-select-shell{width:min(1100px,100%);margin:0 auto}
+.review-select-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.review-select-summary{flex:1;font-size:.72rem;color:var(--muted);font-weight:700}
+.review-select-layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px;min-height:440px}
+.review-select-layout.group-only{grid-template-columns:minmax(0,760px);justify-content:center}
+.review-group-panel,.review-char-panel{background:#fff;border:1.5px solid var(--border);border-radius:8px;overflow:hidden}
+.review-group-panel{display:flex;flex-direction:column}
+.review-panel-title{padding:12px 14px;border-bottom:1px solid var(--border);font-size:.78rem;font-weight:900;color:var(--ink)}
+.review-group-filter{display:flex;gap:5px;padding:9px 10px;overflow-x:auto;border-bottom:1px solid var(--border)}
+.review-group-filter button{flex:0 0 auto;border:1px solid var(--border);border-radius:7px;background:#fff;padding:6px 9px;font:700 .66rem inherit;color:var(--muted);cursor:pointer}
+.review-group-filter button.active{background:#fff1e6;border-color:var(--o3);color:var(--o1)}
+.review-group-list{padding:8px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.review-group-choice,.review-char-row{display:flex;align-items:center;gap:10px;border:1px solid #eee2d5;border-radius:7px;background:#fff;padding:9px 10px;cursor:pointer}
+.review-group-choice:hover,.review-char-row:hover{background:#fffdfa;border-color:var(--o3)}
+.review-check{appearance:none;-webkit-appearance:none;width:23px;height:23px;flex:0 0 23px;border:1.5px solid #c9b9a8;border-radius:7px;background:#fff;display:grid;place-items:center;cursor:pointer}
+.review-check:checked{background:var(--o1);border-color:var(--o1)}
+.review-check:checked::after{content:'✓';color:#fff;font-size:.82rem;font-weight:900;line-height:1}
+.review-group-choice-text{min-width:0;flex:1}
+.review-group-choice-name{font-size:.76rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.review-group-choice-meta{font-size:.61rem;color:var(--muted);margin-top:2px}
+.review-char-panel{display:flex;flex-direction:column}
+.review-char-list{padding:8px;display:flex;flex-direction:column;gap:6px;overflow-y:auto}
+.review-char-row{display:grid;grid-template-columns:23px 44px minmax(0,1fr) auto;gap:10px}
+.review-char-glyph{font-size:1.55rem;font-weight:900;text-align:center;color:var(--ink)}
+.review-char-context{font-size:.78rem;font-weight:900;color:var(--ink)}
+.review-char-reason{font-size:.62rem;color:var(--muted);font-weight:600;margin-top:3px}
+.review-char-stats{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.review-stat{font-size:.61rem;font-weight:800;border-radius:6px;padding:3px 6px;background:#f6f2ed;color:var(--muted);white-space:nowrap}
+.review-stat.correct{background:#ecfdf3;color:#15803d}.review-stat.almost{background:#fffbeb;color:#a16207}
+.review-select-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:12px;flex-wrap:wrap}
+.review-direct-action{min-width:132px}
+#review-char-bulk-actions{display:flex;gap:8px}
+.review-method-body{display:flex;align-items:center}
+.review-method-list{width:min(700px,100%)}
+.review-method-row{grid-template-columns:48px minmax(0,1fr) 24px}
+.review-empty{padding:42px 18px;text-align:center;color:var(--muted);font-size:.78rem}
 .review-word-nav,.learn-word-nav{width:100%;display:grid;grid-template-columns:130px minmax(0,1fr) 130px;align-items:center;gap:14px}
 .review-word-nav>.btn,.learn-word-nav>.btn{width:100%;min-height:46px}
 .review-word-nav .review-word,.learn-word-nav .learn-word{min-width:0;justify-self:center}
@@ -521,19 +555,21 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .match-index{position:absolute;top:5px;right:7px;width:24px;height:24px;border-radius:50%;background:var(--o1);color:#fff;font-size:.68rem;font-weight:900;display:flex;align-items:center;justify-content:center}
 .match-structure{width:76px;height:76px}
 .match-structure svg{width:100%;height:100%}
-.component-match-board{width:min(900px,100%);display:grid;grid-template-columns:minmax(0,1.4fr) minmax(260px,1fr);gap:34px;position:relative;align-items:start}
-.component-match-prompts{display:flex;flex-direction:column;gap:14px;position:relative;z-index:2}
-.component-match-pool{display:grid;grid-template-columns:repeat(2,minmax(96px,1fr));gap:12px;position:relative;z-index:2}
-.component-prompt{border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px}
+.component-match-board{width:min(960px,100%);display:grid;grid-template-columns:minmax(280px,.85fr) minmax(400px,1.15fr);gap:44px;position:relative;align-items:start}
+.component-match-prompts{display:flex;flex-direction:column;gap:8px;position:relative;z-index:2}
+.component-match-pool{display:grid;grid-template-columns:minmax(120px,1fr) 92px minmax(120px,1fr);position:relative;z-index:2}
+.component-part-column{display:flex;flex-direction:column;gap:10px}
+.component-part-column.left{grid-column:1}.component-part-column.right{grid-column:3}
+.component-prompt{border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:7px 10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px}
 .component-prompt.selected{border-color:var(--o1);box-shadow:0 0 0 3px rgba(255,107,0,.12)}
 .component-prompt.locked{border-color:var(--green);background:#f0fdf4}
-.component-prompt-pinyin{font-size:1.12rem;font-weight:900;color:var(--o1)}
-.component-prompt-word{display:grid;gap:7px;justify-content:center;width:100%}
-.component-prompt-word .hanzi-grid{max-width:94px}
-.component-part{min-height:112px;border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:7px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.component-prompt-pinyin{font-size:.82rem;font-weight:900;color:var(--o1);line-height:1.1}
+.component-prompt-word{display:flex;gap:3px;justify-content:center;width:100%}
+.component-prompt-word .hanzi-grid{width:62px;flex:0 0 62px}
+.component-part{min-height:82px;border:2px solid #ded7cf;border-radius:8px;background:#fff;padding:5px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .component-part.used{border-color:var(--o1);background:#fff8f1}
 .component-part.locked{border-color:var(--green);background:#f0fdf4}
-.component-part svg{width:94px;height:94px}
+.component-part svg{width:70px;height:70px}
 .component-match-lines{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;overflow:visible}
 .component-match-lines line{stroke:var(--o1);stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 1px 1px rgba(255,107,0,.18))}
 .component-match-lines line.locked{stroke:var(--green)}
@@ -583,6 +619,25 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .similar-char svg{width:82px;height:82px;display:block;margin:auto}
 .similar-form-chars{font-size:.78rem;color:var(--muted);line-height:1.5}
 @media(max-width:600px){
+  .worksheet-preview-tabs{display:flex;overflow-x:auto}
+  .worksheet-preview-tab{flex:0 0 auto;padding:0 12px}
+  .gpick-body{padding:10px}
+  .gpick-layout{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:9px}
+  .gpick-categories{flex-direction:row;overflow-x:auto;padding:8px}
+  .gpick-category{width:auto;flex:0 0 auto;padding:8px 10px;white-space:nowrap}
+  .gpick-toolbar{padding:10px}.gpick-row{grid-template-columns:minmax(0,1fr) 22px;gap:8px;padding:11px}
+  .gpick-progress,.gpick-status{display:none}
+  .review-source-home,.review-select-body,.review-method-body{padding:12px 10px 22px}
+  .review-source-row,.review-method-row{grid-template-columns:42px minmax(0,1fr) 20px;padding:11px 10px;gap:9px}
+  .review-source-count{display:none}
+  .review-source-icon,.review-method-icon{width:38px;height:38px}
+  .review-select-layout{grid-template-columns:1fr;min-height:0}
+  .review-select-footer{display:grid;grid-template-columns:1fr}
+  .review-direct-action{width:100%}
+  .review-group-panel{max-height:250px}
+  .review-char-panel{min-height:360px}
+  .review-char-row{grid-template-columns:23px 38px minmax(0,1fr)}
+  .review-char-stats{grid-column:2/-1;justify-content:flex-start}
   .learning-body,.review-body{padding:12px 12px 22px}
   .learning-shell,.review-shell{gap:12px}
   .learn-option{width:86px;min-height:74px}.learn-option svg{width:68px;height:68px}
@@ -606,12 +661,12 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   .match-board{gap:10px}
   .match-card{min-height:78px;padding:7px}
   .match-structure{width:62px;height:62px}
-  .component-match-board{grid-template-columns:minmax(0,1.35fr) minmax(168px,.8fr);gap:16px}
-  .component-match-pool{grid-template-columns:repeat(2,minmax(74px,1fr));gap:7px}
-  .component-prompt{padding:8px}
-  .component-prompt-word .hanzi-grid{max-width:72px}
-  .component-part{min-height:84px;padding:4px}
-  .component-part svg{width:70px;height:70px}
+  .component-match-board{grid-template-columns:minmax(190px,.8fr) minmax(300px,1.2fr);gap:18px}
+  .component-match-pool{grid-template-columns:minmax(74px,1fr) 42px minmax(74px,1fr)}
+  .component-prompt{padding:6px}
+  .component-prompt-word .hanzi-grid{width:52px;flex-basis:52px}
+  .component-part{min-height:70px;padding:3px}
+  .component-part svg{width:60px;height:60px}
   .match-prompt-word{font-size:1.2rem}
   .char-manager-initials{gap:5px;padding:8px}
   .char-manager-initial{width:33px;height:33px}
@@ -694,8 +749,21 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
     <div class="tb-title">选择分组</div>
     <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
   </div>
-  <div class="sg-tabbar" id="gpick-tabbar"></div>
-  <div class="gpick-body"><div class="gpick-grid" id="gpick-grid"></div></div>
+  <div class="gpick-body">
+    <div class="gpick-layout">
+      <nav class="gpick-categories" id="gpick-categories" aria-label="课程分类"></nav>
+      <main class="gpick-main">
+        <div class="gpick-toolbar">
+          <div class="gpick-heading" id="gpick-heading">选择学习组</div>
+          <select class="gpick-range" id="gpick-range" aria-label="分组范围"></select>
+        </div>
+        <div class="gpick-scroll">
+          <div id="gpick-continue"></div>
+          <div class="gpick-list" id="gpick-list"></div>
+        </div>
+      </main>
+    </div>
+  </div>
 </div>
 
 <!-- PINYIN -->
@@ -793,52 +861,42 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   <div id="prac-step1" class="prac-step active">
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
-      <div class="tb-title">选择复习内容</div>
+      <div class="tb-title">选择复习来源</div>
       <div class="tb-right"><button class="tb-btn" onclick="showPage('home')">🏠 首页</button></div>
     </div>
-    <div class="review-source-bar">
-      <button class="review-source-btn active" data-source="groups" onclick="selectReviewSource('groups')">按组复习</button>
-      <button class="review-source-btn" data-source="todayAlmost" onclick="selectReviewSource('todayAlmost')">今日差一点</button>
-      <button class="review-source-btn" data-source="due" onclick="selectReviewSource('due')">到期复习</button>
-      <button class="review-source-btn" data-source="historical" onclick="selectReviewSource('historical')">历史高频</button>
-    </div>
-    <div id="review-group-source">
-      <div class="sg-tabbar" id="prac-tabbar"></div>
-      <div class="prac-grp-body"><div class="gpick-grid" id="prac-grp-grid"></div></div>
-    </div>
-    <div class="review-smart-panel" id="review-smart-source"></div>
-    <div class="review-method-footer">
-      <button class="btn btn-ghost" onclick="openWorksheetReview()">生成练习纸</button>
-      <button class="btn btn-ghost" onclick="startRecognitionReview()">形近字挑选</button>
-      <button class="btn btn-ghost" onclick="startStructureReview()">结构连连看</button>
-      <button class="btn btn-primary" onclick="startReview()">写字练习</button>
+    <div class="review-source-home">
+      <div class="review-source-list" id="review-source-list"></div>
     </div>
   </div>
   <div id="prac-step2" class="prac-step">
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
-      <div class="tb-title">生成练习纸</div>
-      <div class="tb-right"><button class="tb-btn" onclick="pracGoStep(1)">‹ 返回</button></div>
+      <div class="tb-title">选择复习字</div>
+      <div class="tb-right"><button class="tb-btn" onclick="openReviewPicker()">‹ 返回</button></div>
     </div>
-    <div class="prac-sel-body">
-      <div class="prac-modes">
-        <div class="prac-mode-card active" id="pmc-simple" onclick="selectPracMode('simple')">
-          <span class="pm-icon">🌟</span><span class="pm-name">简单模式</span><span class="pm-desc">结构字展示一个部件<br>补写出另一半</span>
+    <div class="review-select-body">
+      <div class="review-select-shell">
+        <div class="review-select-toolbar">
+          <div class="review-select-summary" id="review-select-summary"></div>
+          <div id="review-char-bulk-actions">
+            <button class="btn btn-ghost btn-sm" onclick="toggleAllReviewChars(true)">全选</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleAllReviewChars(false)">清空</button>
+          </div>
         </div>
-        <div class="prac-mode-card" id="pmc-standard" onclick="selectPracMode('standard')">
-          <span class="pm-icon">🎯</span><span class="pm-name">标准模式</span><span class="pm-desc">只显示拼音<br>完整默写整个字</span>
+        <div class="review-select-layout" id="review-select-layout"></div>
+        <div class="review-select-footer">
+          <button class="btn btn-primary review-direct-action" onclick="startReview()">写字练习</button>
+          <button class="btn btn-ghost review-direct-action" onclick="openWorksheetReview()">生成练习纸</button>
+          <button class="btn btn-ghost review-direct-action" onclick="startStructureReview()">结构连连看</button>
         </div>
-      </div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
-        <button class="btn btn-primary" style="padding:12px 38px;font-size:.95rem" onclick="generateWorksheet()">生成练习纸</button>
       </div>
     </div>
   </div>
-  <div id="prac-step3" class="prac-step">
+  <div id="prac-step5" class="prac-step">
     <div class="topbar">
       <div class="tb-brand"><span class="tb-brand-romeo">Romeo</span><span class="tb-brand-sub">汉字课堂</span></div>
       <div class="tb-title" id="prac-quiz-title">复 习</div>
-      <div class="tb-right"><button class="tb-btn" onclick="openReviewPicker()">‹ 返回</button></div>
+      <div class="tb-right"><button class="tb-btn" onclick="returnToReviewSelection()">‹ 返回</button></div>
     </div>
     <div class="review-body">
       <div class="review-shell" id="review-shell">
@@ -960,9 +1018,11 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
   <div class="modal" style="max-width:620px">
     <div class="mhdr"><div class="mtitle">📄 练习纸预览</div><button class="mclose" onclick="closeModal('modal-worksheet')">✕</button></div>
     <div class="mbody" style="gap:14px">
-      <div class="ws-mode-switch">
-        <button class="ws-mode-btn active" id="ws-mode-practice" onclick="setWorksheetVariant('practice')">练习版</button>
-        <button class="ws-mode-btn" id="ws-mode-complete" onclick="setWorksheetVariant('complete')">完整字词</button>
+      <div class="worksheet-preview-tabs" role="tablist" aria-label="练习纸类型">
+        <button class="worksheet-preview-tab active" type="button" role="tab" data-type="simple" onclick="setWorksheetType('simple')">简单练习纸</button>
+        <button class="worksheet-preview-tab" type="button" role="tab" data-type="focus" onclick="setWorksheetType('focus')">重点字纸</button>
+        <button class="worksheet-preview-tab" type="button" role="tab" data-type="standard" onclick="setWorksheetType('standard')">标准练习纸</button>
+        <button class="worksheet-preview-tab" type="button" role="tab" data-type="recognition" onclick="setWorksheetType('recognition')">识字纸</button>
       </div>
       <div id="ws-status" style="font-size:.82rem;color:var(--muted);text-align:center;padding:8px 0">正在生成，请稍候…</div>
       <canvas id="ws-canvas" style="width:100%;border:1.5px solid var(--border);border-radius:8px;display:none"></canvas>
@@ -1055,20 +1115,39 @@ function decodeRuntimePayload(payload){
   const decoded=HanziContent.decodeContentPayload(payload,baseContent);
   installContent(decoded.content);
   contentOverrides=decoded.overrides;
+  installRuntimeProgress(payload);
+  return decoded;
+}
+function installRuntimeProgress(payload){
   charProgress=Number(payload&&payload.dataVersion)>=DATA_VERSION
     ?HanziProgress.expandProgress(payload.progress||{})
     :{};
   store.ach=Object.assign({},DEFAULT_STORE.ach,(payload&&payload.achievement)||(payload&&payload.ach)||{});
   syncRevision=Number(payload&&payload.revision)||0;
   store._ts=Number(payload&&payload._ts)||0;
-  return decoded;
 }
 function loadLocalState(){
   try{
     const currentRaw=localStorage.getItem(LOCAL_STATE_KEY);
-    if(currentRaw){decodeRuntimePayload(JSON.parse(currentRaw));return true;}
+    if(currentRaw){
+      const payload=JSON.parse(currentRaw);
+      if(baseContent&&Number(payload.contentVersion||0)<Number(baseContent.contentVersion||0)){
+        installContent(baseContent);
+        contentOverrides={groups:{},superGroups:{},charDefs:{},similarGroups:{}};
+        installRuntimeProgress(payload);
+      }else decodeRuntimePayload(payload);
+      return true;
+    }
     const legacyRaw=localStorage.getItem(LEGACY_LOCAL_KEY);
-    if(legacyRaw){decodeRuntimePayload(JSON.parse(legacyRaw));saveStore();return true;}
+    if(legacyRaw){
+      const payload=JSON.parse(legacyRaw);
+      if(baseContent&&Number(payload.contentVersion||0)<Number(baseContent.contentVersion||0)){
+        installContent(baseContent);
+        contentOverrides={groups:{},superGroups:{},charDefs:{},similarGroups:{}};
+        installRuntimeProgress(payload);
+      }else decodeRuntimePayload(payload);
+      saveStore();return true;
+    }
   }catch(e){}
   return false;
 }
@@ -1110,80 +1189,78 @@ document.querySelectorAll('.modal-overlay').forEach(el=>el.addEventListener('cli
 
 /* ━━━━━ HOME ━━━━━ */
 function renderHome(){}
-function goStudy(){showPage('gpick');renderGpick('gpick');}
-
-/* ━━━━━ SUPER GROUP TABBAR ━━━━━ */
-let gpickActiveSg=null;
-let pracActiveSg=null;
-
-function renderSgTabbar(containerId, activeSgId){
-  const barEl=document.getElementById(containerId+'-tabbar');
-  if(!barEl)return;
-  barEl.innerHTML='';
-  const allBtn=document.createElement('button');
-  allBtn.className='sg-tab'+(activeSgId===null?' active':'');
-  allBtn.textContent='全部';
-  allBtn.onclick=()=>{
-    if(containerId==='gpick'){gpickActiveSg=null;renderGpick('gpick');}
-    else{pracActiveSg=null;renderGpick('prac');}
-  };
-  barEl.appendChild(allBtn);
-  store.superGroups.forEach(sg=>{
-    const btn=document.createElement('button');
-    btn.className='sg-tab'+(activeSgId===sg.id?' active':'');
-    btn.textContent=sg.name;
-    btn.onclick=()=>{
-      if(containerId==='gpick'){gpickActiveSg=sg.id;renderGpick('gpick');}
-      else{pracActiveSg=sg.id;renderGpick('prac');}
-    };
-    barEl.appendChild(btn);
-  });
-}
+function goStudy(){showPage('gpick');renderGpick();}
 
 /* ━━━━━ GROUP PICKER ━━━━━ */
-function renderGpick(containerId){
-  const activeSgId = containerId==='gpick'? gpickActiveSg : pracActiveSg;
-  renderSgTabbar(containerId, activeSgId);
+let gpickActiveSg=null;
+let gpickRangeIndex=0;
 
-  const gridId = containerId==='gpick'? 'gpick-grid':'prac-grp-grid';
-  const grid=document.getElementById(gridId); grid.innerHTML='';
-
-  let visibleGroups=store.groups;
-  if(activeSgId!==null){
-    const sg=store.superGroups.find(x=>x.id===activeSgId);
-    const ids=sg?(sg.groupIds||[]):[];
-    visibleGroups=store.groups.filter(g=>ids.includes(g.id));
+function groupLearningStats(group){
+  const targets=HanziLearning.buildLearningTargets(group,()=>0);
+  const completed=targets.filter(target=>HanziProgress.normalizeRecord(charProgress[target.hanzi]).learningCompleted).length;
+  const updatedAt=targets.reduce((latest,target)=>{
+    const value=HanziProgress.normalizeRecord(charProgress[target.hanzi]).updatedAt||'';
+    return value>latest?value:latest;
+  },'');
+  return{total:targets.length,completed,updatedAt};
+}
+function groupsForSuperGroup(superGroupId){
+  const sg=store.superGroups.find(item=>item.id===superGroupId);
+  if(!sg)return[];
+  const ids=new Set(sg.groupIds||[]);
+  return store.groups.filter(group=>ids.has(group.id));
+}
+function learningCategories(){
+  const assigned=new Set(store.superGroups.flatMap(group=>group.groupIds||[]));
+  const categories=store.superGroups.filter(group=>groupsForSuperGroup(group.id).length).map(group=>({id:group.id,name:group.name}));
+  if(store.groups.some(group=>!assigned.has(group.id)))categories.push({id:'__other',name:'其他分组'});
+  return categories;
+}
+function activeLearningGroups(){
+  if(gpickActiveSg==='__other'){
+    const assigned=new Set(store.superGroups.flatMap(group=>group.groupIds||[]));
+    return store.groups.filter(group=>!assigned.has(group.id));
   }
-
-  if(!visibleGroups.length){
-    grid.innerHTML='<div class="gpick-empty">📚 暂无分组<br><small style="color:var(--muted)">请先在字词管理新建</small></div>';return;
-  }
-
-  const grpSgMap={};
-  store.superGroups.forEach(sg=>(sg.groupIds||[]).forEach(gid=>grpSgMap[gid]=sg.name));
-
-  visibleGroups.forEach(g=>{
-    const card=document.createElement('div');card.className='gpick-card';
-    if(containerId==='prac'&&P.groupIds&&P.groupIds.includes(g.id))card.classList.add('selected');
-    card.onclick=()=>{
-      if(containerId==='gpick'){startStudy(g.id);}
-      else{
-        if(!Array.isArray(P.groupIds))P.groupIds=[];
-        if(P.groupIds.includes(g.id))P.groupIds=P.groupIds.filter(id=>id!==g.id);
-        else P.groupIds.push(g.id);
-        P.groupId=P.groupIds[0]||null;
-        renderGpick('prac');
-      }
-    };
-    const ch=g.entries.filter(e=>e.type==='char').length,wd=g.entries.filter(e=>e.type==='word').length;
-    const sgBadge=grpSgMap[g.id]?`<span class="gpick-sg-badge">${grpSgMap[g.id]}</span>`:'';
-    card.innerHTML=`<div class="gpick-card-top"><span class="gpick-name">${g.name}</span><span class="gpick-arrow">›</span></div>
-      <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-        <span class="gpick-meta">${ch?ch+'字 ':''}${wd?wd+'词':''}${!g.entries.length?'暂无内容':''}</span>
-        ${sgBadge}
-      </div>`;
-    grid.appendChild(card);
+  return groupsForSuperGroup(gpickActiveSg);
+}
+function latestLearningGroup(){
+  return store.groups.map(group=>({group,stats:groupLearningStats(group)}))
+    .filter(item=>item.stats.updatedAt)
+    .sort((a,b)=>b.stats.updatedAt.localeCompare(a.stats.updatedAt))[0]||null;
+}
+function renderLearningGroupRow(group){
+  const stats=groupLearningStats(group);const words=(group.entries||[]).filter(entry=>entry.type==='word').length;
+  const percent=stats.total?Math.round(stats.completed/stats.total*100):0;
+  const row=document.createElement('button');row.className='gpick-row';row.onclick=()=>startStudy(group.id);
+  row.innerHTML=`<span><span class="gpick-name">${escapeHtml(group.name)}</span><span class="gpick-meta">${words}词 · ${stats.total}个重点字</span></span>
+    <span class="gpick-progress"><span class="gpick-progress-track"><span class="gpick-progress-fill" style="width:${percent}%"></span></span><span class="gpick-progress-text">${stats.completed}/${stats.total}</span></span>
+    <span class="gpick-status${percent===100&&stats.total?' done':''}">${percent===100&&stats.total?'已完成':stats.completed?'学习中':'未开始'}</span><span class="gpick-arrow">›</span>`;
+  return row;
+}
+function renderGpick(){
+  const categories=learningCategories();
+  if(!gpickActiveSg||!categories.some(item=>item.id===gpickActiveSg))gpickActiveSg=categories[0]?.id||null;
+  const categoryEl=document.getElementById('gpick-categories');categoryEl.innerHTML='';
+  categories.forEach(category=>{
+    const button=document.createElement('button');button.className='gpick-category'+(category.id===gpickActiveSg?' active':'');button.textContent=category.name;
+    button.onclick=()=>{gpickActiveSg=category.id;gpickRangeIndex=0;renderGpick();};categoryEl.appendChild(button);
   });
+  const groups=activeLearningGroups();const pageSize=10;const pages=Math.max(1,Math.ceil(groups.length/pageSize));
+  gpickRangeIndex=Math.min(gpickRangeIndex,pages-1);
+  document.getElementById('gpick-heading').textContent=categories.find(item=>item.id===gpickActiveSg)?.name||'选择学习组';
+  const range=document.getElementById('gpick-range');range.innerHTML='';
+  for(let index=0;index<pages;index+=1){
+    const option=document.createElement('option');option.value=String(index);option.textContent=`第 ${index*pageSize+1}–${Math.min((index+1)*pageSize,groups.length)} 组`;option.selected=index===gpickRangeIndex;range.appendChild(option);
+  }
+  range.style.display=groups.length>pageSize?'block':'none';range.onchange=()=>{gpickRangeIndex=Number(range.value)||0;renderGpick();};
+  const continueEl=document.getElementById('gpick-continue');const latest=latestLearningGroup();
+  if(latest){
+    const stats=latest.stats;continueEl.innerHTML=`<button class="gpick-continue"><span><span class="gpick-continue-title">继续上次学习</span><span class="gpick-continue-name">${escapeHtml(latest.group.name)} · ${stats.completed}/${stats.total}</span></span><span class="gpick-arrow">›</span></button>`;
+    continueEl.querySelector('button').onclick=()=>startStudy(latest.group.id);
+  }else continueEl.innerHTML='';
+  const list=document.getElementById('gpick-list');list.innerHTML='';
+  groups.slice(gpickRangeIndex*pageSize,(gpickRangeIndex+1)*pageSize).forEach(group=>list.appendChild(renderLearningGroupRow(group)));
+  if(!groups.length)list.innerHTML='<div class="gpick-empty">暂无分组</div>';
 }
 
 function startStudy(gid){
@@ -1287,15 +1364,10 @@ function toggleCover(){S.coverMode=!S.coverMode;S.chars.forEach((c,ci)=>{const c
 document.addEventListener('keydown',e=>{if(!document.getElementById('page-study').classList.contains('active'))return;if(document.querySelector('.modal-overlay.open'))return;if(e.key==='Enter')learningPrimaryAction();});
 
 /* ━━━━━ PRACTICE ━━━━━ */
-let P={mode:'simple',groupId:null,groupIds:[],queue:[],idx:0,chars:[],reviewSource:'groups',reviewEntries:null,reviewLabel:null};
+let P={mode:'simple',groupId:null,groupIds:[],queue:[],idx:0,chars:[],reviewSource:'groups',reviewEntries:null,reviewLabel:null,reviewSelectedChars:[],reviewCandidates:[],reviewGroupSg:null,reviewGroupPage:0};
 function pracGoStep(n){
   document.querySelectorAll('.prac-step').forEach(s=>s.classList.remove('active'));
   document.getElementById('prac-step'+n).classList.add('active');
-  if(n===1){
-    if(!P.groupIds)P.groupIds=[];
-    P.groupId=P.groupIds[0]||null;
-    renderGpick('prac');
-  }
 }
 function selectPracMode(m){P.mode=m;document.getElementById('pmc-simple').classList.toggle('active',m==='simple');document.getElementById('pmc-standard').classList.toggle('active',m==='standard');}
 function startPractice(){
@@ -1313,7 +1385,7 @@ function startPractice(){
   for(let i=P.queue.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[P.queue[i],P.queue[j]]=[P.queue[j],P.queue[i]];}
   P.idx=0;store.ach.sessions++;saveStore();scheduleAutoSync();
   document.getElementById('prac-quiz-title').textContent='练习 · '+(P.mode==='simple'?'简单':'标准');
-  pracGoStep(3);loadPracEntry();
+  pracGoStep(5);loadPracEntry();
 }
 function loadPracEntry(){
   (P.chars||[]).forEach(cs=>{if(cs.hwWriter){try{cs.hwWriter.cancelAnimation();cs.hwWriter.cancelQuiz();}catch(e){}cs.hwWriter=null;}});
@@ -2264,7 +2336,7 @@ function loadCharData(ch){
   const request=fetch(`${CHAR_DATA_BASE}/${encodeURIComponent(ch)}.json`,controller?{signal:controller.signal}:undefined).then(response=>{
     if(!response.ok)throw new Error(`字形数据 ${response.status}`);
     return response.json();
-  }).catch(()=>null).finally(()=>clearTimeout(timeout));
+  }).catch(()=>{charDataCache.delete(ch);return null;}).finally(()=>clearTimeout(timeout));
   charDataCache.set(ch,request);return request;
 }
 function svgElement(tag,attributes){
@@ -2618,24 +2690,128 @@ function reviewSourceData(){return HanziReview.buildSmartSources(store.groups,ch
 function reviewSourceLabel(source){
   return{groups:'按组复习',todayAlmost:'今日差一点',due:'到期复习',historical:'历史高频'}[source]||'复习';
 }
-function selectReviewSource(source){
-  P.reviewSource=source;
-  document.querySelectorAll('.review-source-btn').forEach(button=>button.classList.toggle('active',button.dataset.source===source));
-  const grouped=document.getElementById('review-group-source');const smart=document.getElementById('review-smart-source');
-  grouped.style.display=source==='groups'?'flex':'none';smart.style.display=source==='groups'?'none':'flex';
-  if(source==='groups'){renderGpick('prac');return;}
-  const chars=reviewSourceData()[source]||[];
-  smart.innerHTML=`<div class="review-smart-summary"><div class="review-smart-count">${chars.length}</div><div>${escapeHtml(reviewSourceLabel(source))}重点字</div><div class="review-smart-chars">${chars.map(ch=>`<span class="review-smart-char">${escapeHtml(ch)}</span>`).join('')}</div>${chars.length?'':'<div class="fhint" style="margin-top:12px">暂时没有需要复习的字</div>'}</div>`;
+function renderReviewSources(){
+  const smart=reviewSourceData();const available=HanziReview.availableFocusChars(store.groups);
+  const definitions=[
+    {id:'groups',icon:'组',name:'按组复习',desc:'从课程分组中选择需要复习的字',count:`${available.length}个重点字`},
+    {id:'todayAlmost',icon:'今',name:'今日差一点',desc:'再次练习今天标记为差一点的字',count:`${smart.todayAlmost.length}个`},
+    {id:'historical',icon:'频',name:'历史高频',desc:'优先复习累计差一点次数较多的字',count:`${smart.historical.length}个`},
+    {id:'due',icon:'期',name:'到期复习',desc:'按照当前复习周期安排的到期字',count:`${smart.due.length}个`}
+  ];
+  const list=document.getElementById('review-source-list');if(!list)return;list.innerHTML='';
+  definitions.forEach(item=>{
+    const button=document.createElement('button');button.className='review-source-row';button.onclick=()=>openReviewSource(item.id);
+    button.innerHTML=`<span class="review-source-icon">${item.icon}</span><span><span class="review-source-name">${item.name}</span><span class="review-source-desc">${item.desc}</span></span><span class="review-source-count">${item.count}</span><span class="review-source-arrow">›</span>`;
+    list.appendChild(button);
+  });
+}
+function reviewGroupsForActiveCategory(){
+  if(P.reviewGroupSg==='__other'){
+    const assigned=new Set(store.superGroups.flatMap(group=>group.groupIds||[]));
+    return store.groups.filter(group=>!assigned.has(group.id));
+  }
+  return groupsForSuperGroup(P.reviewGroupSg);
+}
+function reviewCandidateItems(){
+  const source=P.reviewSource||'groups';
+  const groups=source==='groups'?store.groups.filter(group=>(P.groupIds||[]).includes(group.id)):store.groups;
+  const targetChars=source==='groups'?null:(reviewSourceData()[source]||[]);
+  const expanded=HanziReview.expandTargetTasks(HanziReview.buildReviewTasks(groups,targetChars).tasks);
+  const seen=new Set();
+  return expanded.filter(item=>{if(seen.has(item.ch))return false;seen.add(item.ch);return true;});
+}
+function reviewReason(item){
+  const record=HanziProgress.normalizeRecord(charProgress[item.ch]);const source=P.reviewSource;
+  if(source==='todayAlmost')return'今天标记为差一点';
+  if(source==='historical')return`累计差一点 ${record.almostCount} 次`;
+  if(source==='due')return record.nextReviewDate?`到期日 ${record.nextReviewDate}`:'已进入复习周期';
+  return item.groupName||'所选分组';
+}
+function updateReviewCandidates(defaultNew=true){
+  const previous=new Set((P.reviewCandidates||[]).map(item=>item.ch));const selected=new Set(P.reviewSelectedChars||[]);
+  P.reviewCandidates=reviewCandidateItems();
+  P.reviewSelectedChars=P.reviewSource==='groups'
+    ?P.reviewCandidates.map(item=>item.ch)
+    :P.reviewCandidates.map(item=>item.ch).filter(ch=>selected.has(ch)||(defaultNew&&!previous.has(ch)));
+}
+function renderReviewGroupPanel(container){
+  const categories=learningCategories();
+  if(!P.reviewGroupSg||!categories.some(item=>item.id===P.reviewGroupSg))P.reviewGroupSg=categories[0]?.id||null;
+  const panel=document.createElement('section');panel.className='review-group-panel';panel.innerHTML='<div class="review-panel-title">选择分组</div>';
+  const filters=document.createElement('div');filters.className='review-group-filter';
+  categories.forEach(category=>{
+    const button=document.createElement('button');button.className=category.id===P.reviewGroupSg?'active':'';button.textContent=category.name;
+    button.onclick=()=>{P.reviewGroupSg=category.id;P.reviewGroupPage=0;renderReviewSelection();};filters.appendChild(button);
+  });
+  const categoryGroups=reviewGroupsForActiveCategory();const pageSize=10;const pages=Math.max(1,Math.ceil(categoryGroups.length/pageSize));
+  P.reviewGroupPage=Math.min(P.reviewGroupPage||0,pages-1);
+  if(categoryGroups.length>pageSize){
+    const range=document.createElement('select');range.className='gpick-range';range.setAttribute('aria-label','复习分组范围');
+    for(let index=0;index<pages;index+=1){const option=document.createElement('option');option.value=String(index);option.textContent=`${index*pageSize+1}–${Math.min((index+1)*pageSize,categoryGroups.length)}`;option.selected=index===P.reviewGroupPage;range.appendChild(option);}
+    range.onchange=()=>{P.reviewGroupPage=Number(range.value)||0;renderReviewSelection();};filters.appendChild(range);
+  }
+  panel.appendChild(filters);const list=document.createElement('div');list.className='review-group-list';
+  categoryGroups.slice(P.reviewGroupPage*pageSize,(P.reviewGroupPage+1)*pageSize).forEach(group=>{
+    const choice=document.createElement('label');choice.className='review-group-choice';
+    const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.className='review-check';checkbox.checked=(P.groupIds||[]).includes(group.id);
+    checkbox.onchange=()=>{
+      const ids=new Set(P.groupIds||[]);checkbox.checked?ids.add(group.id):ids.delete(group.id);P.groupIds=[...ids];P.groupId=P.groupIds[0]||null;
+      updateReviewCandidates();renderReviewSelection();
+    };
+    const stats=groupLearningStats(group);const text=document.createElement('span');text.className='review-group-choice-text';
+    text.innerHTML=`<span class="review-group-choice-name">${escapeHtml(group.name)}</span><span class="review-group-choice-meta">${stats.total}个重点字</span>`;
+    choice.append(checkbox,text);list.appendChild(choice);
+  });
+  if(!list.children.length)list.innerHTML='<div class="review-empty">暂无分组</div>';
+  panel.appendChild(list);container.appendChild(panel);
+}
+function renderReviewCharPanel(container){
+  const panel=document.createElement('section');panel.className='review-char-panel';panel.innerHTML=`<div class="review-panel-title">${escapeHtml(reviewSourceLabel(P.reviewSource))} · 重点字</div>`;
+  const list=document.createElement('div');list.className='review-char-list';const selected=new Set(P.reviewSelectedChars||[]);
+  (P.reviewCandidates||[]).forEach(item=>{
+    const record=HanziProgress.normalizeRecord(charProgress[item.ch]);const row=document.createElement('label');row.className='review-char-row';
+    const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.className='review-check';checkbox.checked=selected.has(item.ch);
+    checkbox.onchange=()=>{const values=new Set(P.reviewSelectedChars||[]);checkbox.checked?values.add(item.ch):values.delete(item.ch);P.reviewSelectedChars=[...values];renderReviewSelection();};
+    const glyph=document.createElement('span');glyph.className='review-char-glyph';glyph.textContent=item.ch;
+    const context=document.createElement('span');context.innerHTML=`<span class="review-char-context">${escapeHtml(item.entry.hanzi)}</span><span class="review-char-reason">${escapeHtml(reviewReason(item))}</span>`;
+    const stats=document.createElement('span');stats.className='review-char-stats';stats.innerHTML=`<span class="review-stat">进度 ${record.masteryStep}/3</span><span class="review-stat correct">正确 ${record.correctCount}</span><span class="review-stat almost">差一点 ${record.almostCount}</span>`;
+    row.append(checkbox,glyph,context,stats);list.appendChild(row);
+  });
+  if(!list.children.length)list.innerHTML='<div class="review-empty">当前范围暂时没有可复习的重点字</div>';
+  panel.appendChild(list);container.appendChild(panel);
+}
+function renderReviewSelection(){
+  const layout=document.getElementById('review-select-layout');if(!layout)return;layout.innerHTML='';
+  const grouped=P.reviewSource==='groups';layout.classList.toggle('group-only',grouped);
+  if(grouped)renderReviewGroupPanel(layout);else renderReviewCharPanel(layout);
+  const selected=(P.reviewSelectedChars||[]).length,total=(P.reviewCandidates||[]).length;
+  const groupCount=(P.groupIds||[]).length;
+  document.getElementById('review-select-summary').textContent=grouped
+    ?`已选择 ${groupCount} 个分组，共 ${total} 个重点字`
+    :`已选择 ${selected}/${total} 个重点字`;
+  document.getElementById('review-char-bulk-actions').style.display=grouped?'none':'flex';
+  document.querySelectorAll('.review-direct-action').forEach(button=>{button.disabled=!selected;});
+}
+function openReviewSource(source){
+  P.reviewSource=source;P.reviewEntries=null;P.reviewLabel=null;
+  if(source!=='groups')P.groupIds=[];
+  P.reviewCandidates=[];P.reviewSelectedChars=[];
+  updateReviewCandidates(true);pracGoStep(2);renderReviewSelection();
+}
+function toggleAllReviewChars(checked){
+  P.reviewSelectedChars=checked?(P.reviewCandidates||[]).map(item=>item.ch):[];renderReviewSelection();
+}
+function returnToReviewSelection(){
+  clearReviewTimers();pracGoStep(2);renderReviewSelection();
 }
 function currentReviewSelection(showAlert=true){
-  const source=P.reviewSource||'groups';let groups=[];let targetChars=null;
+  const source=P.reviewSource||'groups';let groups=[];
   if(source==='groups'){
     const ids=P.groupIds||[];groups=store.groups.filter(group=>ids.includes(group.id));
     if(!groups.length){if(showAlert)alert('请至少选择一个分组');return null;}
-  }else{
-    groups=store.groups;targetChars=reviewSourceData()[source]||[];
-    if(!targetChars.length){if(showAlert)alert('当前范围暂时没有需要复习的字');return null;}
-  }
+  }else groups=store.groups;
+  const targetChars=P.reviewSelectedChars||[];
+  if(!targetChars.length){if(showAlert)alert('请至少选择一个重点字');return null;}
   const built=HanziReview.buildReviewTasks(groups,targetChars);
   const label=source==='groups'?(groups.length===1?groups[0].name:`${groups.length}个分组`):reviewSourceLabel(source);
   return{source,groups,targetChars,built,label};
@@ -2645,17 +2821,15 @@ function openReviewPicker(){
   showPage('practice');document.querySelectorAll('.prac-step').forEach(step=>step.classList.remove('active'));document.getElementById('prac-step1').classList.add('active');
   if(!Array.isArray(P.groupIds))P.groupIds=[];
   P.groupId=P.groupIds[0]||null;P.reviewEntries=null;P.reviewLabel=null;
-  selectReviewSource(P.reviewSource||'groups');
+  renderReviewSources();
 }
 function openWorksheetReview(){
   const selection=currentReviewSelection();if(!selection)return;
-  P.reviewEntries=selection.source==='groups'
-    ?selection.groups.flatMap(group=>group.entries||[])
-    :[...new Map(selection.built.tasks.map(task=>[`${task.groupId}:${task.entryIndex}`,task.entry])).values()];
-  P.reviewLabel=selection.label;pracGoStep(2);
+  P.reviewEntries=[...new Map(selection.built.tasks.map(task=>[`${task.groupId}:${task.entryIndex}`,task.entry])).values()];
+  P.reviewLabel=selection.label;generateWorksheet('simple');
 }
 function showReviewStep(){
-  document.querySelectorAll('.prac-step').forEach(step=>step.classList.remove('active'));document.getElementById('prac-step3').classList.add('active');
+  document.querySelectorAll('.prac-step').forEach(step=>step.classList.remove('active'));document.getElementById('prac-step5').classList.add('active');
 }
 function resetReviewShell(stage='写字练习'){
   document.getElementById('review-shell').innerHTML=`<div class="flow-head"><span class="flow-step" id="review-stage">${escapeHtml(stage)}</span><div class="flow-dots" id="review-dots"></div></div><div class="review-mode-board" id="review-mode-board"></div><div class="learn-success-celebration" id="review-success" role="status" aria-live="polite" aria-hidden="true"></div>`;
@@ -2670,7 +2844,7 @@ function renderMethodDots(count,index,done){
   for(let i=0;i<count;i+=1){const dot=document.createElement('span');dot.className='flow-dot'+(done&&done(i)?' done':i===index?' active':'');dots.appendChild(dot);}
 }
 function renderReviewEmpty(title,detail,stage='复习'){
-  resetReviewShell(stage);document.getElementById('review-mode-board').innerHTML=`<div class="empty-state"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(detail)}</span><div style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">返回复习</button></div></div>`;
+  resetReviewShell(stage);document.getElementById('review-mode-board').innerHTML=`<div class="empty-state"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(detail)}</span><div style="margin-top:18px"><button class="btn btn-ghost" onclick="returnToReviewSelection()">返回复习选择</button></div></div>`;
 }
 function setReviewTitle(method,label){
   document.getElementById('prac-quiz-title').textContent=`${method} · ${label}`;showReviewStep();resetReviewShell(method);
@@ -2694,7 +2868,7 @@ function renderPracticeWord(container,item,hiddenPosition){
   container.appendChild(word);
 }
 function practiceComplete(method,detail){
-  resetReviewShell(method);document.getElementById('review-mode-board').innerHTML=`<div class="learn-complete"><div class="learn-complete-title">${escapeHtml(method)}完成</div><div class="learn-complete-meta">${escapeHtml(detail)}<br>本次练习不修改正式复习进度</div><div class="learn-controls" style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">选择其他方式</button><button class="btn btn-primary" onclick="showPage('home')">回到首页</button></div></div>`;
+  resetReviewShell(method);document.getElementById('review-mode-board').innerHTML=`<div class="learn-complete"><div class="learn-complete-title">${escapeHtml(method)}完成</div><div class="learn-complete-meta">${escapeHtml(detail)}<br>本次练习不修改正式复习进度</div><div class="learn-controls" style="margin-top:18px"><button class="btn btn-ghost" onclick="returnToReviewSelection()">选择其他练习</button><button class="btn btn-primary" onclick="showPage('home')">回到首页</button></div></div>`;
 }
 
 function startRecognitionReview(){
@@ -2731,13 +2905,27 @@ async function startStructureReview(){
   const sourceItems=HanziReview.expandTargetTasks(selection.built.tasks);const token=Date.now();
   ReviewState={mode:'structure-loading',label:selection.label,token,renderToken:0,timers:[]};setReviewTitle('结构连连看',selection.label);
   document.getElementById('review-mode-board').innerHTML='<div class="empty-state"><strong>正在准备部件…</strong></div>';
-  const loaded=await Promise.all([...new Set(sourceItems.map(item=>item.ch))].map(async ch=>[ch,await loadCharData(ch)]));
+  const allChars=[...new Set(sourceItems.flatMap(item=>[...item.entry.hanzi]))];
+  const loaded=await Promise.all(allChars.map(async ch=>[ch,await loadCharData(ch)]));
   if(ReviewState.token!==token)return;
   const dataMap={};loaded.forEach(([ch,data])=>{if(data)dataMap[ch]=data;});
   const items=HanziLearning.buildComponentMatchItems(sourceItems,dataMap,store.charDefs||{});
   if(items.length<2){renderReviewEmpty('可拆分重点字不足','结构连连看需要至少两个已设置红蓝部件的重点字。','结构连连看');return;}
-  const batches=[];for(let i=0;i<items.length;i+=6)batches.push(items.slice(i,i+6));
-  const batchStates=batches.map(batch=>({assignments:{},locked:new Set(),selected:null,options:shuffleArr(batch.flatMap(item=>item.components))}));
+  const pageCount=Math.ceil(items.length/6);const baseSize=Math.floor(items.length/pageCount);const extra=items.length%pageCount;
+  const batches=[];let batchStart=0;
+  for(let page=0;page<pageCount;page+=1){
+    const batchSize=baseSize+(page<extra?1:0);
+    batches.push(items.slice(batchStart,batchStart+batchSize));batchStart+=batchSize;
+  }
+  const batchStates=batches.map(batch=>{
+    const leftOptions=[];const rightOptions=[];
+    batch.forEach(item=>{
+      const pair=shuffleArr(item.components);
+      leftOptions.push(pair[0]);rightOptions.push(pair[1]);
+    });
+    const shuffledLeft=shuffleArr(leftOptions);const shuffledRight=shuffleArr(rightOptions);
+    return{assignments:{},locked:new Set(),selected:null,leftOptions:shuffledLeft,rightOptions:shuffledRight,options:[...shuffledLeft,...shuffledRight]};
+  });
   ReviewState={mode:'structure',label:selection.label,batches,batchStates,index:0,dataMap,renderToken:0,timers:[]};
   setReviewTitle('结构连连看',selection.label);renderStructureReview();
 }
@@ -2747,9 +2935,10 @@ function assignedStructureParts(state,key){
 function fillStructureAssembly(grid,item,state){
   grid.innerHTML='';const svg=createStrokeSvg(null,[],true);grid.appendChild(svg);
   const locked=state.locked.has(item.matchKey);
+  if(!locked)return;
   assignedStructureParts(state,item.matchKey).forEach(part=>{
     const data=ReviewState.dataMap[part.sourceChar];if(!data)return;
-    const color=locked?(part.role==='red'?'#dc2626':'#2563eb'):'#3f3f46';
+    const color=part.role==='red'?'#dc2626':'#2563eb';
     part.indices.forEach(index=>{if(data.strokes[index])svg.appendChild(svgElement('path',{d:data.strokes[index],fill:color,transform:HW_TF}));});
   });
 }
@@ -2759,7 +2948,7 @@ function renderStructurePrompt(item,state){
   const tokens=HanziReview.pinyinTokens(item.entry,autoPinyin);const pinyin=document.createElement('div');pinyin.className='component-prompt-pinyin';pinyin.textContent=tokens.join(' ');
   const chars=[...item.entry.hanzi];const positions=new Set(item.positions);const word=document.createElement('div');word.className='component-prompt-word';configureHanziWordRow(word,chars.length);
   chars.forEach((ch,index)=>{
-    const target=positions.has(index);const grid=createHanziGrid('',target);grid.dataset.matchTarget=target?item.matchKey:'';
+    const target=positions.has(index);const grid=createHanziGrid('',target&&(state.selected===item.matchKey||state.locked.has(item.matchKey)));
     if(target)fillStructureAssembly(grid,item,state);
     else{const data=ReviewState.dataMap[ch];fillHanziGrid(grid,ch,data,data?redBlueLayers(ch,data):[],true);if(!data)loadCharData(ch).then(loaded=>{if(grid.isConnected)fillHanziGrid(grid,ch,loaded,loaded?redBlueLayers(ch,loaded):[],true);});}
     word.appendChild(grid);
@@ -2771,10 +2960,12 @@ function drawStructureMatchLines(){
   const bounds=board.getBoundingClientRect();svg.setAttribute('viewBox',`0 0 ${bounds.width} ${bounds.height}`);svg.innerHTML='';
   const state=ReviewState.batchStates[ReviewState.index];if(!state)return;
   Object.entries(state.assignments).forEach(([key,ids])=>{
-    const target=board.querySelector(`[data-match-target="${CSS.escape(key)}"]`);if(!target)return;const tr=target.getBoundingClientRect();
-    ids.forEach(id=>{const source=board.querySelector(`[data-part-id="${CSS.escape(id)}"]`);if(!source)return;const sr=source.getBoundingClientRect();
-      const line=svgElement('line',{x1:sr.left-bounds.left,y1:sr.top+sr.height/2-bounds.top,x2:tr.right-bounds.left,y2:tr.top+tr.height/2-bounds.top,class:state.locked.has(key)?'locked':''});svg.appendChild(line);
-    });
+    if(ids.length!==2)return;
+    const first=board.querySelector(`[data-part-id="${CSS.escape(ids[0])}"]`);const second=board.querySelector(`[data-part-id="${CSS.escape(ids[1])}"]`);
+    if(!first||!second)return;
+    const firstRect=first.getBoundingClientRect();const secondRect=second.getBoundingClientRect();
+    const left=firstRect.left<=secondRect.left?firstRect:secondRect;const right=firstRect.left<=secondRect.left?secondRect:firstRect;
+    const line=svgElement('line',{x1:left.right-bounds.left,y1:left.top+left.height/2-bounds.top,x2:right.left-bounds.left,y2:right.top+right.height/2-bounds.top,class:state.locked.has(key)?'locked':''});svg.appendChild(line);
   });
 }
 window.addEventListener('resize',()=>{if(ReviewState.mode==='structure')requestAnimationFrame(drawStructureMatchLines);});
@@ -2785,11 +2976,14 @@ function renderStructureReview(){
   const board=document.getElementById('review-mode-board');const match=document.createElement('div');match.className='component-match-board';
   const prompts=document.createElement('div');prompts.className='component-match-prompts';const pool=document.createElement('div');pool.className='component-match-pool';
   batch.forEach(item=>prompts.appendChild(renderStructurePrompt(item,state)));
-  state.options.forEach(part=>{
+  const leftColumn=document.createElement('div');leftColumn.className='component-part-column left';
+  const rightColumn=document.createElement('div');rightColumn.className='component-part-column right';
+  const renderPart=(part,column)=>{
     const owner=Object.keys(state.assignments).find(key=>(state.assignments[key]||[]).includes(part.id));const card=document.createElement('button');
     card.className='component-part'+(owner?' used':'')+(owner&&state.locked.has(owner)?' locked':'');card.dataset.partId=part.id;card.onclick=()=>selectStructurePart(part.id);
-    const data=ReviewState.dataMap[part.sourceChar];card.appendChild(createStrokeSvg(data,[{indices:part.indices,color:'#3f3f46'}],false));pool.appendChild(card);
-  });
+    const data=ReviewState.dataMap[part.sourceChar];card.appendChild(createStrokeSvg(data,[{indices:part.indices,color:'#3f3f46'}],false));column.appendChild(card);
+  };
+  state.leftOptions.forEach(part=>renderPart(part,leftColumn));state.rightOptions.forEach(part=>renderPart(part,rightColumn));pool.append(leftColumn,rightColumn);
   const lines=svgElement('svg',{class:'component-match-lines','aria-hidden':'true'});match.append(prompts,pool,lines);board.appendChild(match);
   const feedback=document.createElement('div');feedback.className='learn-feedback';feedback.id='review-feedback';board.appendChild(feedback);
   const check=document.createElement('button');check.className='btn btn-primary';check.textContent='检查';check.disabled=!batch.every(item=>(state.assignments[item.matchKey]||[]).length===2);check.onclick=checkStructureReview;board.appendChild(check);
@@ -2895,12 +3089,28 @@ function finishReviewSession(){
 }
 function renderReviewComplete(recordedTasks,recordedChars){
   const summary=HanziProgress.summarize(charProgress);
-  resetReviewShell('写字练习');document.getElementById('review-mode-board').innerHTML=`<div class="learn-complete"><div class="learn-complete-title">写字练习完成</div><div class="learn-complete-meta">本次记录 ${recordedTasks||0} 个词语、${recordedChars||0} 个重点字<br>当前已掌握 ${summary.mastered} 个重点字</div><div class="learn-controls" style="margin-top:18px"><button class="btn btn-ghost" onclick="openReviewPicker()">选择其他方式</button><button class="btn btn-primary" onclick="showPage('home')">回到首页</button></div></div>`;
+  resetReviewShell('写字练习');document.getElementById('review-mode-board').innerHTML=`<div class="learn-complete"><div class="learn-complete-title">写字练习完成</div><div class="learn-complete-meta">本次记录 ${recordedTasks||0} 个词语、${recordedChars||0} 个重点字<br>当前已掌握 ${summary.mastered} 个重点字</div><div class="learn-controls" style="margin-top:18px"><button class="btn btn-ghost" onclick="returnToReviewSelection()">选择其他练习</button><button class="btn btn-primary" onclick="showPage('home')">回到首页</button></div></div>`;
 }
 
 /* ━━━━━ WORKSHEET ━━━━━ */
 const WS={W:1240,H:1754,MX:64,MY:64,TITLE_H:82,FOOTER_H:56,MAX_CELL:102,MIN_CELL:48};
-const WS_STATE={variant:'practice',entryItems:null,grpName:'练习',token:0};
+const WS_STATE={type:'simple',entryItems:null,grpName:'练习',token:0};
+const WORKSHEET_TYPES={
+  simple:{title:'简单练习纸',file:'简单练习纸'},
+  focus:{title:'重点字纸',file:'重点字纸'},
+  standard:{title:'标准练习纸',file:'标准练习纸'},
+  recognition:{title:'识字纸',file:'识字纸'}
+};
+function setWorksheetType(type){
+  if(!WORKSHEET_TYPES[type])return;
+  WS_STATE.type=type;
+  document.querySelectorAll('.worksheet-preview-tab').forEach(button=>{
+    const active=button.dataset.type===type;button.classList.toggle('active',active);button.setAttribute('aria-selected',active?'true':'false');
+  });
+  const saveBtn=document.getElementById('ws-save-btn');
+  if(saveBtn)saveBtn.textContent=`💾 保存${WORKSHEET_TYPES[type].file}`;
+  if(WS_STATE.entryItems)renderWorksheet();
+}
 function getSelectedPracticeEntries(){
   if(Array.isArray(P.reviewEntries))return P.reviewEntries;
   const ids=(P.groupIds&&P.groupIds.length)?P.groupIds:[P.groupId].filter(Boolean);
@@ -2911,24 +3121,15 @@ function getSelectedPracticeEntries(){
   return entries;
 }
 
-function setWorksheetVariant(variant){
-  if(!['practice','complete'].includes(variant))return;
-  WS_STATE.variant=variant;
-  document.getElementById('ws-mode-practice').classList.toggle('active',variant==='practice');
-  document.getElementById('ws-mode-complete').classList.toggle('active',variant==='complete');
-  const saveBtn=document.getElementById('ws-save-btn');
-  if(saveBtn)saveBtn.textContent=variant==='complete'?'💾 保存完整字词':'💾 保存练习纸';
-  if(WS_STATE.entryItems)renderWorksheet();
-}
-
-async function generateWorksheet(){
+async function generateWorksheet(type){
+  if(!WORKSHEET_TYPES[type])return;
   const entries=getSelectedPracticeEntries();
   if(!entries.length){alert('所选分组暂无内容');return;}
   const grpName=P.reviewLabel||(entries.length===store.groups.reduce((s,g)=>s+(g.entries?g.entries.length:0),0)
     ?'全部'
     :((P.groupIds&&P.groupIds.length>1)?'多分组':(store.groups.find(x=>x.id===P.groupId)||{name:'练习'}).name));
   openModal('modal-worksheet');const stEl=document.getElementById('ws-status');const canvas=document.getElementById('ws-canvas');const saveBtn=document.getElementById('ws-save-btn');
-  WS_STATE.entryItems=null;WS_STATE.grpName=grpName;setWorksheetVariant(WS_STATE.variant);
+  WS_STATE.entryItems=null;WS_STATE.grpName=grpName;setWorksheetType(type);
   stEl.textContent='正在加载字形数据，请稍候…';stEl.style.display='block';canvas.style.display='none';saveBtn.style.display='none';
   const token=++WS_STATE.token;
   const fetchChar=ch=>fetch(`https://cdn.jsdelivr.net/npm/hanzi-writer-data@2.0/${encodeURIComponent(ch)}.json`).then(r=>r.ok?r.json():null).catch(()=>null);
@@ -2937,7 +3138,10 @@ async function generateWorksheet(){
   if(token!==WS_STATE.token)return;
   const dataMap=new Map(loaded);
   const entryItems=[];
-  entries.forEach((entry,order)=>{const chars=[...entry.hanzi];const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).trim().split(/\s+/);entryItems.push({order,chars:chars.map((ch,ci)=>({ch,pinyin:pinyins[ci]||autoPinyin(ch),cfg:resolveCfgForChar(entry,ci,ch),data:dataMap.get(ch)}))});});
+  entries.forEach((entry,order)=>{
+    const chars=[...entry.hanzi];const pinyins=(entry.pinyin||autoPinyin(entry.hanzi)).trim().split(/\s+/);const focusIndices=new Set(HanziContent.getWordFocusIndices(entry));
+    entryItems.push({order,chars:chars.map((ch,ci)=>({ch,pinyin:pinyins[ci]||autoPinyin(ch),cfg:resolveCfgForChar(entry,ci,ch),data:dataMap.get(ch),isFocus:focusIndices.has(ci)}))});
+  });
   WS_STATE.entryItems=entryItems;
   renderWorksheet();
 }
@@ -2972,7 +3176,7 @@ function renderWorksheet(){
   const canvasHeight=Math.max(WS.H,contentTop+layout.totalH+WS.FOOTER_H+WS.MY);
   canvas.width=WS.W;canvas.height=canvasHeight;
   const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
-  const titleMode=WS_STATE.variant==='complete'?'完整字词':`${P.mode==='simple'?'简单模式':'标准模式'}看拼音写汉字`;
+  const titleMode=WORKSHEET_TYPES[WS_STATE.type]?.title||'练习纸';
   ctx.fillStyle='#111111';ctx.font=`bold 44px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText(`${WS_STATE.grpName} · ${titleMode}`,WS.W/2,WS.MY+46);
   const {cell:CELL,pinyinH:PINY,rowGap:ROW_GAP,cellGap:CELL_GAP}=layout.metrics;
   const STROKE_PAD=Math.round(CELL*0.1);
@@ -3011,10 +3215,11 @@ function renderWorksheet(){
       entry.chars.forEach((ci2,ci)=>{
         const cx=curX+ci*(CELL+CELL_GAP);const cy=curY+PINY;
         drawTzg(cx,cy,CELL);
-        if(WS_STATE.variant==='complete'&&ci2.data){
+        const showComplete=WS_STATE.type==='recognition'||(WS_STATE.type==='focus'&&!ci2.isFocus);
+        if(showComplete&&ci2.data){
           const colors=buildColors(ci2.data.strokes.length,ci2.cfg.mode,ci2.cfg.redRange);
           ci2.data.strokes.forEach((stroke,si)=>drawStroke(stroke,colors[si],cx,cy,CELL,STROKE_PAD));
-        }else if(P.mode==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
+        }else if(WS_STATE.type==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
           const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);
           const redIdx=[],blueIdx=[];for(let k=1;k<=ns;k++){(rs.has(k)?redIdx:blueIdx).push(k-1);}
           const showRed=blueIdx.length===0||(redIdx.length>0&&((entry.order+ci)%2===0));
@@ -3029,7 +3234,7 @@ function renderWorksheet(){
   ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,canvas.height-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
 }
-function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const mode=WS_STATE.variant==='complete'?'完整字词':`${P.mode==='simple'?'简单':'标准'}_练习纸`;const a=document.createElement('a');a.download=`${WS_STATE.grpName}_${mode}.png`;a.href=canvas.toDataURL('image/png');a.click();}
+function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const mode=WORKSHEET_TYPES[WS_STATE.type]?.file||'练习纸';const a=document.createElement('a');a.download=`${WS_STATE.grpName}_${mode}.png`;a.href=canvas.toDataURL('image/png');a.click();}
 
 /* ━━━━━ CLOUD SYNC ━━━━━ */
 let _toastTimer=null;
