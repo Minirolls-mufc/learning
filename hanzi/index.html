@@ -190,6 +190,12 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
 .worksheet-preview-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;padding:4px;border:1px solid var(--border);border-radius:8px;background:#f8f3ed}
 .worksheet-preview-tab{min-height:38px;border:0;border-radius:6px;background:transparent;color:var(--muted);font:800 .68rem inherit;cursor:pointer;white-space:nowrap}
 .worksheet-preview-tab.active{background:#fff;color:var(--o1);box-shadow:0 2px 8px rgba(79,45,14,.1)}
+.worksheet-simple-part{display:flex;align-items:center;justify-content:center;gap:10px;min-height:40px}
+.worksheet-simple-part-label{font-size:.72rem;font-weight:800;color:var(--muted)}
+.worksheet-part-options{display:inline-flex;gap:4px;padding:3px;border:1px solid var(--border);border-radius:8px;background:#f8f3ed}
+.worksheet-part-option{min-height:32px;padding:0 14px;border:0;border-radius:6px;background:transparent;font:800 .7rem inherit;color:var(--muted);cursor:pointer}
+.worksheet-part-option.red.active{background:#fff;color:#dc2626;box-shadow:0 2px 7px rgba(220,38,38,.13)}
+.worksheet-part-option.blue.active{background:#fff;color:#1d4ed8;box-shadow:0 2px 7px rgba(29,78,216,.13)}
 .prac-grp-body{flex:1;overflow-y:auto;padding:20px 16px 80px}
 .prac-grp-footer{flex-shrink:0;padding:10px 14px;background:var(--paper);border-top:1.5px solid var(--border);display:flex;justify-content:center;gap:10px;}
 .prac-quiz-body{flex:1;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 58px;gap:8px;position:relative;}
@@ -1023,6 +1029,13 @@ body{font-family:'Nunito','Noto Sans SC',sans-serif;background:var(--bg);color:v
         <button class="worksheet-preview-tab" type="button" role="tab" data-type="focus" onclick="setWorksheetType('focus')">重点字纸</button>
         <button class="worksheet-preview-tab" type="button" role="tab" data-type="standard" onclick="setWorksheetType('standard')">标准练习纸</button>
         <button class="worksheet-preview-tab" type="button" role="tab" data-type="recognition" onclick="setWorksheetType('recognition')">识字纸</button>
+      </div>
+      <div class="worksheet-simple-part" id="worksheet-simple-part">
+        <span class="worksheet-simple-part-label">显示部件</span>
+        <div class="worksheet-part-options" role="tablist" aria-label="简单练习纸显示颜色">
+          <button class="worksheet-part-option red active" type="button" role="tab" aria-selected="true" data-part="red" onclick="setSimpleWorksheetPart('red')">红色部分</button>
+          <button class="worksheet-part-option blue" type="button" role="tab" aria-selected="false" data-part="blue" onclick="setSimpleWorksheetPart('blue')">蓝色部分</button>
+        </div>
       </div>
       <div id="ws-status" style="font-size:.82rem;color:var(--muted);text-align:center;padding:8px 0">正在生成，请稍候…</div>
       <canvas id="ws-canvas" style="width:100%;border:1.5px solid var(--border);border-radius:8px;display:none"></canvas>
@@ -3094,7 +3107,7 @@ function renderReviewComplete(recordedTasks,recordedChars){
 
 /* ━━━━━ WORKSHEET ━━━━━ */
 const WS={W:1240,H:1754,MX:64,MY:64,TITLE_H:82,FOOTER_H:56,MAX_CELL:102,MIN_CELL:48};
-const WS_STATE={type:'simple',entryItems:null,grpName:'练习',token:0};
+const WS_STATE={type:'simple',simplePart:'red',entryItems:null,grpName:'练习',token:0};
 const WORKSHEET_TYPES={
   simple:{title:'简单练习纸',file:'简单练习纸'},
   focus:{title:'重点字纸',file:'重点字纸'},
@@ -3107,9 +3120,26 @@ function setWorksheetType(type){
   document.querySelectorAll('.worksheet-preview-tab').forEach(button=>{
     const active=button.dataset.type===type;button.classList.toggle('active',active);button.setAttribute('aria-selected',active?'true':'false');
   });
+  const partControl=document.getElementById('worksheet-simple-part');
+  if(partControl)partControl.hidden=type!=='simple';
   const saveBtn=document.getElementById('ws-save-btn');
-  if(saveBtn)saveBtn.textContent=`💾 保存${WORKSHEET_TYPES[type].file}`;
+  if(saveBtn)saveBtn.textContent=`💾 保存${getWorksheetFileLabel()}`;
   if(WS_STATE.entryItems)renderWorksheet();
+}
+function setSimpleWorksheetPart(part){
+  if(part!=='red'&&part!=='blue')return;
+  WS_STATE.simplePart=part;
+  document.querySelectorAll('.worksheet-part-option').forEach(button=>{
+    const active=button.dataset.part===part;button.classList.toggle('active',active);button.setAttribute('aria-selected',active?'true':'false');
+  });
+  const saveBtn=document.getElementById('ws-save-btn');
+  if(saveBtn)saveBtn.textContent=`💾 保存${getWorksheetFileLabel()}`;
+  if(WS_STATE.entryItems&&WS_STATE.type==='simple')renderWorksheet();
+}
+function getWorksheetFileLabel(){
+  const label=WORKSHEET_TYPES[WS_STATE.type]?.file||'练习纸';
+  if(WS_STATE.type!=='simple')return label;
+  return `${label}_${WS_STATE.simplePart==='blue'?'蓝色部分':'红色部分'}`;
 }
 function getSelectedPracticeEntries(){
   if(Array.isArray(P.reviewEntries))return P.reviewEntries;
@@ -3222,7 +3252,7 @@ function renderWorksheet(){
         }else if(WS_STATE.type==='simple'&&ci2.cfg.mode==='complex'&&ci2.cfg.redRange&&ci2.data){
           const ns=ci2.data.strokes.length;const rs=parseRange(ci2.cfg.redRange,ns);
           const redIdx=[],blueIdx=[];for(let k=1;k<=ns;k++){(rs.has(k)?redIdx:blueIdx).push(k-1);}
-          const showRed=blueIdx.length===0||(redIdx.length>0&&((entry.order+ci)%2===0));
+          const showRed=WS_STATE.simplePart!=='blue';
           const shown=showRed?redIdx:blueIdx;const col=showRed?'#dc2626':'#1d4ed8';
           shown.forEach(si=>drawStroke(ci2.data.strokes[si],col,cx,cy,CELL,STROKE_PAD));
         }
@@ -3234,7 +3264,7 @@ function renderWorksheet(){
   ctx.fillStyle='#bbbbbb';ctx.font=`16px 'Noto Sans SC',Arial,sans-serif`;ctx.textAlign='center';ctx.fillText('Romeo 汉字课堂 · 加油！',WS.W/2,canvas.height-38);
   stEl.style.display='none';canvas.style.display='block';saveBtn.style.display='inline-flex';
 }
-function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const mode=WORKSHEET_TYPES[WS_STATE.type]?.file||'练习纸';const a=document.createElement('a');a.download=`${WS_STATE.grpName}_${mode}.png`;a.href=canvas.toDataURL('image/png');a.click();}
+function saveWorksheet(){const canvas=document.getElementById('ws-canvas');const mode=getWorksheetFileLabel();const a=document.createElement('a');a.download=`${WS_STATE.grpName}_${mode}.png`;a.href=canvas.toDataURL('image/png');a.click();}
 
 /* ━━━━━ CLOUD SYNC ━━━━━ */
 let _toastTimer=null;
