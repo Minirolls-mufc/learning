@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f5fbf6" />
+    <title>路线追踪 · 积木飞机场</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main id="practice" class="practice">
+      <header class="practice-toolbar">
+        <a class="icon-button home-button" href="../" aria-label="返回首页" title="返回首页">
+          <svg aria-hidden="true"><use href="./icons.svg#arrow-left" /></svg>
+        </a>
+        <h1>路线追踪</h1>
+        <span id="chartCount" class="chart-count" aria-live="polite">1 / 20</span>
+        <button id="nextChart" class="next-button" type="button" title="随机换一张">
+          <svg aria-hidden="true"><use href="./icons.svg#shuffle" /></svg>
+          <span>换一张</span>
+        </button>
+        <button id="fullscreen" class="icon-button" type="button" aria-label="进入全屏" title="进入全屏">
+          <svg aria-hidden="true"><use href="./icons.svg#maximize" /></svg>
+        </button>
+      </header>
+
+      <section id="chartArea" class="chart-area" aria-label="视觉追踪路线图">
+        <svg id="routeChart" role="img" aria-labelledby="chartTitle chartDescription">
+          <title id="chartTitle">视觉追踪路线图</title>
+          <desc id="chartDescription">从中心 0 出发，依次沿箭头追踪 1 到 12，最后回到 0。</desc>
+          <g id="routeLines"></g>
+          <g id="routeNodes"></g>
+          <g id="guideDot" class="guide-dot" aria-hidden="true">
+            <circle class="guide-outline" r="14" />
+            <circle class="guide-core" r="8" />
+          </g>
+        </svg>
+      </section>
+
+      <footer class="practice-controls">
+        <label class="guide-toggle">
+          <input id="guideEnabled" type="checkbox" checked />
+          <span class="switch" aria-hidden="true"></span>
+          <span>辅助点</span>
+        </label>
+        <button id="playPause" class="icon-button" type="button" aria-label="暂停辅助点" title="暂停辅助点">
+          <svg aria-hidden="true"><use href="./icons.svg#pause" /></svg>
+        </button>
+        <button id="restart" class="icon-button" type="button" aria-label="从 0 重新开始" title="从 0 重新开始">
+          <svg aria-hidden="true"><use href="./icons.svg#rotate-ccw" /></svg>
+        </button>
+        <label class="speed-control" for="guideSpeed">
+          <span>速度</span>
+          <input id="guideSpeed" type="range" min="0.25" max="2" step="0.05" value="1" />
+          <output id="speedValue" for="guideSpeed">1.00×</output>
+        </label>
+        <span id="routeProgress" class="route-progress" aria-label="当前路线">0 → 1</span>
+      </footer>
+      <div id="notice" class="notice" role="status" hidden></div>
+    </main>
+    <script src="./script.js" defer></script>
+  </body>
+</html>

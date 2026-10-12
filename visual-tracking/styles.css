@@ -160,6 +160,15 @@ h1 {
   background: linear-gradient(180deg, #fff8dc, #ffffff 72%);
 }
 
+.choice-routes {
+  background: linear-gradient(180deg, #e5f6e9, #ffffff 72%);
+  text-decoration: none;
+}
+
+.choice-art .route-choice-numbers text {
+  font-size: 24px;
+}
+
 .choice-art {
   width: min(270px, 96%);
   height: auto;
