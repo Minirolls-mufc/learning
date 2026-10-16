@@ -33,31 +33,86 @@ function crosses(a, b, c, d) {
   return side(a, b, c) * side(a, b, d) < 0 && side(c, d, a) * side(c, d, b) < 0;
 }
 
-function generateCharts() {
-  const charts = [];
-  const seen = new Set();
-  while (charts.length < 20) {
-    const ring = Array.from({ length: 12 }, (_, index) => {
-      const angle = -Math.PI / 2 + index * Math.PI / 6 + (Math.random() - 0.5) * 0.13;
-      const radius = 0.9 + Math.random() * 0.1;
-      return { x: 0.5 + Math.cos(angle) * 0.39 * radius, y: 0.5 + Math.sin(angle) * 0.39 * radius };
-    });
-    const order = shuffle(Array.from({ length: 12 }, (_, index) => index));
-    const key = order.join(",");
-    if (seen.has(key)) continue;
-    const points = [{ x: 0.5, y: 0.5 }, ...order.map((index) => ring[index])];
-    const closed = [...points, points[0]];
-    let crossingCount = 0;
-    for (let i = 0; i < closed.length - 1; i += 1) {
-      for (let j = i + 2; j < closed.length - 1; j += 1) {
-        if (crosses(closed[i], closed[i + 1], closed[j], closed[j + 1])) crossingCount += 1;
+function ringGap(a, b) {
+  const gap = Math.abs(a - b);
+  return Math.min(gap, 12 - gap);
+}
+
+function isClearRoute(points) {
+  const count = points.length;
+  const minimumOpening = Math.cos(Math.PI / 6);
+  for (let i = 0; i < count; i += 1) {
+    const previous = points[(i + count - 1) % count];
+    const point = points[i];
+    const next = points[(i + 1) % count];
+    const ax = previous.x - point.x;
+    const ay = previous.y - point.y;
+    const bx = next.x - point.x;
+    const by = next.y - point.y;
+    if ((ax * bx + ay * by) / (Math.hypot(ax, ay) * Math.hypot(bx, by)) > minimumOpening + 1e-9) return false;
+  }
+
+  for (let i = 0; i < count; i += 1) {
+    const a = points[i];
+    const b = points[(i + 1) % count];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const length = Math.hypot(dx, dy);
+    for (let j = i + 2; j < count; j += 1) {
+      if (i === 0 && j === count - 1) continue;
+      const c = points[j];
+      const d = points[(j + 1) % count];
+      const ex = d.x - c.x;
+      const ey = d.y - c.y;
+      const otherLength = Math.hypot(ex, ey);
+      const sine = Math.abs(dx * ey - dy * ex) / (length * otherLength);
+      if (crosses(a, b, c, d) && sine < Math.sin(25 * Math.PI / 180) - 1e-9) return false;
+
+      // Parallel routes need visible space between them, even when they do not cross.
+      if (sine < Math.sin(12 * Math.PI / 180)) {
+        const projectionC = ((c.x - a.x) * dx + (c.y - a.y) * dy) / length;
+        const projectionD = ((d.x - a.x) * dx + (d.y - a.y) * dy) / length;
+        const overlap = Math.min(length, Math.max(projectionC, projectionD)) - Math.max(0, Math.min(projectionC, projectionD));
+        const distance = Math.min(Math.abs(dx * (c.y - a.y) - dy * (c.x - a.x)), Math.abs(dx * (d.y - a.y) - dy * (d.x - a.x))) / length;
+        if (overlap > 0.2 && distance < 0.18) return false;
       }
     }
-    if (crossingCount < 14) continue;
-    seen.add(key);
-    charts.push({ points, order, crossingCount });
   }
-  return charts;
+  return true;
+}
+
+function generateCharts() {
+  const ring = Array.from({ length: 12 }, (_, index) => {
+    const angle = -Math.PI / 2 + index * Math.PI / 6;
+    return { x: Math.cos(angle), y: Math.sin(angle) };
+  });
+  const orders = [];
+  function visit(order) {
+    if (orders.length >= 80) return;
+    if (order.length === 12) {
+      if (ringGap(order[10], order[11]) > 4) return;
+      const points = [{ x: 0, y: 0 }, ...order.map((index) => ring[index])];
+      if (isClearRoute(points)) orders.push(order);
+      return;
+    }
+    for (const next of shuffle(Array.from({ length: 12 }, (_, index) => index))) {
+      if (order.includes(next)) continue;
+      const gap = ringGap(order.at(-1), next);
+      if (gap < 3 || gap > 5 || (order.length === 1 && gap > 4)) continue;
+      if (order.length > 1 && ringGap(order.at(-2), next) < 2) continue;
+      visit([...order, next]);
+    }
+  }
+  visit([0]);
+  const variants = orders.flatMap((order) => Array.from({ length: 12 }, (_, offset) => order.map((index) => (index + offset) % 12)));
+  return shuffle(variants).slice(0, 20).map((order) => {
+    const rotation = Math.random() * Math.PI * 2;
+    const points = [{ x: 0, y: 0 }, ...order.map((index) => {
+      const angle = index * Math.PI / 6 + rotation;
+      return { x: Math.cos(angle), y: Math.sin(angle) };
+    })];
+    return { points, order };
+  });
 }
 
 const charts = generateCharts();
@@ -81,7 +136,8 @@ function drawChart() {
   if (!width || !height) return;
   ui.chart.setAttribute("viewBox", `0 0 ${width} ${height}`);
   const radius = Math.min(22, Math.max(12, Math.min(width, height) * 0.033));
-  screenPoints = currentChart().points.map((point) => ({ x: point.x * width, y: point.y * height }));
+  const chartRadius = Math.max(1, Math.min(width, height) / 2 - radius - 14);
+  screenPoints = currentChart().points.map((point) => ({ x: width / 2 + point.x * chartRadius, y: height / 2 + point.y * chartRadius }));
   const lines = document.createDocumentFragment();
   const nodes = document.createDocumentFragment();
 
